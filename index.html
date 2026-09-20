@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DS Playground — 3D Tactile Visualizer</title>
+  <title>DS Overflow — 3D Tactile Data Structures Playground</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
 
     :root {
-      --bg-cream: #faf7f0;
-      --border-dark: #121826;
-      --shadow-dark: #121826;
+      --bg-cream: #faf8f2;
+      --border-dark: #161a24;
+      --shadow-dark: #161a24;
       --color-orange: #ff6b35;
-      --color-blue: #3b82f6;
-      --color-yellow: #fbbf24;
+      --color-blue: #2563eb;
+      --color-yellow: #f59e0b;
       --color-green: #10b981;
-      --color-purple: #8b5cf6;
-      --color-pink: #ec4899;
+      --color-purple: #9333ea;
+      --color-pink: #f43f5e;
     }
 
     * {
@@ -29,24 +29,25 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
+    /* Blueprint grid background */
     body {
       background-color: var(--bg-cream);
       background-image: 
-        linear-gradient(to right, rgba(59, 130, 246, 0.08) 1.5px, transparent 1.5px),
-        linear-gradient(to bottom, rgba(59, 130, 246, 0.08) 1.5px, transparent 1.5px);
-      background-size: 32px 32px;
-      color: #121826;
+        linear-gradient(to right, rgba(37, 99, 235, 0.07) 1.5px, transparent 1.5px),
+        linear-gradient(to bottom, rgba(37, 99, 235, 0.07) 1.5px, transparent 1.5px);
+      background-size: 30px 30px;
+      color: #161a24;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    /* Neo-Brutalist Cards */
+    /* Neo-Brutalist Card Containers */
     .neo-card {
       background: #ffffff;
       border: 3px solid var(--border-dark);
       border-radius: 20px;
       box-shadow: 6px 6px 0px var(--shadow-dark);
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
     }
 
     .neo-card-sm {
@@ -56,12 +57,12 @@
       box-shadow: 4px 4px 0px var(--shadow-dark);
     }
 
-    /* Keycaps Navigation */
+    /* 3D Keycaps Navigation */
     .keycap-nav {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
+      gap: 0.85rem;
+      padding: 0.8rem 1rem;
       border-radius: 14px;
       border: 2.5px solid var(--border-dark);
       background: #ffffff;
@@ -70,7 +71,7 @@
       font-size: 0.95rem;
       cursor: pointer;
       transition: all 0.15s ease;
-      color: #121826;
+      color: #161a24;
       user-select: none;
       width: 100%;
       text-align: left;
@@ -79,7 +80,7 @@
     .keycap-nav:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 0px var(--border-dark);
-      background: #fdfaf3;
+      background: #fffbf5;
     }
 
     .keycap-nav:active {
@@ -94,22 +95,23 @@
       transform: translateY(2px);
     }
 
-    /* 3D Tactile Action Buttons */
+    /* 3D Extruded Keycap Buttons */
     .key-btn {
-      position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      padding: 0.6rem 1.15rem;
+      gap: 0.45rem;
+      height: 42px;
+      padding: 0 1.15rem;
       font-size: 0.875rem;
       font-weight: 800;
       border: 2.5px solid var(--border-dark);
       border-radius: 12px;
       cursor: pointer;
       user-select: none;
-      transition: all 0.1s ease;
+      transition: all 0.12s ease;
       box-shadow: 0 4px 0px var(--border-dark);
+      white-space: nowrap;
     }
 
     .key-btn:hover:not(:disabled) {
@@ -123,82 +125,82 @@
     }
 
     .key-btn:disabled {
-      opacity: 0.5;
+      opacity: 0.45;
       cursor: not-allowed;
       transform: none;
       box-shadow: 0 2px 0px var(--border-dark);
     }
 
-    .key-btn-orange { background: #ff7844; color: #ffffff; }
-    .key-btn-blue   { background: #3b82f6; color: #ffffff; }
+    .key-btn-orange { background: #ff6b35; color: #ffffff; }
+    .key-btn-blue   { background: #2563eb; color: #ffffff; }
     .key-btn-green  { background: #10b981; color: #ffffff; }
-    .key-btn-yellow { background: #fbbf24; color: #121826; }
-    .key-btn-purple { background: #a855f7; color: #ffffff; }
+    .key-btn-yellow { background: #f59e0b; color: #161a24; }
+    .key-btn-purple { background: #9333ea; color: #ffffff; }
     .key-btn-pink   { background: #f43f5e; color: #ffffff; }
-    .key-btn-white  { background: #ffffff; color: #121826; }
+    .key-btn-white  { background: #ffffff; color: #161a24; }
 
     /* Neo Inputs */
     .neo-input {
       background: #ffffff;
       border: 2.5px solid var(--border-dark);
       border-radius: 12px;
-      padding: 0.55rem 0.85rem;
+      height: 42px;
+      padding: 0 0.95rem;
       font-size: 0.9rem;
       font-weight: 700;
-      color: #121826;
-      box-shadow: inset 2px 2px 0px rgba(0,0,0,0.06);
+      color: #161a24;
+      box-shadow: inset 1.5px 1.5px 0px rgba(0,0,0,0.06);
       outline: none;
       transition: all 0.15s;
     }
     .neo-input:focus {
       border-color: var(--color-blue);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
     }
 
-    /* Sticker Badges */
+    /* Complexity Badges */
     .sticker-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      padding: 0.35rem 0.75rem;
+      justify-content: center;
+      padding: 0.35rem 0.8rem;
       border-radius: 9999px;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       font-weight: 800;
-      border: 2px solid var(--border-dark);
-      box-shadow: 2px 2px 0px var(--border-dark);
-      background: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      border: 2.5px solid var(--border-dark);
+      box-shadow: 2.5px 2.5px 0px var(--border-dark);
+      white-space: nowrap;
     }
 
     /* ══════════════════════════════════════════════
-       3D KEYCAP CELL
+       3D KEYCAP CELL (Perfected Alignment & Depth)
     ══════════════════════════════════════════════ */
+    .keycap-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding-top: 34px; /* Reserved headroom for floating pointer without collision */
+    }
+
     .keycap-3d {
       position: relative;
-      width: 64px;
-      height: 64px;
+      width: 66px;
+      height: 66px;
       background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
       border: 3px solid var(--border-dark);
       border-radius: 16px;
-      box-shadow: 0 8px 0px var(--border-dark), 0 12px 10px rgba(0,0,0,0.15);
+      box-shadow: 0 7px 0px var(--border-dark), 0 10px 12px rgba(0,0,0,0.12);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.35rem;
       font-weight: 900;
-      color: #121826;
+      color: #161a24;
       transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
       user-select: none;
       cursor: pointer;
-    }
-
-    .keycap-3d:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 0px var(--border-dark), 0 16px 14px rgba(0,0,0,0.18);
-    }
-
-    .keycap-3d:active {
-      transform: translateY(4px);
-      box-shadow: 0 4px 0px var(--border-dark);
     }
 
     .keycap-3d::after {
@@ -208,30 +210,65 @@
       left: 6px;
       right: 6px;
       height: 12px;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.85);
       border-radius: 8px;
     }
 
+    .keycap-3d:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 11px 0px var(--border-dark), 0 14px 16px rgba(0,0,0,0.16);
+    }
+
+    .keycap-3d:active {
+      transform: translateY(4px);
+      box-shadow: 0 3px 0px var(--border-dark);
+    }
+
     .keycap-3d.highlight {
-      background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
+      background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
       color: #ffffff;
-      transform: translateY(-8px);
-      box-shadow: 0 14px 0px var(--border-dark), 0 18px 20px rgba(37, 99, 235, 0.35);
+      transform: translateY(-6px);
+      box-shadow: 0 13px 0px var(--border-dark), 0 16px 20px rgba(37, 99, 235, 0.35);
     }
 
     .keycap-3d.found {
-      background: linear-gradient(180deg, #34d399 0%, #059669 100%);
+      background: linear-gradient(180deg, #10b981 0%, #047857 100%);
       color: #ffffff;
-      transform: translateY(-10px) scale(1.08);
-      box-shadow: 0 16px 0px var(--border-dark), 0 20px 24px rgba(16, 185, 129, 0.4);
+      transform: translateY(-8px) scale(1.06);
+      box-shadow: 0 15px 0px var(--border-dark), 0 18px 22px rgba(16, 185, 129, 0.4);
     }
 
     .keycap-3d.deleting {
-      background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
+      background: linear-gradient(180deg, #f43f5e 0%, #be123c 100%);
       color: #ffffff;
       transform: translateY(6px) scale(0.6);
-      box-shadow: 0 2px 0px var(--border-dark);
+      box-shadow: 0 1px 0px var(--border-dark);
       opacity: 0;
+    }
+
+    /* Floating Index Pointer Tag */
+    .pointer-callout {
+      position: absolute;
+      top: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.55rem;
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 0.75rem;
+      font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+      border: 2px solid var(--border-dark);
+      border-radius: 8px;
+      box-shadow: 2px 2px 0px var(--border-dark);
+      animation: bouncePointer 0.8s infinite alternate ease-in-out;
+      z-index: 10;
+    }
+
+    @keyframes bouncePointer {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-4px); }
     }
 
     /* Linked List Capsule */
@@ -251,52 +288,54 @@
       box-shadow: 0 10px 0px var(--border-dark);
     }
     .ll-capsule.highlight {
-      transform: translateY(-8px);
+      transform: translateY(-6px);
       border-color: #2563eb;
       box-shadow: 0 12px 0px #1e3a8a, 0 14px 15px rgba(37, 99, 235, 0.25);
     }
     .ll-val-box {
-      padding: 0.65rem 1.1rem;
-      font-size: 1.2rem;
+      padding: 0.75rem 1.15rem;
+      font-size: 1.25rem;
       font-weight: 900;
-      color: #121826;
+      color: #161a24;
       background: #ffffff;
+      min-width: 54px;
+      text-align: center;
     }
     .ll-ptr-box {
-      padding: 0.65rem 0.85rem;
+      padding: 0.75rem 0.85rem;
       background: #f1f5f9;
       border-left: 3px solid var(--border-dark);
       font-size: 0.75rem;
       font-family: 'JetBrains Mono', monospace;
       font-weight: 800;
-      color: #64748b;
+      color: #475569;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    /* Stack Chute */
+    /* Stack Physical Chute */
     .stack-chute {
-      width: 280px;
+      width: 300px;
       min-height: 290px;
       border: 4px solid var(--border-dark);
       border-top: none;
-      border-radius: 0 0 20px 20px;
+      border-radius: 0 0 22px 22px;
       background: #ffffff;
-      box-shadow: inset 0 -12px 0px rgba(0,0,0,0.06), 4px 6px 0px var(--border-dark);
+      box-shadow: inset 0 -12px 0px rgba(0,0,0,0.05), 4px 6px 0px var(--border-dark);
       display: flex;
       flex-direction: column-reverse;
-      padding: 0.75rem 1.25rem;
-      gap: 0.6rem;
+      padding: 0.85rem 1.25rem;
+      gap: 0.65rem;
     }
 
     .stack-plate {
       width: 100%;
-      padding: 0.75rem;
+      padding: 0.85rem;
       border: 3px solid var(--border-dark);
       border-radius: 12px;
       background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 900;
       text-align: center;
       box-shadow: 0 4px 0px var(--border-dark);
@@ -318,22 +357,22 @@
     .conveyor-belt {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      padding: 1.5rem;
+      gap: 1.25rem;
+      padding: 1.75rem;
       background: #ffffff;
       border: 3px solid var(--border-dark);
       border-radius: 20px;
       box-shadow: 6px 6px 0px var(--border-dark);
       overflow-x: auto;
-      min-height: 150px;
+      min-height: 160px;
     }
 
     /* Mailbox Slot */
     .mailbox-slot {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.6rem 0.85rem;
+      gap: 0.85rem;
+      padding: 0.65rem 1rem;
       background: #ffffff;
       border: 2.5px solid var(--border-dark);
       border-radius: 14px;
@@ -345,32 +384,24 @@
       transform: translateX(4px);
     }
 
-    /* Step Callout Pointer Marker */
-    .pointer-marker {
-      animation: bounceMarker 1s infinite alternate ease-in-out;
-    }
-
-    /* Code Line Highlight */
+    /* Synchronized Code Line Highlight */
     .code-line {
       display: block;
-      padding: 0.1rem 0.5rem;
-      border-radius: 4px;
-      transition: background 0.2s;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+      line-height: 1.55;
     }
     .code-line.active-line {
-      background: rgba(251, 191, 36, 0.25);
-      border-left: 3px solid #fbbf24;
+      background: rgba(245, 158, 11, 0.25);
+      border-left: 3.5px solid #f59e0b;
       color: #fbbf24;
       font-weight: 700;
     }
 
     @keyframes dropSlam {
-      from { transform: translateY(-50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    @keyframes bounceMarker {
-      from { transform: translateY(0px); }
-      to { transform: translateY(-6px); }
+      from { transform: translateY(-45px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
     }
   </style>
 </head>
@@ -383,23 +414,23 @@
       
       <!-- Brand Poster Card -->
       <div class="neo-card p-5 bg-[#ffedd5] relative overflow-hidden">
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-xl bg-[#ff6b35] border-3 border-[#121826] shadow-[0_4px_0_#121826] flex items-center justify-center text-white font-black text-2xl">
+        <div class="flex items-center gap-3.5">
+          <div class="w-13 h-13 rounded-2xl bg-[#ff6b35] border-3 border-[#161a24] shadow-[0_4px_0_#161a24] flex items-center justify-center text-white font-black text-2xl tracking-tighter">
             DS
           </div>
           <div>
-            <h1 class="text-xl font-black tracking-tight leading-none">OVERFLOW</h1>
+            <h1 class="text-xl font-black tracking-tight leading-none text-[#161a24]">OVERFLOW</h1>
             <p class="text-xs font-bold text-slate-700 tracking-wide mt-1">Data Structures Lab</p>
           </div>
         </div>
 
-        <div class="mt-4 pt-3 border-t-2 border-[#121826]/10 flex items-center justify-between">
+        <div class="mt-4 pt-3.5 border-t-2 border-[#161a24]/15 flex items-center justify-between">
           <!-- Audio Toggle Button -->
-          <button id="sound-btn" onclick="toggleSound()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border-2 border-[#121826] bg-white text-xs font-mono font-bold shadow-[2px_2px_0_#121826] cursor-pointer hover:bg-slate-50">
+          <button id="sound-btn" onclick="toggleSound()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-[#161a24] bg-white text-xs font-mono font-bold shadow-[2px_2px_0_#161a24] cursor-pointer hover:bg-slate-50 transition-all active:translate-y-0.5">
             <span id="sound-icon">🔊</span>
             <span id="sound-text">SFX On</span>
           </button>
-          <span class="bg-[#121826] text-white px-2 py-0.5 rounded-full font-mono text-[0.7rem] font-bold">PRO UX</span>
+          <span class="bg-[#161a24] text-white px-2.5 py-1 rounded-full font-mono text-[0.7rem] font-black tracking-wider">PRO UX</span>
         </div>
       </div>
 
@@ -409,7 +440,7 @@
           Select Structure
         </div>
         <button class="keycap-nav active" onclick="switchDS('array')">
-          <span class="text-xl">🟧</span>
+          <span class="text-xl">🔢</span>
           <span>Array</span>
         </button>
         <button class="keycap-nav" onclick="switchDS('linkedlist')">
@@ -434,13 +465,13 @@
         </button>
       </div>
 
-      <!-- UX Guidance: Click-to-Interact hint -->
-      <div class="neo-card-sm p-4 bg-[#e0f2fe] border-2 border-[#121826]">
+      <!-- UX Guidance: Click-to-Interact Hint -->
+      <div class="neo-card-sm p-4 bg-[#e0f2fe] border-2 border-[#161a24]">
         <div class="flex items-center gap-1.5 font-black text-xs uppercase tracking-wider text-blue-900 mb-1">
           <span>👆 Direct Manipulation</span>
         </div>
         <p class="text-xs text-slate-700 leading-relaxed font-semibold">
-          You can <b>click directly on any keycap node</b> in the canvas to inspect its memory address, value, or trigger an instant delete!
+          Click directly on <b>any keycap cell</b> in the canvas to inspect its memory address, value, or trigger instant actions!
         </p>
       </div>
 
@@ -454,18 +485,18 @@
         <!-- Rendered by JS -->
       </div>
 
-      <!-- Interactive Controls Bento Bar -->
-      <div class="neo-card p-5" id="ds-controls-panel">
+      <!-- Action Controls Bento Bar -->
+      <div class="neo-card p-4 md:p-5" id="ds-controls-panel">
         <!-- Rendered by JS -->
       </div>
 
       <!-- Interactive 3D Canvas Area -->
-      <div class="neo-card p-8 min-h-[330px] flex flex-col justify-center items-center relative overflow-hidden bg-white" id="ds-canvas-panel">
+      <div class="neo-card p-6 md:p-8 min-h-[300px] flex flex-col justify-center items-center relative overflow-hidden bg-white" id="ds-canvas-panel">
         <!-- Rendered by JS -->
       </div>
 
       <!-- Stepper Controls & Live Terminal Bar -->
-      <div class="neo-card-sm p-4 bg-[#121826] text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="neo-card-sm p-4 bg-[#161a24] text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
         
         <!-- Live status -->
         <div class="flex items-center gap-3 overflow-hidden flex-1">
@@ -475,21 +506,23 @@
         </div>
 
         <!-- Algorithmic Step Controller -->
-        <div class="flex items-center gap-2 flex-shrink-0">
+        <div class="flex items-center gap-3 flex-shrink-0">
           <!-- Step Forward Button -->
-          <button id="btn-step-fwd" onclick="stepForward()" disabled class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 font-mono text-xs font-bold border border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-700 hover:text-white flex items-center gap-1">
+          <button id="btn-step-fwd" onclick="stepForward()" disabled class="px-3.5 py-1.5 rounded-xl bg-slate-800 text-slate-300 font-mono text-xs font-bold border-2 border-slate-600 disabled:opacity-35 disabled:cursor-not-allowed hover:bg-slate-700 hover:text-white flex items-center gap-1.5 transition-all">
             <span>⏭️</span> Step Next
           </button>
 
           <div class="h-5 w-px bg-slate-700"></div>
 
           <!-- Speed Slider -->
-          <span class="text-[0.7rem] font-mono text-slate-400 font-bold uppercase">Speed:</span>
-          <select id="anim-speed" class="bg-[#1e293b] border-2 border-slate-700 text-white text-xs rounded-lg px-2 py-1 font-mono font-bold outline-none cursor-pointer">
-            <option value="900">Slow (0.5x)</option>
-            <option value="450" selected>Normal (1x)</option>
-            <option value="180">Fast (2x)</option>
-          </select>
+          <div class="flex items-center gap-2">
+            <span class="text-[0.7rem] font-mono text-slate-400 font-bold uppercase">Speed:</span>
+            <select id="anim-speed" class="bg-[#242b38] border-2 border-slate-600 text-white text-xs rounded-xl px-2.5 py-1 font-mono font-bold outline-none cursor-pointer">
+              <option value="900">Slow (0.5x)</option>
+              <option value="450" selected>Normal (1x)</option>
+              <option value="180">Fast (2x)</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -529,7 +562,7 @@
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + duration);
 
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.22, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
 
         osc.connect(gain);
@@ -537,9 +570,7 @@
 
         osc.start();
         osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {
-        // Fallback gracefully if audio blocked
-      }
+      } catch (e) {}
     }
 
     function toggleSound() {
@@ -555,10 +586,11 @@
     const DS_CONFIG = {
       array: {
         title: "Array",
+        icon: "🔢",
         tag: "Contiguous Memory Block",
-        accent: "#ff7844",
+        accent: "#ff6b35",
         bgTint: "#ffedd5",
-        summary: "Arrays place elements in unbroken, consecutive memory lockers. You can jump directly to any locker via its index [i] in instant O(1) time. Deleting or inserting requires sliding all items, which takes O(n).",
+        summary: "Arrays allocate unbroken, sequential slots in memory. Accessing any cell by its index [i] happens in instant O(1) time. Inserting or deleting in the middle requires shifting items, which takes O(n) time.",
         complexities: [
           { label: "Access: O(1)", bg: "#dcfce7", text: "#15803d" },
           { label: "Search: O(n)", bg: "#fef3c7", text: "#b45309" },
@@ -566,42 +598,43 @@
           { label: "Delete: O(n)", bg: "#fee2e2", text: "#b91c1c" }
         ],
         presets: [
-          { name: "Default", data: [12, 45, 7, 23, 56, 8, 89] },
-          { name: "Worst-Case Search", data: [10, 20, 30, 40, 50, 60, 999] },
+          { name: "Default (7 items)", data: [12, 45, 7, 23, 56, 8, 89] },
+          { name: "Worst-Case Search", data: [10, 20, 30, 40, 50, 60, 99] },
           { name: "Ascending Sorted", data: [5, 12, 19, 28, 42, 56, 70] }
         ],
         steps: [
           { title: "Insert / Push", desc: "Adds an element to the next available index at the end of the array." },
-          { title: "Delete by Index", desc: "Extracts an item from index [i]. Subsequent items physically slide left to fill the vacuum." },
+          { title: "Delete by Index", desc: "Extracts an item from index [i]. Subsequent items slide left to fill the gap." },
           { title: "Linear Search", desc: "Scans sequentially index-by-index until the matching value is spotted." }
         ],
         codeLines: {
           insert: [
-            "# 1. Check array bounds",
-            "arr.append(value)",
-            "# Insert complete in O(1) amortized"
+            "# 1. Check array capacity bounds",
+            "arr.append(value)  # O(1) amortized",
+            "# Element inserted at new tail index"
           ],
           search: [
             "for i in range(len(arr)):",
             "    if arr[i] == target:",
-            "        return i  # Target Found!",
+            "        return i  # Target Found at index [i]!",
             "return -1  # Target Not Found"
           ],
           delete: [
             "removed_val = arr[index]",
             "for j in range(index, len(arr) - 1):",
-            "    arr[j] = arr[j + 1]  # Shift left",
-            "arr.pop()  # Shrink size"
+            "    arr[j] = arr[j + 1]  # Shift items left",
+            "arr.pop()  # Shrink array length"
           ]
         }
       },
 
       linkedlist: {
         title: "Linked List",
+        icon: "🔗",
         tag: "Chained Pointer Nodes",
-        accent: "#3b82f6",
+        accent: "#2563eb",
         bgTint: "#dbeafe",
-        summary: "Linked lists chain individual memory nodes together using pointers. Nodes can live anywhere in RAM! Inserting at the very front (HEAD) is instantaneous O(1) because zero elements need to shift.",
+        summary: "Linked lists connect individual memory nodes together using pointers. Nodes can live anywhere in RAM. Inserting at the very front (HEAD) is instantaneous O(1) because zero elements need to shift.",
         complexities: [
           { label: "Access: O(n)", bg: "#fef3c7", text: "#b45309" },
           { label: "Search: O(n)", bg: "#fef3c7", text: "#b45309" },
@@ -616,7 +649,7 @@
         steps: [
           { title: "Insert Head", desc: "Creates a new node and points its 'next' reference directly to current HEAD in O(1)." },
           { title: "Insert Tail", desc: "Follows pointers down the chain to the last node whose next is NULL, then attaches the new node." },
-          { title: "Delete Head", desc: "Simply repoints HEAD to HEAD.next. The unlinked node is garbage collected instantly." }
+          { title: "Delete Head", desc: "Simply repoints HEAD to HEAD.next. The unlinked node is freed instantly." }
         ],
         codeLines: {
           insert: [
@@ -641,10 +674,11 @@
 
       stack: {
         title: "Stack (LIFO)",
+        icon: "📚",
         tag: "Last-In, First-Out Chute",
-        accent: "#a855f7",
+        accent: "#9333ea",
         bgTint: "#f3e8ff",
-        summary: "Like a vertical dispenser of Pringles chips or a cafeteria tray rack. You can only place items on the TOP (Push) or retrieve items from the TOP (Pop). The last item added is always the first one out.",
+        summary: "Like a vertical cafeteria tray dispenser or stack of plates. You can only place items on the TOP (Push) or retrieve items from the TOP (Pop). The last item added is always the first one out.",
         complexities: [
           { label: "Push: O(1)", bg: "#dcfce7", text: "#15803d" },
           { label: "Pop: O(1)", bg: "#dcfce7", text: "#15803d" },
@@ -680,10 +714,11 @@
 
       queue: {
         title: "Queue (FIFO)",
+        icon: "🚶",
         tag: "First-In, First-Out Pipeline",
         accent: "#10b981",
         bgTint: "#d1fae5",
-        summary: "Like an orderly queue line at a movie theater ticket counter: whoever gets in line first is served and exits first. Elements enter at the REAR and leave from the FRONT.",
+        summary: "Like an orderly checkout queue: whoever gets in line first is served and exits first. Elements enter at the REAR and leave from the FRONT.",
         complexities: [
           { label: "Enqueue: O(1)", bg: "#dcfce7", text: "#15803d" },
           { label: "Dequeue: O(1)", bg: "#dcfce7", text: "#15803d" },
@@ -698,7 +733,7 @@
         steps: [
           { title: "Enqueue (Rear)", desc: "Enters a new element at the back of the line." },
           { title: "Dequeue (Front)", desc: "Releases the front-most element from the queue." },
-          { title: "Peek", desc: "Observes the person at the front without dequeueing." }
+          { title: "Peek", desc: "Observes the element at the front without dequeueing." }
         ],
         codeLines: {
           enqueue: [
@@ -715,6 +750,7 @@
 
       bst: {
         title: "Binary Search Tree",
+        icon: "🌳",
         tag: "Logarithmic Search Tree",
         accent: "#06b6d4",
         bgTint: "#cffafe",
@@ -741,20 +777,21 @@
             "    if target == curr.val: return curr",
             "    elif target < curr.val: curr = curr.left",
             "    else: curr = curr.right",
-            "return None  # Not found"
+            "return None  # Target not found"
           ],
           inorder: [
             "def in_order(node):",
             "    if not node: return",
-            "    in_order(node.left)    # Visit Left",
-            "    visit(node.val)         # Visit Root",
-            "    in_order(node.right)   # Visit Right"
+            "    in_order(node.left)    # Visit Left Subtree",
+            "    visit(node.val)         # Visit Current Node",
+            "    in_order(node.right)   # Visit Right Subtree"
           ]
         }
       },
 
       hashtable: {
         title: "Hash Table",
+        icon: "🗂️",
         tag: "O(1) Key-Value Mapping",
         accent: "#ec4899",
         bgTint: "#fce7f3",
@@ -855,7 +892,6 @@
       const btn = document.getElementById('btn-step-fwd');
       if (btn) btn.disabled = false;
 
-      // Allow either manual step OR auto-advance after delay
       const delayMs = getDelay();
       return new Promise(resolve => {
         let timer = null;
@@ -903,22 +939,25 @@
     function renderApp() {
       const cfg = DS_CONFIG[currentDS];
 
-      // Header Bento Card with Preset Bar
+      // Header Bento Card with Perfectly Aligned Badges
       document.getElementById('ds-header-panel').innerHTML = `
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div class="flex items-center gap-4">
-            <div class="w-16 h-16 rounded-2xl border-3 border-[#121826] shadow-[4px_4px_0_#121826] flex items-center justify-center text-3xl font-black" style="background:${cfg.bgTint}">
-              ${currentDS === 'array' ? '🔢' : currentDS === 'linkedlist' ? '🔗' : currentDS === 'stack' ? '📚' : currentDS === 'queue' ? '🚶' : currentDS === 'bst' ? '🌳' : '🗂️'}
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <!-- Left side: Icon and title -->
+          <div class="flex items-start sm:items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl border-3 border-[#161a24] shadow-[3px_3px_0_#161a24] flex items-center justify-center text-3xl font-black flex-shrink-0" style="background:${cfg.bgTint}">
+              ${cfg.icon}
             </div>
             <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <h2 class="text-2xl font-black tracking-tight text-[#121826]">${cfg.title}</h2>
-                <span class="text-xs font-black uppercase px-2.5 py-0.5 rounded-full border-2 border-[#121826] bg-[#ffffff] shadow-[2px_2px_0_#121826]">${cfg.tag}</span>
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <h2 class="text-2xl font-black tracking-tight text-[#161a24]">${cfg.title}</h2>
+                <span class="text-xs font-black uppercase px-2.5 py-0.5 rounded-full border-2 border-[#161a24] bg-[#ffffff] shadow-[2px_2px_0_#161a24]">${cfg.tag}</span>
               </div>
-              <p class="text-sm font-semibold text-slate-600 mt-1">${cfg.summary}</p>
+              <p class="text-sm font-semibold text-slate-600 mt-1 max-w-2xl leading-relaxed">${cfg.summary}</p>
             </div>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
+
+          <!-- Right side: Complexity badges grid -->
+          <div class="flex flex-wrap lg:flex-nowrap items-center gap-2 flex-shrink-0">
             ${cfg.complexities.map(c => `
               <span class="sticker-badge" style="background:${c.bg}; color:${c.text}">
                 ${c.label}
@@ -927,13 +966,13 @@
           </div>
         </div>
 
-        <!-- Scenario Presets Bar -->
-        <div class="mt-4 pt-4 border-t-2 border-[#121826]/10 flex items-center gap-2 flex-wrap">
-          <span class="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+        <!-- Presets Row -->
+        <div class="mt-4 pt-4 border-t-2 border-[#161a24]/10 flex items-center gap-2.5 flex-wrap">
+          <span class="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
             <span>✨ Presets:</span>
           </span>
           ${cfg.presets.map((p, idx) => `
-            <button onclick="loadPreset(${idx})" class="px-2.5 py-1 rounded-lg border-2 border-[#121826] bg-slate-50 hover:bg-yellow-100 text-xs font-bold text-[#121826] shadow-[2px_2px_0_#121826] cursor-pointer transition-all active:translate-y-0.5">
+            <button onclick="loadPreset(${idx})" class="px-3 py-1 rounded-xl border-2 border-[#161a24] bg-slate-50 hover:bg-yellow-100 text-xs font-bold text-[#161a24] shadow-[2px_2px_0_#161a24] cursor-pointer transition-all active:translate-y-0.5">
               ${p.name}
             </button>
           `).join('')}
@@ -945,19 +984,19 @@
       document.getElementById('ds-guide-panel').innerHTML = `
         <!-- Left: Step Guide -->
         <div class="neo-card p-5 flex flex-col gap-3">
-          <div class="flex items-center justify-between pb-2 border-b-2 border-[#121826]/10">
+          <div class="flex items-center justify-between pb-2.5 border-b-2 border-[#161a24]/10">
             <span class="text-xs font-black uppercase tracking-wider text-slate-600">📖 Step-by-Step Guidance</span>
             <span class="text-xs font-mono font-bold text-slate-400">Rules</span>
           </div>
           <div class="flex flex-col gap-2.5">
             ${cfg.steps.map((st, i) => `
-              <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border-2 border-[#121826] shadow-[2px_2px_0_#121826]">
-                <div class="w-6 h-6 rounded-full bg-[#121826] text-white flex items-center justify-center text-xs font-mono font-black flex-shrink-0">
+              <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border-2 border-[#161a24] shadow-[2px_2px_0_#161a24]">
+                <div class="w-6 h-6 rounded-full bg-[#161a24] text-white flex items-center justify-center text-xs font-mono font-black flex-shrink-0">
                   ${i + 1}
                 </div>
                 <div>
-                  <h4 class="text-xs font-black text-[#121826]">${st.title}</h4>
-                  <p class="text-xs text-slate-600 mt-0.5 font-semibold">${st.desc}</p>
+                  <h4 class="text-xs font-black text-[#161a24]">${st.title}</h4>
+                  <p class="text-xs text-slate-600 mt-0.5 font-semibold leading-relaxed">${st.desc}</p>
                 </div>
               </div>
             `).join('')}
@@ -966,11 +1005,11 @@
 
         <!-- Right: Synchronized Code Execution -->
         <div class="neo-card p-5 flex flex-col gap-3">
-          <div class="flex items-center justify-between pb-2 border-b-2 border-[#121826]/10">
+          <div class="flex items-center justify-between pb-2.5 border-b-2 border-[#161a24]/10">
             <span class="text-xs font-black uppercase tracking-wider text-slate-600">💻 Live Synchronized Code</span>
-            <span class="text-xs font-mono font-bold text-yellow-600 bg-yellow-100 px-2 py-0.5 rounded border border-yellow-300">Live Tracing</span>
+            <span class="text-xs font-mono font-bold text-yellow-700 bg-yellow-100 px-2.5 py-0.5 rounded-full border border-yellow-300">Live Tracing</span>
           </div>
-          <div id="code-box" class="p-4 rounded-xl bg-[#121826] text-white font-mono text-xs overflow-x-auto border-2 border-[#121826] shadow-[inset_2px_2px_0_rgba(0,0,0,0.5)] min-h-[160px]">
+          <div id="code-box" class="p-4 rounded-xl bg-[#161a24] text-slate-200 font-mono text-xs overflow-x-auto border-2 border-[#161a24] shadow-[inset_2px_2px_0_rgba(0,0,0,0.5)] min-h-[160px] flex flex-col justify-center">
             ${defaultLines.map(l => `<span class="code-line">${l}</span>`).join('')}
           </div>
         </div>
@@ -1003,7 +1042,7 @@
     }
 
     /* ════════════════════════════════════════════════════
-       1. ARRAY MODULE (With Pointer Callouts & Direct Click)
+       1. ARRAY MODULE (No Marker Overlap, Responsive Gap)
     ════════════════════════════════════════════════════ */
     const ArrayModule = {
       renderControls() {
@@ -1014,14 +1053,14 @@
               <button class="key-btn key-btn-orange" onclick="ArrayModule.insert()"><span class="text-base">➕</span> Insert</button>
             </div>
 
-            <div class="h-8 w-0.5 bg-slate-300 hidden sm:block"></div>
+            <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
 
             <div class="flex items-center gap-2">
               <input id="arr-idx-in" type="number" placeholder="Index (0..N)" class="neo-input w-36" onkeydown="if(event.key==='Enter') ArrayModule.deleteIdx()" />
               <button class="key-btn key-btn-pink" onclick="ArrayModule.deleteIdx()"><span class="text-base">🗑️</span> Delete Index</button>
             </div>
 
-            <div class="h-8 w-0.5 bg-slate-300 hidden sm:block"></div>
+            <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
 
             <button class="key-btn key-btn-blue" onclick="ArrayModule.search()"><span class="text-base">🔍</span> Search Value</button>
             <button class="key-btn key-btn-white" onclick="ArrayModule.reset()"><span class="text-base">↺</span> Reset</button>
@@ -1038,23 +1077,23 @@
 
         panel.innerHTML = `
           <div class="w-full flex flex-col items-center">
-            <div class="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-6 flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#ff7844]"></span>
+            <div class="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#ff6b35]"></span>
               Indexed Memory Blocks • Size = ${arrData.length} (Click any keycap to inspect!)
             </div>
 
-            <div class="flex items-end justify-center gap-3.5 flex-wrap py-4">
+            <div class="flex items-end justify-center gap-3 sm:gap-4 flex-wrap py-2">
               ${arrData.map((v, i) => `
-                <div class="flex flex-col items-center gap-2 relative">
+                <div class="keycap-container">
                   ${i === highlightIdx ? `
-                    <div class="pointer-marker text-xs font-mono font-black text-blue-600 bg-blue-100 px-2 py-0.5 rounded-md border border-blue-400 shadow-sm absolute -top-8">
+                    <div class="pointer-callout">
                       i = ${i} ⬇️
                     </div>
                   ` : ''}
                   <div id="key-cap-${i}" onclick="ArrayModule.inspect(${i})" class="keycap-3d ${i === highlightIdx ? styleType : ''}" title="Click to inspect or delete">
                     ${v}
                   </div>
-                  <span class="font-mono text-xs font-black text-slate-500 bg-slate-200 px-2 py-0.5 rounded-md border border-[#121826]">
+                  <span class="font-mono text-xs font-black text-slate-600 bg-slate-100 px-2 py-0.5 mt-2 rounded-md border border-[#161a24]">
                     [${i}]
                   </span>
                 </div>
@@ -1078,7 +1117,7 @@
         const inp = document.getElementById('arr-val-in');
         const v = parseInt(inp.value);
         if (isNaN(v)) { logMsg("Enter a number to insert.", "⚠️"); return; }
-        if (arrData.length >= 10) { logMsg("Array reached capacity for visual layout.", "⚠️"); return; }
+        if (arrData.length >= 10) { logMsg("Array capacity limit (max 10 items for screen layout).", "⚠️"); return; }
         arrData.push(v);
         inp.value = '';
         setCodeLines(DS_CONFIG.array.codeLines.insert);
@@ -1110,7 +1149,7 @@
         this.renderCanvas();
         highlightCodeLine(3);
         setLock(false);
-        logMsg(`Removed <b>${removed}</b>. All subsequent elements shifted in O(n) time.`, "✅");
+        logMsg(`Removed <b>${removed}</b>. Subsequent elements shifted left in O(n) time.`, "✅");
       },
 
       async search() {
@@ -1155,7 +1194,7 @@
     };
 
     /* ════════════════════════════════════════════════════
-       2. LINKED LIST MODULE (Clickable Nodes)
+       2. LINKED LIST MODULE
     ════════════════════════════════════════════════════ */
     const LinkedListModule = {
       renderControls() {
@@ -1185,7 +1224,7 @@
         panel.innerHTML = `
           <div class="w-full flex items-center justify-center overflow-x-auto py-6">
             <div class="flex items-center gap-3 flex-nowrap px-4">
-              <div class="px-3.5 py-1.5 rounded-xl bg-[#3b82f6] text-white border-2 border-[#121826] shadow-[3px_3px_0_#121826] font-mono text-xs font-black">
+              <div class="px-3.5 py-1.5 rounded-xl bg-[#2563eb] text-white border-2 border-[#161a24] shadow-[3px_3px_0_#161a24] font-mono text-xs font-black">
                 HEAD
               </div>
               <span class="text-2xl font-black text-slate-800">→</span>
@@ -1201,7 +1240,7 @@
               `).join('')}
 
               <span class="text-2xl font-black text-slate-800">→</span>
-              <div class="px-3.5 py-1.5 rounded-xl bg-[#f43f5e] text-white border-2 border-[#121826] shadow-[3px_3px_0_#121826] font-mono text-xs font-black">
+              <div class="px-3.5 py-1.5 rounded-xl bg-[#f43f5e] text-white border-2 border-[#161a24] shadow-[3px_3px_0_#161a24] font-mono text-xs font-black">
                 NULL
               </div>
             </div>
@@ -1211,7 +1250,7 @@
 
       inspect(val) {
         playKeyClick(600, 0.04);
-        logMsg(`Inspected node with value <b>${val}</b>. Pointer points to next node in RAM.`, "🔗");
+        logMsg(`Inspected node with value <b>${val}</b>. Pointer links to next contiguous or scattered node.`, "🔗");
         this.renderCanvas(val);
       },
 
@@ -1331,13 +1370,13 @@
               ${stackData.map((v, i) => `
                 <div onclick="${i === topIdx ? 'StackModule.pop()' : ''}" class="stack-plate ${i === topIdx ? 'is-top' : ''}" title="${i === topIdx ? 'Click to Pop!' : 'Blocked by plates above'}">
                   ${v}
-                  ${i === topIdx ? '<span class="absolute right-3 top-2.5 bg-[#121826] text-white text-[0.65rem] font-mono px-2 py-0.5 rounded-full font-black">TOP (Click to Pop)</span>' : ''}
+                  ${i === topIdx ? '<span class="absolute right-3 top-2.5 bg-[#161a24] text-white text-[0.65rem] font-mono px-2 py-0.5 rounded-full font-black">TOP (Click to Pop)</span>' : ''}
                 </div>
               `).join('')}
               ${stackData.length === 0 ? '<div class="text-center font-bold text-slate-400 my-auto">Stack Chute is Empty</div>' : ''}
             </div>
 
-            <div class="w-64 border-t-4 border-[#121826] text-center pt-2 mt-2">
+            <div class="w-72 border-t-4 border-[#161a24] text-center pt-2 mt-2">
               <span class="text-[0.7rem] font-mono font-black uppercase tracking-wider text-slate-600">Base of Chute (Sealed)</span>
             </div>
           </div>
@@ -1415,7 +1454,7 @@
                   <div onclick="${i === 0 ? 'QueueModule.dequeue()' : ''}" class="keycap-3d" style="${i === 0 ? 'background:linear-gradient(180deg,#6ee7b7,#10b981);color:#fff;' : i === queueData.length - 1 ? 'background:linear-gradient(180deg,#93c5fd,#3b82f6);color:#fff;' : ''}" title="${i === 0 ? 'Click to Dequeue!' : ''}">
                     ${v}
                   </div>
-                  <span class="text-[0.7rem] font-mono font-black px-2 py-0.5 rounded-full border border-[#121826] ${i === 0 ? 'bg-emerald-100 text-emerald-800' : i === queueData.length - 1 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-700'}">
+                  <span class="text-[0.7rem] font-mono font-black px-2.5 py-0.5 rounded-full border border-[#161a24] ${i === 0 ? 'bg-emerald-100 text-emerald-800' : i === queueData.length - 1 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-700'}">
                     ${i === 0 ? 'FRONT' : i === queueData.length - 1 ? 'REAR' : `ITEM ${i}`}
                   </span>
                 </div>
@@ -1505,12 +1544,12 @@
           const cur = posMap[n.val];
           if (n.left) {
             const lc = posMap[n.left.val];
-            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${lc.x}" y2="${lc.y}" stroke="#121826" stroke-width="3" />`;
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${lc.x}" y2="${lc.y}" stroke="#161a24" stroke-width="3" />`;
             drawLines(n.left);
           }
           if (n.right) {
             const rc = posMap[n.right.val];
-            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${rc.x}" y2="${rc.y}" stroke="#121826" stroke-width="3" />`;
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${rc.x}" y2="${rc.y}" stroke="#161a24" stroke-width="3" />`;
             drawLines(n.right);
           }
         }
@@ -1521,14 +1560,14 @@
           const inPath = pathVals.includes(n.val);
 
           let fill = '#ffffff';
-          let textColor = '#121826';
+          let textColor = '#161a24';
           if (isTarget) { fill = '#10b981'; textColor = '#ffffff'; }
-          else if (inPath) { fill = '#3b82f6'; textColor = '#ffffff'; }
+          else if (inPath) { fill = '#2563eb'; textColor = '#ffffff'; }
 
           nodesSvg += `
             <g transform="translate(${x},${y})" onclick="BSTModule.inspect(${n.val})" class="cursor-pointer">
-              <circle r="22" cx="3" cy="3" fill="#121826" />
-              <circle r="22" fill="${fill}" stroke="#121826" stroke-width="3" />
+              <circle r="22" cx="3" cy="3" fill="#161a24" />
+              <circle r="22" fill="${fill}" stroke="#161a24" stroke-width="3" />
               <text text-anchor="middle" dy="5" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="900" fill="${textColor}">
                 ${n.val}
               </text>
@@ -1548,7 +1587,7 @@
 
       inspect(val) {
         playKeyClick(600, 0.04);
-        logMsg(`Selected node <b>${val}</b>. All left children are < ${val}, all right children are > ${val}.`, "🌳");
+        logMsg(`Selected node <b>${val}</b>. Left children < ${val}, right children > ${val}.`, "🌳");
         const inp = document.getElementById('bst-val-in');
         if (inp) inp.value = val;
       },
@@ -1641,7 +1680,7 @@
     };
 
     /* ════════════════════════════════════════════════════
-       6. HASH TABLE MODULE (Interactive Mailbox)
+       6. HASH TABLE MODULE
     ════════════════════════════════════════════════════ */
     const HashTableModule = {
       renderControls() {
@@ -1663,12 +1702,12 @@
           <div class="w-full max-w-2xl flex flex-col gap-3 py-2">
             <div class="flex items-center justify-between text-xs font-mono font-black text-slate-600 mb-1">
               <span>Mailbox Buckets = ${HT_SIZE}</span>
-              <span class="bg-yellow-200 px-2 py-0.5 rounded border border-[#121826]">hash(k) = sum(charCodes) % ${HT_SIZE}</span>
+              <span class="bg-yellow-200 px-2 py-0.5 rounded border border-[#161a24]">hash(k) = sum(charCodes) % ${HT_SIZE}</span>
             </div>
 
             ${htBuckets.map((bucket, i) => `
               <div class="mailbox-slot ${i === activeBucket ? 'active-slot' : ''}">
-                <div class="w-14 flex items-center justify-center py-1 rounded-lg bg-[#121826] text-white font-mono text-xs font-black flex-shrink-0">
+                <div class="w-14 flex items-center justify-center py-1 rounded-lg bg-[#161a24] text-white font-mono text-xs font-black flex-shrink-0">
                   [${i}]
                 </div>
 
@@ -1676,7 +1715,7 @@
                   ${bucket.length === 0 ? `
                     <span class="text-xs font-mono text-slate-400 font-bold italic">Empty Mailbox Slot</span>
                   ` : bucket.map((item, j) => `
-                    <div onclick="HashTableModule.inspect('${item.k}','${item.v}')" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border-2 border-[#121826] text-xs font-mono font-bold shadow-[2px_2px_0_#121826] ${item.k === targetKey ? 'bg-blue-400 text-white' : 'bg-white text-[#121826]'} hover:scale-105 transition-all">
+                    <div onclick="HashTableModule.inspect('${item.k}','${item.v}')" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border-2 border-[#161a24] text-xs font-mono font-bold shadow-[2px_2px_0_#161a24] ${item.k === targetKey ? 'bg-blue-500 text-white' : 'bg-white text-[#161a24]'} hover:scale-105 transition-all">
                       <span class="font-black text-[#ff6b35]">${item.k}</span>:
                       <span>${item.v}</span>
                     </div>
