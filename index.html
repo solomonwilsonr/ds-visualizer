@@ -1,544 +1,315 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DS Overflow — 3D Tactile Data Structures Playground</title>
+  <title>AlgoStudio — Interactive Data Structures Lab</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
     :root {
-      --bg-cream: #faf8f2;
-      --border-dark: #161a24;
-      --shadow-dark: #161a24;
-      --color-orange: #ff6b35;
-      --color-blue: #2563eb;
-      --color-yellow: #f59e0b;
-      --color-green: #10b981;
-      --color-purple: #9333ea;
-      --color-pink: #f43f5e;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
 
     * {
       box-sizing: border-box;
-      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      font-family: var(--font-sans);
     }
 
     .font-mono {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: var(--font-mono);
     }
 
-    /* Blueprint grid background */
-    body {
-      background-color: var(--bg-cream);
-      background-image: 
-        linear-gradient(to right, rgba(37, 99, 235, 0.07) 1.5px, transparent 1.5px),
-        linear-gradient(to bottom, rgba(37, 99, 235, 0.07) 1.5px, transparent 1.5px);
-      background-size: 30px 30px;
-      color: #161a24;
-      min-height: 100vh;
-      overflow-x: hidden;
+    /* Subtle dot grid for studio canvas */
+    .bg-dot-grid {
+      background-color: #fafbfc;
+      background-image: radial-gradient(#e2e8f0 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
     }
 
-    /* Neo-Brutalist Card Containers */
-    .neo-card {
-      background: #ffffff;
-      border: 3px solid var(--border-dark);
-      border-radius: 20px;
-      box-shadow: 6px 6px 0px var(--shadow-dark);
-      position: relative;
+    /* Custom subtle shadows */
+    .shadow-soft {
+      box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 4px 12px -2px rgba(15, 23, 42, 0.05);
     }
 
-    .neo-card-sm {
-      background: #ffffff;
-      border: 2.5px solid var(--border-dark);
-      border-radius: 14px;
-      box-shadow: 4px 4px 0px var(--shadow-dark);
+    .shadow-card {
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04), 0 8px 24px -4px rgba(15, 23, 42, 0.06);
     }
 
-    /* 3D Keycaps Navigation */
-    .keycap-nav {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-      padding: 0.8rem 1rem;
-      border-radius: 14px;
-      border: 2.5px solid var(--border-dark);
-      background: #ffffff;
-      box-shadow: 0 4px 0px var(--border-dark);
-      font-weight: 800;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      color: #161a24;
-      user-select: none;
-      width: 100%;
-      text-align: left;
+    .shadow-active {
+      box-shadow: 0 0 0 2px #4f46e5, 0 8px 20px -4px rgba(79, 70, 229, 0.25);
     }
 
-    .keycap-nav:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 0px var(--border-dark);
-      background: #fffbf5;
-    }
-
-    .keycap-nav:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0px var(--border-dark);
-    }
-
-    .keycap-nav.active {
-      background: #ffedd5;
-      border-color: var(--border-dark);
-      box-shadow: 0 2px 0px var(--border-dark);
-      transform: translateY(2px);
-    }
-
-    /* 3D Extruded Keycap Buttons */
-    .key-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.45rem;
-      height: 42px;
-      padding: 0 1.15rem;
-      font-size: 0.875rem;
-      font-weight: 800;
-      border: 2.5px solid var(--border-dark);
-      border-radius: 12px;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.12s ease;
-      box-shadow: 0 4px 0px var(--border-dark);
-      white-space: nowrap;
-    }
-
-    .key-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 0px var(--border-dark);
-    }
-
-    .key-btn:active:not(:disabled) {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0px var(--border-dark);
-    }
-
-    .key-btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: 0 2px 0px var(--border-dark);
-    }
-
-    .key-btn-orange { background: #ff6b35; color: #ffffff; }
-    .key-btn-blue   { background: #2563eb; color: #ffffff; }
-    .key-btn-green  { background: #10b981; color: #ffffff; }
-    .key-btn-yellow { background: #f59e0b; color: #161a24; }
-    .key-btn-purple { background: #9333ea; color: #ffffff; }
-    .key-btn-pink   { background: #f43f5e; color: #ffffff; }
-    .key-btn-white  { background: #ffffff; color: #161a24; }
-
-    /* Neo Inputs */
-    .neo-input {
-      background: #ffffff;
-      border: 2.5px solid var(--border-dark);
-      border-radius: 12px;
-      height: 42px;
-      padding: 0 0.95rem;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #161a24;
-      box-shadow: inset 1.5px 1.5px 0px rgba(0,0,0,0.06);
-      outline: none;
-      transition: all 0.15s;
-    }
-    .neo-input:focus {
-      border-color: var(--color-blue);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-    }
-
-    /* Complexity Badges */
-    .sticker-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.35rem 0.8rem;
-      border-radius: 9999px;
-      font-size: 0.78rem;
-      font-weight: 800;
-      font-family: 'JetBrains Mono', monospace;
-      border: 2.5px solid var(--border-dark);
-      box-shadow: 2.5px 2.5px 0px var(--border-dark);
-      white-space: nowrap;
-    }
-
-    /* ══════════════════════════════════════════════
-       3D KEYCAP CELL (Perfected Alignment & Depth)
-    ══════════════════════════════════════════════ */
-    .keycap-container {
+    /* Polished Array Cell */
+    .arr-cell-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      position: relative;
-      padding-top: 34px; /* Reserved headroom for floating pointer without collision */
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .keycap-3d {
-      position: relative;
-      width: 66px;
-      height: 66px;
-      background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
-      border: 3px solid var(--border-dark);
-      border-radius: 16px;
-      box-shadow: 0 7px 0px var(--border-dark), 0 10px 12px rgba(0,0,0,0.12);
+    .arr-tile {
+      width: 64px;
+      height: 64px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.35rem;
-      font-weight: 900;
-      color: #161a24;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      box-shadow: 0 2px 8px -1px rgba(15, 23, 42, 0.06), 0 1px 3px 0 rgba(15, 23, 42, 0.04);
       transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-      user-select: none;
       cursor: pointer;
+      position: relative;
     }
 
-    .keycap-3d::after {
-      content: '';
-      position: absolute;
-      top: 4px;
-      left: 6px;
-      right: 6px;
-      height: 12px;
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 8px;
+    .arr-tile:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px -2px rgba(15, 23, 42, 0.1);
     }
 
-    .keycap-3d:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 11px 0px var(--border-dark), 0 14px 16px rgba(0,0,0,0.16);
-    }
-
-    .keycap-3d:active {
-      transform: translateY(4px);
-      box-shadow: 0 3px 0px var(--border-dark);
-    }
-
-    .keycap-3d.highlight {
-      background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+    .arr-tile.active-scan {
+      background: #4f46e5;
       color: #ffffff;
-      transform: translateY(-6px);
-      box-shadow: 0 13px 0px var(--border-dark), 0 16px 20px rgba(37, 99, 235, 0.35);
+      border-color: #4338ca;
+      transform: translateY(-6px) scale(1.05);
+      box-shadow: 0 10px 25px -3px rgba(79, 70, 229, 0.35);
     }
 
-    .keycap-3d.found {
-      background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+    .arr-tile.found-match {
+      background: #10b981;
       color: #ffffff;
-      transform: translateY(-8px) scale(1.06);
-      box-shadow: 0 15px 0px var(--border-dark), 0 18px 22px rgba(16, 185, 129, 0.4);
+      border-color: #059669;
+      transform: translateY(-8px) scale(1.08);
+      box-shadow: 0 12px 28px -3px rgba(16, 185, 129, 0.4);
     }
 
-    .keycap-3d.deleting {
-      background: linear-gradient(180deg, #f43f5e 0%, #be123c 100%);
+    .arr-tile.removing {
+      background: #f43f5e;
       color: #ffffff;
-      transform: translateY(6px) scale(0.6);
-      box-shadow: 0 1px 0px var(--border-dark);
+      transform: scale(0.6);
       opacity: 0;
     }
 
-    /* Floating Index Pointer Tag */
-    .pointer-callout {
-      position: absolute;
-      top: 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.2rem 0.55rem;
-      background: #2563eb;
-      color: #ffffff;
-      font-size: 0.75rem;
-      font-weight: 900;
-      font-family: 'JetBrains Mono', monospace;
-      border: 2px solid var(--border-dark);
-      border-radius: 8px;
-      box-shadow: 2px 2px 0px var(--border-dark);
-      animation: bouncePointer 0.8s infinite alternate ease-in-out;
-      z-index: 10;
-    }
-
-    @keyframes bouncePointer {
-      from { transform: translateY(0); }
-      to   { transform: translateY(-4px); }
-    }
-
-    /* Linked List Capsule */
-    .ll-capsule {
+    /* Linked List Node */
+    .ll-node-box {
       display: flex;
       align-items: stretch;
       background: #ffffff;
-      border: 3px solid var(--border-dark);
-      border-radius: 16px;
-      box-shadow: 0 6px 0px var(--border-dark);
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
       overflow: hidden;
+      box-shadow: 0 2px 8px -1px rgba(15, 23, 42, 0.06);
       cursor: pointer;
       transition: all 0.25s ease;
     }
-    .ll-capsule:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 0px var(--border-dark);
-    }
-    .ll-capsule.highlight {
-      transform: translateY(-6px);
-      border-color: #2563eb;
-      box-shadow: 0 12px 0px #1e3a8a, 0 14px 15px rgba(37, 99, 235, 0.25);
-    }
-    .ll-val-box {
-      padding: 0.75rem 1.15rem;
-      font-size: 1.25rem;
-      font-weight: 900;
-      color: #161a24;
-      background: #ffffff;
-      min-width: 54px;
-      text-align: center;
-    }
-    .ll-ptr-box {
-      padding: 0.75rem 0.85rem;
-      background: #f1f5f9;
-      border-left: 3px solid var(--border-dark);
-      font-size: 0.75rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 800;
-      color: #475569;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+
+    .ll-node-box:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px -2px rgba(15, 23, 42, 0.1);
     }
 
-    /* Stack Physical Chute */
-    .stack-chute {
-      width: 300px;
-      min-height: 290px;
-      border: 4px solid var(--border-dark);
+    .ll-node-box.highlight {
+      border-color: #4f46e5;
+      transform: translateY(-4px);
+      box-shadow: 0 0 0 2px #4f46e5, 0 10px 20px -3px rgba(79, 70, 229, 0.2);
+    }
+
+    /* Stack Container */
+    .stack-chamber {
+      width: 260px;
+      min-height: 280px;
+      border: 2px dashed #cbd5e1;
       border-top: none;
-      border-radius: 0 0 22px 22px;
-      background: #ffffff;
-      box-shadow: inset 0 -12px 0px rgba(0,0,0,0.05), 4px 6px 0px var(--border-dark);
+      border-radius: 0 0 16px 16px;
+      background: #f8fafc;
       display: flex;
       flex-direction: column-reverse;
-      padding: 0.85rem 1.25rem;
-      gap: 0.65rem;
+      padding: 1rem;
+      gap: 0.6rem;
     }
 
-    .stack-plate {
+    .stack-slab {
       width: 100%;
-      padding: 0.85rem;
-      border: 3px solid var(--border-dark);
-      border-radius: 12px;
-      background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
-      font-size: 1.15rem;
-      font-weight: 900;
+      padding: 0.75rem 1rem;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-weight: 700;
       text-align: center;
-      box-shadow: 0 4px 0px var(--border-dark);
-      animation: dropSlam 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      position: relative;
+      color: #0f172a;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04);
+      animation: dropSlam 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
       cursor: pointer;
       transition: all 0.15s;
     }
-    .stack-plate:hover {
+
+    .stack-slab:hover {
+      border-color: #cbd5e1;
       transform: scale(1.02);
     }
-    .stack-plate.is-top {
-      background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%);
+
+    .stack-slab.is-top {
+      background: #4f46e5;
       color: #ffffff;
-      box-shadow: 0 6px 0px var(--border-dark);
+      border-color: #4338ca;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     }
 
-    /* Queue Conveyor */
-    .conveyor-belt {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-      padding: 1.75rem;
-      background: #ffffff;
-      border: 3px solid var(--border-dark);
-      border-radius: 20px;
-      box-shadow: 6px 6px 0px var(--border-dark);
-      overflow-x: auto;
-      min-height: 160px;
-    }
-
-    /* Mailbox Slot */
-    .mailbox-slot {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-      padding: 0.65rem 1rem;
-      background: #ffffff;
-      border: 2.5px solid var(--border-dark);
-      border-radius: 14px;
-      box-shadow: 3px 3px 0px var(--border-dark);
-      transition: all 0.2s;
-    }
-    .mailbox-slot.active-slot {
-      background: #fef08a;
-      transform: translateX(4px);
-    }
-
-    /* Synchronized Code Line Highlight */
+    /* Code Highlighting */
     .code-line {
       display: block;
-      padding: 0.25rem 0.65rem;
-      border-radius: 6px;
-      transition: all 0.2s;
-      line-height: 1.55;
+      padding: 0.2rem 0.75rem;
+      border-radius: 4px;
+      transition: background 0.15s;
+      line-height: 1.6;
     }
+
     .code-line.active-line {
-      background: rgba(245, 158, 11, 0.25);
-      border-left: 3.5px solid #f59e0b;
-      color: #fbbf24;
-      font-weight: 700;
+      background: rgba(99, 102, 241, 0.2);
+      border-left: 3px solid #818cf8;
+      color: #ffffff;
+      font-weight: 600;
     }
 
     @keyframes dropSlam {
-      from { transform: translateY(-45px); opacity: 0; }
+      from { transform: translateY(-30px); opacity: 0; }
       to   { transform: translateY(0); opacity: 1; }
     }
   </style>
 </head>
-<body class="p-4 md:p-6 lg:p-8">
+<body class="h-full flex flex-col bg-dot-grid text-slate-900 antialiased selection:bg-indigo-500 selection:text-white">
 
-  <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
-
-    <!-- ── Left Sidebar ── -->
-    <aside class="w-full lg:w-72 flex flex-col gap-5 flex-shrink-0">
-      
-      <!-- Brand Poster Card -->
-      <div class="neo-card p-5 bg-[#ffedd5] relative overflow-hidden">
-        <div class="flex items-center gap-3.5">
-          <div class="w-13 h-13 rounded-2xl bg-[#ff6b35] border-3 border-[#161a24] shadow-[0_4px_0_#161a24] flex items-center justify-center text-white font-black text-2xl tracking-tighter">
-            DS
-          </div>
-          <div>
-            <h1 class="text-xl font-black tracking-tight leading-none text-[#161a24]">OVERFLOW</h1>
-            <p class="text-xs font-bold text-slate-700 tracking-wide mt-1">Data Structures Lab</p>
-          </div>
-        </div>
-
-        <div class="mt-4 pt-3.5 border-t-2 border-[#161a24]/15 flex items-center justify-between">
-          <!-- Audio Toggle Button -->
-          <button id="sound-btn" onclick="toggleSound()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-[#161a24] bg-white text-xs font-mono font-bold shadow-[2px_2px_0_#161a24] cursor-pointer hover:bg-slate-50 transition-all active:translate-y-0.5">
-            <span id="sound-icon">🔊</span>
-            <span id="sound-text">SFX On</span>
-          </button>
-          <span class="bg-[#161a24] text-white px-2.5 py-1 rounded-full font-mono text-[0.7rem] font-black tracking-wider">PRO UX</span>
+  <!-- ══════════════════════════════════════════════════════════
+       TOP NAVIGATION BAR
+  ══════════════════════════════════════════════════════════ -->
+  <header class="h-16 border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-6">
+    
+    <!-- Brand -->
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-sm font-bold tracking-tight text-slate-900">AlgoStudio</h1>
+          <span class="text-[0.65rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">Interactive Lab</span>
         </div>
       </div>
+    </div>
 
-      <!-- Navigation Keycaps -->
-      <div class="neo-card p-3.5 flex flex-col gap-2">
-        <div class="px-2 py-1 text-[0.7rem] font-black uppercase tracking-wider text-slate-500">
-          Select Structure
-        </div>
-        <button class="keycap-nav active" onclick="switchDS('array')">
-          <span class="text-xl">🔢</span>
-          <span>Array</span>
-        </button>
-        <button class="keycap-nav" onclick="switchDS('linkedlist')">
-          <span class="text-xl">🔗</span>
-          <span>Linked List</span>
-        </button>
-        <button class="keycap-nav" onclick="switchDS('stack')">
-          <span class="text-xl">📚</span>
-          <span>Stack (LIFO)</span>
-        </button>
-        <button class="keycap-nav" onclick="switchDS('queue')">
-          <span class="text-xl">🚶</span>
-          <span>Queue (FIFO)</span>
-        </button>
-        <button class="keycap-nav" onclick="switchDS('bst')">
-          <span class="text-xl">🌳</span>
-          <span>Binary Search Tree</span>
-        </button>
-        <button class="keycap-nav" onclick="switchDS('hashtable')">
-          <span class="text-xl">🗂️</span>
-          <span>Hash Table</span>
-        </button>
-      </div>
+    <!-- Segmented Navigation -->
+    <nav class="hidden md:flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200/80 text-xs font-semibold text-slate-600">
+      <button class="nav-btn px-3 py-1.5 rounded-lg transition-all text-slate-900 bg-white shadow-sm" onclick="switchDS('array')">Array</button>
+      <button class="nav-btn px-3 py-1.5 rounded-lg transition-all hover:text-slate-900" onclick="switchDS('linkedlist')">Linked List</button>
+      <button class="nav-btn px-3 py-1.5 rounded-lg transition-all hover:text-slate-900" onclick="switchDS('stack')">Stack</button>
+      <button class="nav-btn px-3 py-1.5 rounded-lg transition-all hover:text-slate-900" onclick="switchDS('queue')">Queue</button>
+      <button class="nav-btn px-3 py-1.5 rounded-lg transition-all hover:text-slate-900" onclick="switchDS('bst')">Binary Search Tree</button>
+      <button class="nav-btn px-3 py-1.5 rounded-lg transition-all hover:text-slate-900" onclick="switchDS('hashtable')">Hash Table</button>
+    </nav>
 
-      <!-- UX Guidance: Click-to-Interact Hint -->
-      <div class="neo-card-sm p-4 bg-[#e0f2fe] border-2 border-[#161a24]">
-        <div class="flex items-center gap-1.5 font-black text-xs uppercase tracking-wider text-blue-900 mb-1">
-          <span>👆 Direct Manipulation</span>
-        </div>
-        <p class="text-xs text-slate-700 leading-relaxed font-semibold">
-          Click directly on <b>any keycap cell</b> in the canvas to inspect its memory address, value, or trigger instant actions!
-        </p>
-      </div>
+    <!-- Header Actions -->
+    <div class="flex items-center gap-2.5">
+      <!-- Audio Switch -->
+      <button id="sound-btn" onclick="toggleSound()" class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-xs font-medium text-slate-700 flex items-center gap-1.5 transition-all">
+        <span id="sound-icon">🔊</span>
+        <span id="sound-text" class="hidden sm:inline">Audio</span>
+      </button>
 
-    </aside>
+      <!-- GitHub Link -->
+      <a href="https://github.com/solomonwilsonr/ds-visualizer" target="_blank" rel="noopener" class="h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
+        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        <span>GitHub</span>
+      </a>
+    </div>
 
-    <!-- ── Main Workspace ── -->
-    <main class="flex-1 flex flex-col gap-6">
+  </header>
 
-      <!-- Header Bento Card -->
-      <div class="neo-card p-6" id="ds-header-panel">
-        <!-- Rendered by JS -->
-      </div>
-
-      <!-- Action Controls Bento Bar -->
-      <div class="neo-card p-4 md:p-5" id="ds-controls-panel">
-        <!-- Rendered by JS -->
-      </div>
-
-      <!-- Interactive 3D Canvas Area -->
-      <div class="neo-card p-6 md:p-8 min-h-[300px] flex flex-col justify-center items-center relative overflow-hidden bg-white" id="ds-canvas-panel">
-        <!-- Rendered by JS -->
-      </div>
-
-      <!-- Stepper Controls & Live Terminal Bar -->
-      <div class="neo-card-sm p-4 bg-[#161a24] text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
-        
-        <!-- Live status -->
-        <div class="flex items-center gap-3 overflow-hidden flex-1">
-          <div class="w-3 h-3 rounded-full bg-[#10b981] animate-ping flex-shrink-0"></div>
-          <span class="text-xs font-mono font-bold text-yellow-400 flex-shrink-0">LIVE CONSOLE:</span>
-          <span id="log-msg" class="text-xs font-mono text-slate-100 truncate">Ready! Click any keycap or operation above.</span>
-        </div>
-
-        <!-- Algorithmic Step Controller -->
-        <div class="flex items-center gap-3 flex-shrink-0">
-          <!-- Step Forward Button -->
-          <button id="btn-step-fwd" onclick="stepForward()" disabled class="px-3.5 py-1.5 rounded-xl bg-slate-800 text-slate-300 font-mono text-xs font-bold border-2 border-slate-600 disabled:opacity-35 disabled:cursor-not-allowed hover:bg-slate-700 hover:text-white flex items-center gap-1.5 transition-all">
-            <span>⏭️</span> Step Next
-          </button>
-
-          <div class="h-5 w-px bg-slate-700"></div>
-
-          <!-- Speed Slider -->
-          <div class="flex items-center gap-2">
-            <span class="text-[0.7rem] font-mono text-slate-400 font-bold uppercase">Speed:</span>
-            <select id="anim-speed" class="bg-[#242b38] border-2 border-slate-600 text-white text-xs rounded-xl px-2.5 py-1 font-mono font-bold outline-none cursor-pointer">
-              <option value="900">Slow (0.5x)</option>
-              <option value="450" selected>Normal (1x)</option>
-              <option value="180">Fast (2x)</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Split Guide & Code Inspection -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="ds-guide-panel">
-        <!-- Rendered by JS -->
-      </div>
-
-    </main>
-
+  <!-- Mobile Segmented Navigation -->
+  <div class="md:hidden overflow-x-auto p-2 bg-slate-100 border-b border-slate-200 flex gap-1">
+    <button class="nav-btn text-xs px-3 py-1.5 rounded-lg bg-white shadow-sm font-semibold" onclick="switchDS('array')">Array</button>
+    <button class="nav-btn text-xs px-3 py-1.5 rounded-lg font-medium text-slate-600" onclick="switchDS('linkedlist')">Linked List</button>
+    <button class="nav-btn text-xs px-3 py-1.5 rounded-lg font-medium text-slate-600" onclick="switchDS('stack')">Stack</button>
+    <button class="nav-btn text-xs px-3 py-1.5 rounded-lg font-medium text-slate-600" onclick="switchDS('queue')">Queue</button>
+    <button class="nav-btn text-xs px-3 py-1.5 rounded-lg font-medium text-slate-600" onclick="switchDS('bst')">BST</button>
+    <button class="nav-btn text-xs px-3 py-1.5 rounded-lg font-medium text-slate-600" onclick="switchDS('hashtable')">Hash Table</button>
   </div>
 
+  <!-- ══════════════════════════════════════════════════════════
+       MAIN CONTENT CONTAINER
+  ══════════════════════════════════════════════════════════ -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-6 md:p-8 flex flex-col gap-6">
+
+    <!-- Structure Overview & Complexity Card -->
+    <section class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-soft" id="ds-hero-card">
+      <!-- Rendered by JS -->
+    </section>
+
+    <!-- Action Toolbar (Operations & Presets) -->
+    <section class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-soft flex flex-col gap-3" id="ds-toolbar-card">
+      <!-- Rendered by JS -->
+    </section>
+
+    <!-- Visual Interactive Stage -->
+    <section class="bg-white rounded-2xl border border-slate-200/80 p-8 min-h-[340px] flex flex-col justify-center items-center relative shadow-soft overflow-hidden" id="ds-stage-card">
+      <!-- Rendered by JS -->
+    </section>
+
+    <!-- Live Execution Console & Playback Controls -->
+    <section class="bg-slate-900 rounded-2xl border border-slate-800 p-4 text-white flex flex-col md:flex-row items-center justify-between gap-4 shadow-soft">
+      <!-- Live Log Message -->
+      <div class="flex items-center gap-3 overflow-hidden w-full md:w-auto">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
+        <span class="text-xs font-mono font-semibold text-slate-400 flex-shrink-0">CONSOLE:</span>
+        <span id="log-msg" class="text-xs font-mono text-slate-200 truncate">Ready. Select an operation or preset above to begin.</span>
+      </div>
+
+      <!-- Player Controls -->
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <!-- Manual Step Button -->
+        <button id="btn-step-fwd" onclick="stepForward()" disabled class="h-8 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 transition-all">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+          </svg>
+          <span>Step Next</span>
+        </button>
+
+        <div class="h-4 w-px bg-slate-700"></div>
+
+        <!-- Speed Dropdown -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono text-slate-400 font-medium">Speed:</span>
+          <select id="anim-speed" class="h-8 bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 font-mono font-medium outline-none cursor-pointer">
+            <option value="900">Slow (0.5x)</option>
+            <option value="450" selected>Normal (1x)</option>
+            <option value="180">Fast (2x)</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Split: Step Guide & Code Tracing -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="ds-details-grid">
+      <!-- Rendered by JS -->
+    </div>
+
+  </main>
+
   <script>
-    /* ════════════════════════════════════════════════════
-       AUDIO SYNTHESIZER (Web Audio API Keycap Click)
-    ════════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════════════
+       AUDIO SYNTHESIZER (Polished subtle click)
+    ══════════════════════════════════════════════════════════ */
     let audioCtx = null;
     let soundEnabled = true;
 
@@ -560,9 +331,9 @@
         const gain = audioCtx.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + duration);
+        osc.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + duration);
 
-        gain.gain.setValueAtTime(0.22, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
 
         osc.connect(gain);
@@ -576,200 +347,185 @@
     function toggleSound() {
       soundEnabled = !soundEnabled;
       document.getElementById('sound-icon').textContent = soundEnabled ? '🔊' : '🔇';
-      document.getElementById('sound-text').textContent = soundEnabled ? 'SFX On' : 'Muted';
-      if (soundEnabled) playKeyClick(800, 0.05);
+      document.getElementById('sound-text').textContent = soundEnabled ? 'Audio' : 'Muted';
+      if (soundEnabled) playKeyClick(800, 0.04);
     }
 
-    /* ════════════════════════════════════════════════════
-       DATA STRUCTURE CONFIGS & CODE
-    ════════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════════════
+       DATA STRUCTURES METADATA & CONFIG
+    ══════════════════════════════════════════════════════════ */
     const DS_CONFIG = {
       array: {
         title: "Array",
-        icon: "🔢",
-        tag: "Contiguous Memory Block",
-        accent: "#ff6b35",
-        bgTint: "#ffedd5",
-        summary: "Arrays allocate unbroken, sequential slots in memory. Accessing any cell by its index [i] happens in instant O(1) time. Inserting or deleting in the middle requires shifting items, which takes O(n) time.",
+        typeTag: "Linear Contiguous Memory",
+        summary: "Arrays allocate unbroken, sequential address blocks in memory. Element lookup by numeric index is instantaneous O(1). Inserting or deleting items in the middle requires shifting trailing elements in O(n) time.",
         complexities: [
-          { label: "Access: O(1)", bg: "#dcfce7", text: "#15803d" },
-          { label: "Search: O(n)", bg: "#fef3c7", text: "#b45309" },
-          { label: "Insert: O(n)", bg: "#fef3c7", text: "#b45309" },
-          { label: "Delete: O(n)", bg: "#fee2e2", text: "#b91c1c" }
+          { label: "Access", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Search", value: "O(n)", badge: "bg-amber-50 text-amber-700 border-amber-200" },
+          { label: "Insert", value: "O(n)", badge: "bg-amber-50 text-amber-700 border-amber-200" },
+          { label: "Delete", value: "O(n)", badge: "bg-rose-50 text-rose-700 border-rose-200" }
         ],
         presets: [
-          { name: "Default (7 items)", data: [12, 45, 7, 23, 56, 8, 89] },
-          { name: "Worst-Case Search", data: [10, 20, 30, 40, 50, 60, 99] },
-          { name: "Ascending Sorted", data: [5, 12, 19, 28, 42, 56, 70] }
+          { name: "Default (7)", data: [12, 45, 7, 23, 56, 8, 89] },
+          { name: "Worst-Case Scan", data: [10, 20, 30, 40, 50, 60, 99] },
+          { name: "Sorted Sequence", data: [4, 11, 19, 28, 42, 65, 80] }
         ],
         steps: [
-          { title: "Insert / Push", desc: "Adds an element to the next available index at the end of the array." },
-          { title: "Delete by Index", desc: "Extracts an item from index [i]. Subsequent items slide left to fill the gap." },
-          { title: "Linear Search", desc: "Scans sequentially index-by-index until the matching value is spotted." }
+          { title: "Direct Index Access", desc: "Memory address = base + (index * size), executed in a single CPU instruction O(1)." },
+          { title: "Push / Insert", desc: "Appends element at the next free index or slides downstream elements right to insert." },
+          { title: "Delete by Index", desc: "Removes target index and slides subsequent elements left by one position in O(n)." }
         ],
         codeLines: {
-          insert: [
-            "# 1. Check array capacity bounds",
-            "arr.append(value)  # O(1) amortized",
-            "# Element inserted at new tail index"
-          ],
           search: [
-            "for i in range(len(arr)):",
-            "    if arr[i] == target:",
-            "        return i  # Target Found at index [i]!",
-            "return -1  # Target Not Found"
+            "def linear_search(arr, target):",
+            "    for i in range(len(arr)):",
+            "        if arr[i] == target:",
+            "            return i  # Match found at index i",
+            "    return -1  # Target not in array"
+          ],
+          insert: [
+            "# Append at tail (O(1) amortized)",
+            "arr.append(value)",
+            "# Array length updated"
           ],
           delete: [
-            "removed_val = arr[index]",
+            "removed_item = arr[index]",
             "for j in range(index, len(arr) - 1):",
-            "    arr[j] = arr[j + 1]  # Shift items left",
-            "arr.pop()  # Shrink array length"
+            "    arr[j] = arr[j + 1]  # Shift elements left",
+            "arr.pop()"
           ]
         }
       },
 
       linkedlist: {
-        title: "Linked List",
-        icon: "🔗",
-        tag: "Chained Pointer Nodes",
-        accent: "#2563eb",
-        bgTint: "#dbeafe",
-        summary: "Linked lists connect individual memory nodes together using pointers. Nodes can live anywhere in RAM. Inserting at the very front (HEAD) is instantaneous O(1) because zero elements need to shift.",
+        title: "Singly Linked List",
+        typeTag: "Node Pointer Chain",
+        summary: "Linked lists chain individual node objects containing a payload value and a reference pointer to the next node. Nodes can be allocated anywhere in memory. Inserting or deleting at the HEAD is an instant O(1) pointer swap.",
         complexities: [
-          { label: "Access: O(n)", bg: "#fef3c7", text: "#b45309" },
-          { label: "Search: O(n)", bg: "#fef3c7", text: "#b45309" },
-          { label: "Insert Head: O(1)", bg: "#dcfce7", text: "#15803d" },
-          { label: "Delete Head: O(1)", bg: "#dcfce7", text: "#15803d" }
+          { label: "Access", value: "O(n)", badge: "bg-amber-50 text-amber-700 border-amber-200" },
+          { label: "Search", value: "O(n)", badge: "bg-amber-50 text-amber-700 border-amber-200" },
+          { label: "Insert Head", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Delete Head", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" }
         ],
         presets: [
-          { name: "Default (4 nodes)", data: [18, 42, 9, 65] },
-          { name: "Single Node", data: [42] },
+          { name: "Default (4 Nodes)", data: [18, 42, 9, 65] },
+          { name: "Single Node", data: [50] },
           { name: "Chain of 6", data: [10, 20, 30, 40, 50, 60] }
         ],
         steps: [
-          { title: "Insert Head", desc: "Creates a new node and points its 'next' reference directly to current HEAD in O(1)." },
-          { title: "Insert Tail", desc: "Follows pointers down the chain to the last node whose next is NULL, then attaches the new node." },
-          { title: "Delete Head", desc: "Simply repoints HEAD to HEAD.next. The unlinked node is freed instantly." }
+          { title: "Insert Head", desc: "Instantiates a new node, points its next reference to the existing HEAD, and updates HEAD in O(1)." },
+          { title: "Insert Tail", desc: "Traverses to the node whose next pointer is NULL, linking the new node in O(n)." },
+          { title: "Delete Head", desc: "Repoints HEAD to HEAD.next. The detached node is automatically garbage collected." }
         ],
         codeLines: {
-          insert: [
-            "new_node = Node(value)",
-            "new_node.next = head",
-            "head = new_node  # O(1) Head assigned"
-          ],
           search: [
             "curr = head",
             "while curr is not None:",
-            "    if curr.val == target: return True",
+            "    if curr.val == target:",
+            "        return True  # Found matching node",
             "    curr = curr.next",
             "return False"
           ],
+          insert: [
+            "new_node = Node(value)",
+            "new_node.next = head",
+            "head = new_node  # O(1) Head assignment"
+          ],
           delete: [
             "if not head: return None",
-            "head = head.next  # Unlink first node",
+            "head = head.next  # Unlink first node in O(1)",
             "return head"
           ]
         }
       },
 
       stack: {
-        title: "Stack (LIFO)",
-        icon: "📚",
-        tag: "Last-In, First-Out Chute",
-        accent: "#9333ea",
-        bgTint: "#f3e8ff",
-        summary: "Like a vertical cafeteria tray dispenser or stack of plates. You can only place items on the TOP (Push) or retrieve items from the TOP (Pop). The last item added is always the first one out.",
+        title: "Stack",
+        typeTag: "LIFO Container",
+        summary: "Follows Last-In, First-Out (LIFO) semantics. Elements are pushed and popped exclusively from the top of the stack. Crucial for execution call stacks, parenthesis matching, and undo/redo operations.",
         complexities: [
-          { label: "Push: O(1)", bg: "#dcfce7", text: "#15803d" },
-          { label: "Pop: O(1)", bg: "#dcfce7", text: "#15803d" },
-          { label: "Peek: O(1)", bg: "#dcfce7", text: "#15803d" },
-          { label: "Search: O(n)", bg: "#fef3c7", text: "#b45309" }
+          { label: "Push", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Pop", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Peek", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Search", value: "O(n)", badge: "bg-amber-50 text-amber-700 border-amber-200" }
         ],
         presets: [
-          { name: "Default Stack", data: [14, 28, 55, 90] },
-          { name: "Almost Full (5)", data: [10, 20, 30, 40, 50] },
+          { name: "Default Stack (4)", data: [14, 28, 55, 90] },
+          { name: "Full Stack (5)", data: [10, 20, 30, 40, 50] },
           { name: "Empty Chute", data: [] }
         ],
         steps: [
-          { title: "Push", desc: "Drops an element onto the top of the stack chute." },
-          { title: "Pop", desc: "Pulls and removes the current TOP element." },
-          { title: "Peek", desc: "Inspects what's currently resting on TOP without removing it." }
+          { title: "Push", desc: "Places an item directly on top of the stack. Stack depth increments by 1." },
+          { title: "Pop", desc: "Removes and returns the topmost item in instant O(1) time." },
+          { title: "Peek", desc: "Reads the current top element without altering the stack." }
         ],
         codeLines: {
           push: [
-            "stack.append(value)  # Place on TOP",
-            "top_ptr = len(stack) - 1"
+            "stack.append(value)  # Push to TOP",
+            "top_pointer = len(stack) - 1"
           ],
           pop: [
-            "if not stack: raise UnderflowError()",
-            "removed_item = stack.pop()  # Pop TOP",
-            "return removed_item"
+            "if len(stack) == 0: raise UnderflowError",
+            "return stack.pop()  # O(1) Pop"
           ],
           peek: [
-            "if not stack: return None",
-            "return stack[-1]  # Read TOP without pop"
+            "if len(stack) == 0: return None",
+            "return stack[-1]  # Inspect TOP"
           ]
         }
       },
 
       queue: {
-        title: "Queue (FIFO)",
-        icon: "🚶",
-        tag: "First-In, First-Out Pipeline",
-        accent: "#10b981",
-        bgTint: "#d1fae5",
-        summary: "Like an orderly checkout queue: whoever gets in line first is served and exits first. Elements enter at the REAR and leave from the FRONT.",
+        title: "Queue",
+        typeTag: "FIFO Pipeline",
+        summary: "Follows First-In, First-Out (FIFO) semantics. Elements enter at the REAR (Enqueue) and leave from the FRONT (Dequeue). Essential for BFS graph traversals, print queues, and task scheduling.",
         complexities: [
-          { label: "Enqueue: O(1)", bg: "#dcfce7", text: "#15803d" },
-          { label: "Dequeue: O(1)", bg: "#dcfce7", text: "#15803d" },
-          { label: "Peek: O(1)", bg: "#dcfce7", text: "#15803d" },
-          { label: "Search: O(n)", bg: "#fef3c7", text: "#b45309" }
+          { label: "Enqueue", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Dequeue", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Peek", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Search", value: "O(n)", badge: "bg-amber-50 text-amber-700 border-amber-200" }
         ],
         presets: [
-          { name: "Standard Queue", data: [15, 33, 72, 8] },
-          { name: "Single Passenger", data: [99] },
-          { name: "Busy Conveyor", data: [5, 10, 15, 20, 25, 30] }
+          { name: "Standard (4)", data: [15, 33, 72, 8] },
+          { name: "Single Item", data: [99] },
+          { name: "Busy Line (6)", data: [5, 10, 15, 20, 25, 30] }
         ],
         steps: [
-          { title: "Enqueue (Rear)", desc: "Enters a new element at the back of the line." },
-          { title: "Dequeue (Front)", desc: "Releases the front-most element from the queue." },
-          { title: "Peek", desc: "Observes the element at the front without dequeueing." }
+          { title: "Enqueue (Rear)", desc: "Appends the new element to the back of the queue." },
+          { title: "Dequeue (Front)", desc: "Serves and removes the front-most element in FIFO order." },
+          { title: "Peek", desc: "Inspects the next element to be dequeued without removing it." }
         ],
         codeLines: {
           enqueue: [
-            "queue.append(value)  # Join REAR",
-            "rear_ptr = len(queue) - 1"
+            "queue.append(value)  # Enqueue to REAR",
+            "rear_index = len(queue) - 1"
           ],
           dequeue: [
-            "if not queue: raise EmptyQueueError()",
-            "front_val = queue.pop(0)  # Exit FRONT",
-            "return front_val"
+            "if len(queue) == 0: raise EmptyQueueError",
+            "return queue.pop(0)  # Dequeue from FRONT"
           ]
         }
       },
 
       bst: {
         title: "Binary Search Tree",
-        icon: "🌳",
-        tag: "Logarithmic Search Tree",
-        accent: "#06b6d4",
-        bgTint: "#cffafe",
-        summary: "A branched tree where every node obeys this golden rule: all left descendants have strictly smaller values, and all right descendants have strictly larger values. Halves search times like Binary Search!",
+        typeTag: "Hierarchical Search Tree",
+        summary: "Every node holds at most two children. The left child must have a value strictly less than the node, and the right child strictly greater. In-order traversal visits nodes in perfectly sorted order.",
         complexities: [
-          { label: "Search: O(log n)", bg: "#dcfce7", text: "#15803d" },
-          { label: "Insert: O(log n)", bg: "#dcfce7", text: "#15803d" },
-          { label: "Delete: O(log n)", bg: "#dcfce7", text: "#15803d" },
-          { label: "Worst: O(n)", bg: "#fee2e2", text: "#b91c1c" }
+          { label: "Search", value: "O(log n)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Insert", value: "O(log n)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Delete", value: "O(log n)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Worst Case", value: "O(n)", badge: "bg-rose-50 text-rose-700 border-rose-200" }
         ],
         presets: [
-          { name: "Balanced (7 Nodes)", data: [50, 25, 75, 12, 38, 60, 92] },
-          { name: "Left-Heavy Skew", data: [70, 50, 40, 30, 20] },
-          { name: "Right-Heavy Skew", data: [20, 30, 40, 50, 70] }
+          { name: "Balanced (7)", data: [50, 25, 75, 12, 38, 60, 92] },
+          { name: "Left Skewed", data: [70, 50, 40, 30, 20] },
+          { name: "Right Skewed", data: [20, 30, 40, 50, 70] }
         ],
         steps: [
-          { title: "Insert", desc: "Compares against nodes: moves Left if value is smaller, Right if larger." },
-          { title: "Search Path", desc: "Skips half the remaining tree at each decision branch." },
-          { title: "In-Order Walk", desc: "Traverses Left Subtree → Root → Right Subtree, producing a perfectly sorted sequence." }
+          { title: "Binary Search", desc: "Compares target against root: move Left if smaller, Right if larger. Halves search space each step." },
+          { title: "Insert", desc: "Navigates down the comparison path and binds the new node to an empty leaf position." },
+          { title: "In-Order Walk", desc: "Recursively visits Left Subtree -> Node -> Right Subtree, printing items in ascending order." }
         ],
         codeLines: {
           search: [
@@ -777,55 +533,52 @@
             "    if target == curr.val: return curr",
             "    elif target < curr.val: curr = curr.left",
             "    else: curr = curr.right",
-            "return None  # Target not found"
+            "return None  # Value not in tree"
           ],
           inorder: [
             "def in_order(node):",
             "    if not node: return",
-            "    in_order(node.left)    # Visit Left Subtree",
+            "    in_order(node.left)    # Visit Left",
             "    visit(node.val)         # Visit Current Node",
-            "    in_order(node.right)   # Visit Right Subtree"
+            "    in_order(node.right)   # Visit Right"
           ]
         }
       },
 
       hashtable: {
         title: "Hash Table",
-        icon: "🗂️",
-        tag: "O(1) Key-Value Mapping",
-        accent: "#ec4899",
-        bgTint: "#fce7f3",
-        summary: "Translates string keys into numbers via a Hash Function (e.g. sum of char codes % bucket count). When keys produce the same bucket index, Chaining links them together into that bucket's list.",
+        typeTag: "Associative Key-Value Map",
+        summary: "Uses a deterministic mathematical hash function to convert string keys into numeric bucket indices. In this implementation, collisions are resolved via Separate Chaining within each bucket array.",
         complexities: [
-          { label: "Lookup: O(1) avg", bg: "#dcfce7", text: "#15803d" },
-          { label: "Insert: O(1) avg", bg: "#dcfce7", text: "#15803d" },
-          { label: "Delete: O(1) avg", bg: "#dcfce7", text: "#15803d" },
-          { label: "Worst: O(n)", bg: "#fee2e2", text: "#b91c1c" }
+          { label: "Lookup", value: "O(1) avg", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Insert", value: "O(1) avg", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Delete", value: "O(1) avg", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+          { label: "Worst Case", value: "O(n)", badge: "bg-rose-50 text-rose-700 border-rose-200" }
         ],
         presets: [
-          { name: "Standard (5 Keys)", data: [["user", "sui"], ["code", "rust"], ["tag", "web3"], ["mode", "fast"], ["zoom", "2x"]] },
-          { name: "Force Collision", data: [["cat", "feline"], ["act", "theatre"], ["tac", "tic"]] }
+          { name: "Default (5 Keys)", data: [["user", "alex"], ["role", "admin"], ["team", "core"], ["mode", "fast"], ["zoom", "100%"]] },
+          { name: "Forced Collision", data: [["cat", "feline"], ["act", "theatre"], ["tac", "tic"]] }
         ],
         steps: [
-          { title: "Hash Formula", desc: "Computes index = sum(charCodes) % bucketCount." },
-          { title: "Set Key-Value", desc: "Finds the corresponding mailbox bucket and appends or updates the key-value pair." },
-          { title: "Collision Chaining", desc: "Stores overlapping keys in an indexed linked chain within that bucket." }
+          { title: "Hash Calculation", desc: "Converts key string characters to numeric ASCII codes: index = sum(charCodes) % bucketCount." },
+          { title: "Bucket Lookup", desc: "Jumps directly to bucket[index] in O(1) time." },
+          { title: "Separate Chaining", desc: "If keys collide on the same bucket, they form an inline chained list." }
         ],
         codeLines: {
           lookup: [
-            "idx = hash_function(key) % NUM_BUCKETS",
-            "bucket = buckets[idx]",
+            "bucket_index = hash(key) % NUM_BUCKETS",
+            "bucket = buckets[bucket_index]",
             "for entry in bucket:",
             "    if entry.key == key: return entry.val",
-            "return None  # Key not present"
+            "return None  # Key not found"
           ]
         }
       }
     };
 
-    /* ════════════════════════════════════════════════════
-       APP STATE
-    ════════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════════════
+       STATE REPOSITORIES
+    ══════════════════════════════════════════════════════════ */
     let currentDS = 'array';
     let isLocked = false;
     let stepResolver = null;
@@ -833,7 +586,7 @@
     // Array state
     let arrData = [12, 45, 7, 23, 56, 8, 89];
 
-    // Linked List state
+    // Linked list state
     class LLNode { constructor(v) { this.val = v; this.next = null; } }
     function buildLL(arr) {
       let h = null;
@@ -875,14 +628,14 @@
     }
     function initHT(data = null) {
       htBuckets = Array.from({ length: HT_SIZE }, () => []);
-      const sample = data || [["user", "sui"], ["code", "rust"], ["tag", "web3"], ["mode", "fast"], ["zoom", "2x"]];
+      const sample = data || [["user", "alex"], ["role", "admin"], ["team", "core"], ["mode", "fast"], ["zoom", "100%"]];
       sample.forEach(([k, v]) => htBuckets[getHash(k)].push({ k, v }));
     }
     initHT();
 
-    /* ════════════════════════════════════════════════════
-       STEPPER ENGINE
-    ════════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════════════
+       STEPPER ENGINE & HELPERS
+    ══════════════════════════════════════════════════════════ */
     function getDelay() {
       const el = document.getElementById('anim-speed');
       return el ? parseInt(el.value) : 450;
@@ -914,9 +667,9 @@
       }
     }
 
-    function logMsg(msg, icon = '⚡') {
+    function logMsg(msg) {
       const el = document.getElementById('log-msg');
-      if (el) el.innerHTML = `${icon} ${msg}`;
+      if (el) el.innerHTML = msg;
     }
 
     function highlightCodeLine(lineIdx) {
@@ -928,96 +681,83 @@
 
     function setLock(locked) {
       isLocked = locked;
-      document.querySelectorAll('.key-btn, .neo-input').forEach(b => {
-        if (!b.id.includes('anim-speed') && b.id !== 'btn-step-fwd') b.disabled = locked;
+      document.querySelectorAll('input, button').forEach(b => {
+        if (!b.id.includes('anim-speed') && b.id !== 'btn-step-fwd' && !b.classList.contains('nav-btn')) {
+          b.disabled = locked;
+        }
       });
     }
 
-    /* ════════════════════════════════════════════════════
-       RENDER DISPATCHER
-    ════════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════════════
+       MAIN RENDER DISPATCHER
+    ══════════════════════════════════════════════════════════ */
     function renderApp() {
       const cfg = DS_CONFIG[currentDS];
 
-      // Header Bento Card with Perfectly Aligned Badges
-      document.getElementById('ds-header-panel').innerHTML = `
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-          <!-- Left side: Icon and title -->
-          <div class="flex items-start sm:items-center gap-4">
-            <div class="w-14 h-14 rounded-2xl border-3 border-[#161a24] shadow-[3px_3px_0_#161a24] flex items-center justify-center text-3xl font-black flex-shrink-0" style="background:${cfg.bgTint}">
-              ${cfg.icon}
+      // 1. Hero Card
+      document.getElementById('ds-hero-card').innerHTML = `
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div>
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <h2 class="text-2xl font-bold tracking-tight text-slate-900">${cfg.title}</h2>
+              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-100">${cfg.typeTag}</span>
             </div>
-            <div>
-              <div class="flex items-center gap-2.5 flex-wrap">
-                <h2 class="text-2xl font-black tracking-tight text-[#161a24]">${cfg.title}</h2>
-                <span class="text-xs font-black uppercase px-2.5 py-0.5 rounded-full border-2 border-[#161a24] bg-[#ffffff] shadow-[2px_2px_0_#161a24]">${cfg.tag}</span>
-              </div>
-              <p class="text-sm font-semibold text-slate-600 mt-1 max-w-2xl leading-relaxed">${cfg.summary}</p>
-            </div>
+            <p class="text-sm text-slate-500 mt-1 max-w-3xl leading-relaxed">${cfg.summary}</p>
           </div>
 
-          <!-- Right side: Complexity badges grid -->
-          <div class="flex flex-wrap lg:flex-nowrap items-center gap-2 flex-shrink-0">
+          <!-- Complexity Badges -->
+          <div class="flex flex-wrap items-center gap-2 flex-shrink-0">
             ${cfg.complexities.map(c => `
-              <span class="sticker-badge" style="background:${c.bg}; color:${c.text}">
-                ${c.label}
-              </span>
+              <div class="flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-mono font-semibold ${c.badge}">
+                <span class="text-slate-500 font-sans font-medium text-[0.7rem] uppercase">${c.label}:</span>
+                <span>${c.value}</span>
+              </div>
             `).join('')}
           </div>
-        </div>
-
-        <!-- Presets Row -->
-        <div class="mt-4 pt-4 border-t-2 border-[#161a24]/10 flex items-center gap-2.5 flex-wrap">
-          <span class="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-            <span>✨ Presets:</span>
-          </span>
-          ${cfg.presets.map((p, idx) => `
-            <button onclick="loadPreset(${idx})" class="px-3 py-1 rounded-xl border-2 border-[#161a24] bg-slate-50 hover:bg-yellow-100 text-xs font-bold text-[#161a24] shadow-[2px_2px_0_#161a24] cursor-pointer transition-all active:translate-y-0.5">
-              ${p.name}
-            </button>
-          `).join('')}
         </div>
       `;
 
-      // Bottom Explanatory & Synchronized Code Bento
+      // 2. Toolbar & Presets
+      MODULES[currentDS].renderControls();
+
+      // 3. Stage
+      MODULES[currentDS].renderCanvas();
+
+      // 4. Details Grid (Step Guide & Code Viewer)
       const defaultLines = cfg.codeLines.search || cfg.codeLines.insert || cfg.codeLines.push || cfg.codeLines.lookup;
-      document.getElementById('ds-guide-panel').innerHTML = `
-        <!-- Left: Step Guide -->
-        <div class="neo-card p-5 flex flex-col gap-3">
-          <div class="flex items-center justify-between pb-2.5 border-b-2 border-[#161a24]/10">
-            <span class="text-xs font-black uppercase tracking-wider text-slate-600">📖 Step-by-Step Guidance</span>
-            <span class="text-xs font-mono font-bold text-slate-400">Rules</span>
+      document.getElementById('ds-details-grid').innerHTML = `
+        <!-- Step-by-Step Educational Rules -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-soft flex flex-col gap-3">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Operation Mechanics</h3>
+            <span class="text-xs font-mono text-slate-400 font-medium">Guide</span>
           </div>
-          <div class="flex flex-col gap-2.5">
+          <div class="flex flex-col gap-3 mt-1">
             ${cfg.steps.map((st, i) => `
-              <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border-2 border-[#161a24] shadow-[2px_2px_0_#161a24]">
-                <div class="w-6 h-6 rounded-full bg-[#161a24] text-white flex items-center justify-center text-xs font-mono font-black flex-shrink-0">
+              <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                <div class="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 mt-0.5">
                   ${i + 1}
                 </div>
                 <div>
-                  <h4 class="text-xs font-black text-[#161a24]">${st.title}</h4>
-                  <p class="text-xs text-slate-600 mt-0.5 font-semibold leading-relaxed">${st.desc}</p>
+                  <h4 class="text-xs font-bold text-slate-900">${st.title}</h4>
+                  <p class="text-xs text-slate-600 mt-0.5 leading-relaxed">${st.desc}</p>
                 </div>
               </div>
             `).join('')}
           </div>
         </div>
 
-        <!-- Right: Synchronized Code Execution -->
-        <div class="neo-card p-5 flex flex-col gap-3">
-          <div class="flex items-center justify-between pb-2.5 border-b-2 border-[#161a24]/10">
-            <span class="text-xs font-black uppercase tracking-wider text-slate-600">💻 Live Synchronized Code</span>
-            <span class="text-xs font-mono font-bold text-yellow-700 bg-yellow-100 px-2.5 py-0.5 rounded-full border border-yellow-300">Live Tracing</span>
+        <!-- Live Code Execution Viewer -->
+        <div class="bg-slate-950 rounded-2xl border border-slate-800 p-6 shadow-soft flex flex-col gap-3">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Live Tracing Code</h3>
+            <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">Python</span>
           </div>
-          <div id="code-box" class="p-4 rounded-xl bg-[#161a24] text-slate-200 font-mono text-xs overflow-x-auto border-2 border-[#161a24] shadow-[inset_2px_2px_0_rgba(0,0,0,0.5)] min-h-[160px] flex flex-col justify-center">
+          <div id="code-box" class="p-3 font-mono text-xs text-slate-300 overflow-x-auto min-h-[170px] flex flex-col justify-center">
             ${defaultLines.map(l => `<span class="code-line">${l}</span>`).join('')}
           </div>
         </div>
       `;
-
-      // Render Active Component
-      MODULES[currentDS].renderControls();
-      MODULES[currentDS].renderCanvas();
     }
 
     function setCodeLines(lines) {
@@ -1028,7 +768,7 @@
     }
 
     function loadPreset(idx) {
-      playKeyClick(700, 0.05);
+      playKeyClick(700, 0.04);
       const preset = DS_CONFIG[currentDS].presets[idx];
       if (currentDS === 'array') arrData = [...preset.data];
       else if (currentDS === 'linkedlist') llHead = buildLL(preset.data);
@@ -1038,64 +778,87 @@
       else if (currentDS === 'hashtable') initHT(preset.data);
 
       MODULES[currentDS].renderCanvas();
-      logMsg(`Loaded Preset: <b>${preset.name}</b>`, "✨");
+      logMsg(`Loaded scenario: <b>${preset.name}</b>`);
     }
 
-    /* ════════════════════════════════════════════════════
-       1. ARRAY MODULE (No Marker Overlap, Responsive Gap)
-    ════════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════════════
+       1. ARRAY MODULE
+    ══════════════════════════════════════════════════════════ */
     const ArrayModule = {
       renderControls() {
-        document.getElementById('ds-controls-panel').innerHTML = `
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="flex items-center gap-2">
-              <input id="arr-val-in" type="number" placeholder="Value (e.g. 99)" class="neo-input w-36" onkeydown="if(event.key==='Enter') ArrayModule.insert()" />
-              <button class="key-btn key-btn-orange" onclick="ArrayModule.insert()"><span class="text-base">➕</span> Insert</button>
+        const presets = DS_CONFIG.array.presets;
+        document.getElementById('ds-toolbar-card').innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <!-- Action Inputs & Buttons -->
+            <div class="flex flex-wrap items-center gap-2.5">
+              <div class="flex items-center gap-1.5">
+                <input id="arr-val-in" type="number" placeholder="Value" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') ArrayModule.insert()" />
+                <button class="h-9 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1" onclick="ArrayModule.insert()">
+                  <span>Insert</span>
+                </button>
+              </div>
+
+              <div class="h-5 w-px bg-slate-200 hidden sm:block"></div>
+
+              <div class="flex items-center gap-1.5">
+                <input id="arr-idx-in" type="number" placeholder="Index [i]" class="h-9 w-24 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') ArrayModule.deleteIdx()" />
+                <button class="h-9 px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all" onclick="ArrayModule.deleteIdx()">
+                  Delete [i]
+                </button>
+              </div>
+
+              <div class="h-5 w-px bg-slate-200 hidden sm:block"></div>
+
+              <button class="h-9 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-sm transition-all" onclick="ArrayModule.search()">
+                Search Value
+              </button>
+
+              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="ArrayModule.reset()">
+                Reset
+              </button>
             </div>
 
-            <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
-
-            <div class="flex items-center gap-2">
-              <input id="arr-idx-in" type="number" placeholder="Index (0..N)" class="neo-input w-36" onkeydown="if(event.key==='Enter') ArrayModule.deleteIdx()" />
-              <button class="key-btn key-btn-pink" onclick="ArrayModule.deleteIdx()"><span class="text-base">🗑️</span> Delete Index</button>
+            <!-- Presets -->
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="text-xs font-medium text-slate-400 mr-1">Presets:</span>
+              ${presets.map((p, i) => `
+                <button onclick="loadPreset(${i})" class="h-8 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[0.75rem] font-medium text-slate-700 transition-all">
+                  ${p.name}
+                </button>
+              `).join('')}
             </div>
-
-            <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
-
-            <button class="key-btn key-btn-blue" onclick="ArrayModule.search()"><span class="text-base">🔍</span> Search Value</button>
-            <button class="key-btn key-btn-white" onclick="ArrayModule.reset()"><span class="text-base">↺</span> Reset</button>
           </div>
         `;
       },
 
-      renderCanvas(highlightIdx = -1, styleType = 'highlight') {
-        const panel = document.getElementById('ds-canvas-panel');
+      renderCanvas(highlightIdx = -1, styleType = 'active-scan') {
+        const stage = document.getElementById('ds-stage-card');
         if (arrData.length === 0) {
-          panel.innerHTML = `<div class="text-center font-bold text-slate-400 py-12">Array is empty. Insert elements or select a preset!</div>`;
+          stage.innerHTML = `<div class="text-sm font-medium text-slate-400 py-12">Array is empty. Insert an element or select a preset.</div>`;
           return;
         }
 
-        panel.innerHTML = `
+        stage.innerHTML = `
           <div class="w-full flex flex-col items-center">
-            <div class="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#ff6b35]"></span>
-              Indexed Memory Blocks • Size = ${arrData.length} (Click any keycap to inspect!)
+            <div class="flex items-center gap-2 text-xs font-mono font-medium text-slate-400 uppercase tracking-wider mb-6">
+              <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+              Memory Block: Total Items = ${arrData.length} (Click cell to inspect)
             </div>
 
-            <div class="flex items-end justify-center gap-3 sm:gap-4 flex-wrap py-2">
-              ${arrData.map((v, i) => `
-                <div class="keycap-container">
-                  ${i === highlightIdx ? `
-                    <div class="pointer-callout">
-                      i = ${i} ⬇️
-                    </div>
-                  ` : ''}
-                  <div id="key-cap-${i}" onclick="ArrayModule.inspect(${i})" class="keycap-3d ${i === highlightIdx ? styleType : ''}" title="Click to inspect or delete">
-                    ${v}
+            <div class="flex items-end justify-center gap-3 flex-wrap py-2">
+              ${arrData.map((val, i) => `
+                <div class="arr-cell-wrap">
+                  <div id="arr-cell-${i}" onclick="ArrayModule.inspect(${i})" class="arr-tile ${i === highlightIdx ? styleType : ''}">
+                    ${val}
                   </div>
-                  <span class="font-mono text-xs font-black text-slate-600 bg-slate-100 px-2 py-0.5 mt-2 rounded-md border border-[#161a24]">
-                    [${i}]
-                  </span>
+                  <div class="text-center mt-2">
+                    <span class="text-[0.75rem] font-mono font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                      [${i}]
+                    </span>
+                    <div class="text-[0.65rem] font-mono text-slate-400 mt-1">
+                      0x${(1000 + i * 4).toString(16).toUpperCase()}
+                    </div>
+                  </div>
                 </div>
               `).join('')}
             </div>
@@ -1104,44 +867,44 @@
       },
 
       inspect(idx) {
-        playKeyClick(650, 0.04);
+        playKeyClick(650, 0.03);
         const val = arrData[idx];
-        logMsg(`Inspecting index <b>[${idx}]</b> with value <b>${val}</b>. (Click "Delete Index" to remove).`, "👆");
-        const idxInp = document.getElementById('arr-idx-in');
-        if (idxInp) idxInp.value = idx;
-        this.renderCanvas(idx, 'highlight');
+        logMsg(`Inspected cell <b>[${idx}]</b> with value <b>${val}</b> at memory address <b>0x${(1000 + idx * 4).toString(16).toUpperCase()}</b>.`);
+        const inp = document.getElementById('arr-idx-in');
+        if (inp) inp.value = idx;
+        this.renderCanvas(idx, 'active-scan');
       },
 
       insert() {
-        playKeyClick(550, 0.05);
+        playKeyClick(550, 0.04);
         const inp = document.getElementById('arr-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Enter a number to insert.", "⚠️"); return; }
-        if (arrData.length >= 10) { logMsg("Array capacity limit (max 10 items for screen layout).", "⚠️"); return; }
+        if (isNaN(v)) { logMsg("Please enter a numeric value to insert."); return; }
+        if (arrData.length >= 10) { logMsg("Visualizer capacity limit reached (max 10 elements)."); return; }
         arrData.push(v);
         inp.value = '';
         setCodeLines(DS_CONFIG.array.codeLines.insert);
         highlightCodeLine(1);
-        this.renderCanvas(arrData.length - 1, 'highlight');
-        logMsg(`Appended keycap <b>${v}</b> at index [${arrData.length - 1}] in O(1) time!`, "✅");
+        this.renderCanvas(arrData.length - 1, 'active-scan');
+        logMsg(`Appended value <b>${v}</b> at index [${arrData.length - 1}] in O(1) amortized time.`);
       },
 
       async deleteIdx() {
-        playKeyClick(400, 0.06);
+        playKeyClick(400, 0.05);
         const inp = document.getElementById('arr-idx-in');
         const idx = parseInt(inp.value);
         if (isNaN(idx) || idx < 0 || idx >= arrData.length) {
-          logMsg(`Invalid index! Must be between 0 and ${arrData.length - 1}.`, "⚠️");
+          logMsg(`Invalid index. Must be between 0 and ${arrData.length - 1}.`);
           return;
         }
 
         setLock(true);
         setCodeLines(DS_CONFIG.array.codeLines.delete);
         highlightCodeLine(0);
-        const cap = document.getElementById(`key-cap-${idx}`);
-        if (cap) cap.className = "keycap-3d deleting";
-        logMsg(`Deleting element at [${idx}]... sliding remaining items left.`, "🗑️");
-        await sleep(350);
+        const el = document.getElementById(`arr-cell-${idx}`);
+        if (el) el.className = "arr-tile removing";
+        logMsg(`Removing index [${idx}]... shifting remaining elements left.`);
+        await sleep(300);
 
         highlightCodeLine(2);
         const removed = arrData.splice(idx, 1)[0];
@@ -1149,116 +912,153 @@
         this.renderCanvas();
         highlightCodeLine(3);
         setLock(false);
-        logMsg(`Removed <b>${removed}</b>. Subsequent elements shifted left in O(n) time.`, "✅");
+        logMsg(`Removed <b>${removed}</b>. Trailing elements shifted left in O(n) time.`);
       },
 
       async search() {
         const inp = document.getElementById('arr-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Enter a target value in the Value box to search.", "⚠️"); return; }
+        if (isNaN(v)) { logMsg("Enter a target value in the Value input to search."); return; }
 
         setLock(true);
         setCodeLines(DS_CONFIG.array.codeLines.search);
-        logMsg(`Starting linear search for keycap: <b>${v}</b> (Use Step Next or wait)...`, "🔍");
+        logMsg(`Scanning array for target value: <b>${v}</b>...`);
 
         for (let i = 0; i < arrData.length; i++) {
-          highlightCodeLine(0);
-          this.renderCanvas(i, 'highlight');
-          playKeyClick(500 + i * 40, 0.04);
-          logMsg(`Checking index [${i}] → ${arrData[i]} === ${v}?`, "🔍");
+          highlightCodeLine(1);
+          this.renderCanvas(i, 'active-scan');
+          playKeyClick(500 + i * 40, 0.03);
+          logMsg(`Checking index [${i}] -> compare ${arrData[i]} === ${v}...`);
           await waitStep();
 
-          highlightCodeLine(1);
+          highlightCodeLine(2);
           if (arrData[i] === v) {
-            highlightCodeLine(2);
-            playKeyClick(850, 0.1);
-            this.renderCanvas(i, 'found');
-            logMsg(`Target keycap <b>${v}</b> located at index <b>[${i}]</b> in ${i + 1} steps!`, "🎯");
+            highlightCodeLine(3);
+            playKeyClick(850, 0.08);
+            this.renderCanvas(i, 'found-match');
+            logMsg(`Match found! Value <b>${v}</b> located at index <b>[${i}]</b> in ${i + 1} steps.`);
             setLock(false);
             return;
           }
         }
 
-        highlightCodeLine(3);
+        highlightCodeLine(4);
         this.renderCanvas();
         setLock(false);
-        logMsg(`Target <b>${v}</b> was not found in the array.`, "❌");
+        logMsg(`Target <b>${v}</b> was not found in the array.`);
       },
 
       reset() {
-        playKeyClick(700, 0.05);
+        playKeyClick(700, 0.04);
         arrData = [12, 45, 7, 23, 56, 8, 89];
         this.renderCanvas();
-        logMsg("Array reset to initial keycaps.", "↺");
+        logMsg("Array reset to default elements.");
       }
     };
 
-    /* ════════════════════════════════════════════════════
+    /* ══════════════════════════════════════════════════════════
        2. LINKED LIST MODULE
-    ════════════════════════════════════════════════════ */
+    ══════════════════════════════════════════════════════════ */
     const LinkedListModule = {
       renderControls() {
-        document.getElementById('ds-controls-panel').innerHTML = `
-          <div class="flex flex-wrap items-center gap-3">
-            <input id="ll-val-in" type="number" placeholder="Value (e.g. 88)" class="neo-input w-36" onkeydown="if(event.key==='Enter') LinkedListModule.insertHead()" />
-            <button class="key-btn key-btn-blue" onclick="LinkedListModule.insertHead()"><span class="text-base">⬅️</span> Insert Head</button>
-            <button class="key-btn key-btn-blue" onclick="LinkedListModule.insertTail()"><span class="text-base">➡️</span> Insert Tail</button>
-            <button class="key-btn key-btn-pink" onclick="LinkedListModule.deleteHead()"><span class="text-base">🗑️</span> Delete Head</button>
-            <button class="key-btn key-btn-yellow" onclick="LinkedListModule.search()"><span class="text-base">🔍</span> Search</button>
-            <button class="key-btn key-btn-white" onclick="LinkedListModule.reset()"><span class="text-base">↺</span> Reset</button>
+        const presets = DS_CONFIG.linkedlist.presets;
+        document.getElementById('ds-toolbar-card').innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-2.5">
+              <input id="ll-val-in" type="number" placeholder="Node Value" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') LinkedListModule.insertHead()" />
+              
+              <button class="h-9 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all" onclick="LinkedListModule.insertHead()">
+                Insert Head (O(1))
+              </button>
+              <button class="h-9 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold shadow-sm transition-all" onclick="LinkedListModule.insertTail()">
+                Insert Tail
+              </button>
+              <button class="h-9 px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all" onclick="LinkedListModule.deleteHead()">
+                Delete Head
+              </button>
+              <button class="h-9 px-3.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="LinkedListModule.search()">
+                Search
+              </button>
+              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="LinkedListModule.reset()">
+                Reset
+              </button>
+            </div>
+
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="text-xs font-medium text-slate-400 mr-1">Presets:</span>
+              ${presets.map((p, i) => `
+                <button onclick="loadPreset(${i})" class="h-8 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[0.75rem] font-medium text-slate-700 transition-all">
+                  ${p.name}
+                </button>
+              `).join('')}
+            </div>
           </div>
         `;
       },
 
       renderCanvas(highlightVal = null) {
-        const panel = document.getElementById('ds-canvas-panel');
+        const stage = document.getElementById('ds-stage-card');
         let nodes = [];
         let curr = llHead;
         while (curr) { nodes.push(curr.val); curr = curr.next; }
 
         if (nodes.length === 0) {
-          panel.innerHTML = `<div class="font-bold text-slate-400 py-12">Linked list is empty (HEAD -> NULL).</div>`;
+          stage.innerHTML = `<div class="text-sm font-medium text-slate-400 py-12">Linked list is empty (HEAD -> NULL).</div>`;
           return;
         }
 
-        panel.innerHTML = `
+        stage.innerHTML = `
           <div class="w-full flex items-center justify-center overflow-x-auto py-6">
-            <div class="flex items-center gap-3 flex-nowrap px-4">
-              <div class="px-3.5 py-1.5 rounded-xl bg-[#2563eb] text-white border-2 border-[#161a24] shadow-[3px_3px_0_#161a24] font-mono text-xs font-black">
+            <div class="flex items-center gap-3 px-4">
+              <!-- HEAD Chip -->
+              <span class="px-2.5 py-1 rounded-md bg-indigo-50 border border-indigo-200 text-indigo-700 font-mono text-xs font-bold">
                 HEAD
-              </div>
-              <span class="text-2xl font-black text-slate-800">→</span>
+              </span>
+              <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
 
+              <!-- Node Capsules -->
               ${nodes.map((v, i) => `
                 <div class="flex items-center gap-3">
-                  <div onclick="LinkedListModule.inspect(${v})" class="ll-capsule ${v === highlightVal ? 'highlight' : ''}" title="Click to inspect node">
-                    <div class="ll-val-box" style="${v === highlightVal ? 'background:#dbeafe;' : ''}">${v}</div>
-                    <div class="ll-ptr-box">NEXT</div>
+                  <div onclick="LinkedListModule.inspect(${v})" class="ll-node-box ${v === highlightVal ? 'highlight' : ''}">
+                    <div class="px-4 py-3 text-base font-bold text-slate-900 bg-white min-w-[52px] text-center">
+                      ${v}
+                    </div>
+                    <div class="px-3 py-3 bg-slate-50 border-l border-slate-200 font-mono text-[0.7rem] text-slate-500 font-semibold flex items-center">
+                      next
+                    </div>
                   </div>
-                  ${i < nodes.length - 1 ? `<span class="text-2xl font-black text-slate-800">→</span>` : ''}
+                  ${i < nodes.length - 1 ? `
+                    <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                  ` : ''}
                 </div>
               `).join('')}
 
-              <span class="text-2xl font-black text-slate-800">→</span>
-              <div class="px-3.5 py-1.5 rounded-xl bg-[#f43f5e] text-white border-2 border-[#161a24] shadow-[3px_3px_0_#161a24] font-mono text-xs font-black">
+              <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+              <span class="px-2.5 py-1 rounded-md bg-rose-50 border border-rose-200 text-rose-700 font-mono text-xs font-bold">
                 NULL
-              </div>
+              </span>
             </div>
           </div>
         `;
       },
 
       inspect(val) {
-        playKeyClick(600, 0.04);
-        logMsg(`Inspected node with value <b>${val}</b>. Pointer links to next contiguous or scattered node.`, "🔗");
+        playKeyClick(600, 0.03);
+        logMsg(`Inspected node <b>${val}</b>. Reference pointer connects to next node address in heap memory.`);
         this.renderCanvas(val);
       },
 
       insertHead() {
-        playKeyClick(550, 0.05);
+        playKeyClick(550, 0.04);
         const inp = document.getElementById('ll-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Enter a value.", "⚠️"); return; }
+        if (isNaN(v)) { logMsg("Please enter a numeric value."); return; }
         const n = new LLNode(v);
         n.next = llHead;
         llHead = n;
@@ -1266,14 +1066,14 @@
         setCodeLines(DS_CONFIG.linkedlist.codeLines.insert);
         highlightCodeLine(2);
         this.renderCanvas(v);
-        logMsg(`Inserted node <b>${v}</b> at HEAD in instant <b>O(1)</b> time!`, "✅");
+        logMsg(`Inserted node <b>${v}</b> at HEAD in instant O(1) time.`);
       },
 
       insertTail() {
-        playKeyClick(550, 0.05);
+        playKeyClick(550, 0.04);
         const inp = document.getElementById('ll-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Enter a value.", "⚠️"); return; }
+        if (isNaN(v)) { logMsg("Please enter a numeric value."); return; }
         const n = new LLNode(v);
         if (!llHead) llHead = n;
         else {
@@ -1283,24 +1083,24 @@
         }
         inp.value = '';
         this.renderCanvas(v);
-        logMsg(`Traversed to end and hooked up node <b>${v}</b> at TAIL.`, "✅");
+        logMsg(`Traversed to end and appended node <b>${v}</b> at TAIL.`);
       },
 
       deleteHead() {
-        playKeyClick(420, 0.05);
-        if (!llHead) { logMsg("List is already empty.", "⚠️"); return; }
+        playKeyClick(420, 0.04);
+        if (!llHead) { logMsg("List is empty. Nothing to delete."); return; }
         setCodeLines(DS_CONFIG.linkedlist.codeLines.delete);
         highlightCodeLine(1);
         const val = llHead.val;
         llHead = llHead.next;
         this.renderCanvas();
-        logMsg(`Deleted HEAD node <b>${val}</b> in O(1) time.`, "🗑️");
+        logMsg(`Deleted HEAD node <b>${val}</b> in O(1) time.`);
       },
 
       async search() {
         const inp = document.getElementById('ll-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Enter search value.", "⚠️"); return; }
+        if (isNaN(v)) { logMsg("Enter search target value."); return; }
 
         setLock(true);
         setCodeLines(DS_CONFIG.linkedlist.codeLines.search);
@@ -1310,217 +1110,278 @@
         while (curr) {
           highlightCodeLine(1);
           this.renderCanvas(curr.val);
-          playKeyClick(520 + count * 40, 0.04);
-          logMsg(`Traversing pointer node ${count}: comparing ${curr.val} === ${v}...`, "🔗");
+          playKeyClick(520 + count * 40, 0.03);
+          logMsg(`Traversing node ${count}: checking value <b>${curr.val}</b> === ${v}...`);
           await waitStep();
 
           highlightCodeLine(2);
           if (curr.val === v) {
-            playKeyClick(850, 0.1);
-            logMsg(`Target node <b>${v}</b> found after ${count + 1} pointer steps!`, "🎯");
+            highlightCodeLine(3);
+            playKeyClick(850, 0.08);
+            logMsg(`Target node <b>${v}</b> located after ${count + 1} pointer transitions.`);
             setLock(false);
             return;
           }
-          highlightCodeLine(3);
+          highlightCodeLine(4);
           curr = curr.next;
           count++;
         }
 
-        highlightCodeLine(4);
+        highlightCodeLine(5);
         this.renderCanvas(null);
         setLock(false);
-        logMsg(`Node <b>${v}</b> not found in linked chain.`, "❌");
+        logMsg(`Node <b>${v}</b> was not found in the linked list.`);
       },
 
       reset() {
-        playKeyClick(700, 0.05);
+        playKeyClick(700, 0.04);
         llHead = buildLL([18, 42, 9, 65]);
         this.renderCanvas();
-        logMsg("Linked list reset.", "↺");
+        logMsg("Linked list reset to default chain.");
       }
     };
 
-    /* ════════════════════════════════════════════════════
-       3. STACK MODULE (Direct Top Click Pop)
-    ════════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════════════
+       3. STACK MODULE
+    ══════════════════════════════════════════════════════════ */
     const StackModule = {
       renderControls() {
-        document.getElementById('ds-controls-panel').innerHTML = `
-          <div class="flex flex-wrap items-center gap-3">
-            <input id="st-val-in" type="number" placeholder="Value (e.g. 33)" class="neo-input w-36" onkeydown="if(event.key==='Enter') StackModule.push()" />
-            <button class="key-btn key-btn-purple" onclick="StackModule.push()"><span class="text-base">⬆️</span> Push (Top)</button>
-            <button class="key-btn key-btn-pink" onclick="StackModule.pop()"><span class="text-base">⬇️</span> Pop (Top)</button>
-            <button class="key-btn key-btn-yellow" onclick="StackModule.peek()"><span class="text-base">👁️</span> Peek</button>
-            <button class="key-btn key-btn-white" onclick="StackModule.reset()"><span class="text-base">↺</span> Reset</button>
+        const presets = DS_CONFIG.stack.presets;
+        document.getElementById('ds-toolbar-card').innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-2.5">
+              <input id="st-val-in" type="number" placeholder="Value" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') StackModule.push()" />
+              <button class="h-9 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all" onclick="StackModule.push()">
+                Push (Top)
+              </button>
+              <button class="h-9 px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all" onclick="StackModule.pop()">
+                Pop (Top)
+              </button>
+              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="StackModule.peek()">
+                Peek Top
+              </button>
+              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="StackModule.reset()">
+                Reset
+              </button>
+            </div>
+
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="text-xs font-medium text-slate-400 mr-1">Presets:</span>
+              ${presets.map((p, i) => `
+                <button onclick="loadPreset(${i})" class="h-8 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[0.75rem] font-medium text-slate-700 transition-all">
+                  ${p.name}
+                </button>
+              `).join('')}
+            </div>
           </div>
         `;
       },
 
       renderCanvas() {
-        const panel = document.getElementById('ds-canvas-panel');
+        const stage = document.getElementById('ds-stage-card');
         const topIdx = stackData.length - 1;
 
-        panel.innerHTML = `
+        stage.innerHTML = `
           <div class="flex flex-col items-center justify-center py-2">
-            <div class="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-3">
-              ⬇️ LIFO Chute: Click the TOP plate directly to Pop! ⬇️
+            <div class="text-xs font-mono font-medium text-slate-400 uppercase tracking-wider mb-3">
+              LIFO Chute: Push & Pop exclusively at the TOP
             </div>
 
-            <div class="stack-chute">
+            <div class="stack-chamber">
               ${stackData.map((v, i) => `
-                <div onclick="${i === topIdx ? 'StackModule.pop()' : ''}" class="stack-plate ${i === topIdx ? 'is-top' : ''}" title="${i === topIdx ? 'Click to Pop!' : 'Blocked by plates above'}">
-                  ${v}
-                  ${i === topIdx ? '<span class="absolute right-3 top-2.5 bg-[#161a24] text-white text-[0.65rem] font-mono px-2 py-0.5 rounded-full font-black">TOP (Click to Pop)</span>' : ''}
+                <div onclick="${i === topIdx ? 'StackModule.pop()' : ''}" class="stack-slab ${i === topIdx ? 'is-top' : ''}" title="${i === topIdx ? 'Click to Pop' : ''}">
+                  <span class="text-sm font-bold">${v}</span>
+                  ${i === topIdx ? '<span class="ml-2 text-[0.65rem] font-mono px-2 py-0.5 rounded bg-white/20 text-white font-semibold">TOP</span>' : ''}
                 </div>
               `).join('')}
-              ${stackData.length === 0 ? '<div class="text-center font-bold text-slate-400 my-auto">Stack Chute is Empty</div>' : ''}
+              ${stackData.length === 0 ? '<div class="text-center text-xs font-medium text-slate-400 my-auto">Stack is Empty</div>' : ''}
             </div>
 
-            <div class="w-72 border-t-4 border-[#161a24] text-center pt-2 mt-2">
-              <span class="text-[0.7rem] font-mono font-black uppercase tracking-wider text-slate-600">Base of Chute (Sealed)</span>
+            <div class="w-64 border-t-2 border-slate-300 text-center pt-2 mt-2">
+              <span class="text-[0.65rem] font-mono font-semibold uppercase tracking-wider text-slate-400">Base of Stack (Closed)</span>
             </div>
           </div>
         `;
       },
 
       push() {
-        playKeyClick(600, 0.05);
+        playKeyClick(600, 0.04);
         const inp = document.getElementById('st-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Enter a value to push.", "⚠️"); return; }
-        if (stackData.length >= 6) { logMsg("Stack chute full for visualizer.", "⚠️"); return; }
+        if (isNaN(v)) { logMsg("Please enter a value to push."); return; }
+        if (stackData.length >= 6) { logMsg("Stack height limit reached for visual stage."); return; }
         stackData.push(v);
         inp.value = '';
         setCodeLines(DS_CONFIG.stack.codeLines.push);
         highlightCodeLine(0);
         this.renderCanvas();
-        logMsg(`Push(${v}) dropped onto TOP in O(1) time. Depth = ${stackData.length}.`, "⬆️");
+        logMsg(`Push(${v}) placed on TOP in O(1) time. Depth = ${stackData.length}.`);
       },
 
       pop() {
-        playKeyClick(420, 0.06);
-        if (stackData.length === 0) { logMsg("Stack Underflow! Nothing to pop.", "⚠️"); return; }
+        playKeyClick(420, 0.05);
+        if (stackData.length === 0) { logMsg("Stack Underflow. Cannot pop from empty stack."); return; }
         setCodeLines(DS_CONFIG.stack.codeLines.pop);
         highlightCodeLine(1);
         const removed = stackData.pop();
         this.renderCanvas();
-        logMsg(`Pop() took <b>${removed}</b> off the TOP in O(1) time.`, "⬇️");
+        logMsg(`Pop() retrieved <b>${removed}</b> from TOP in O(1) time.`);
       },
 
       peek() {
-        playKeyClick(700, 0.04);
-        if (stackData.length === 0) { logMsg("Stack is empty.", "⚠️"); return; }
+        playKeyClick(700, 0.03);
+        if (stackData.length === 0) { logMsg("Stack is empty."); return; }
         setCodeLines(DS_CONFIG.stack.codeLines.peek);
         highlightCodeLine(1);
-        logMsg(`Peek: The TOP plate is <b>${stackData[stackData.length - 1]}</b>.`, "👁️");
+        logMsg(`Peek: TOP item is <b>${stackData[stackData.length - 1]}</b>.`);
       },
 
       reset() {
-        playKeyClick(700, 0.05);
+        playKeyClick(700, 0.04);
         stackData = [14, 28, 55, 90];
         this.renderCanvas();
-        logMsg("Stack reset.", "↺");
+        logMsg("Stack reset to default values.");
       }
     };
 
-    /* ════════════════════════════════════════════════════
-       4. QUEUE MODULE (Direct Front Dequeue)
-    ════════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════════════
+       4. QUEUE MODULE
+    ══════════════════════════════════════════════════════════ */
     const QueueModule = {
       renderControls() {
-        document.getElementById('ds-controls-panel').innerHTML = `
-          <div class="flex flex-wrap items-center gap-3">
-            <input id="qu-val-in" type="number" placeholder="Value (e.g. 64)" class="neo-input w-36" onkeydown="if(event.key==='Enter') QueueModule.enqueue()" />
-            <button class="key-btn key-btn-green" onclick="QueueModule.enqueue()"><span class="text-base">➕</span> Enqueue (Rear)</button>
-            <button class="key-btn key-btn-pink" onclick="QueueModule.dequeue()"><span class="text-base">➖</span> Dequeue (Front)</button>
-            <button class="key-btn key-btn-yellow" onclick="QueueModule.peek()"><span class="text-base">👁️</span> Peek Front</button>
-            <button class="key-btn key-btn-white" onclick="QueueModule.reset()"><span class="text-base">↺</span> Reset</button>
+        const presets = DS_CONFIG.queue.presets;
+        document.getElementById('ds-toolbar-card').innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-2.5">
+              <input id="qu-val-in" type="number" placeholder="Value" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') QueueModule.enqueue()" />
+              <button class="h-9 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all" onclick="QueueModule.enqueue()">
+                Enqueue (Rear)
+              </button>
+              <button class="h-9 px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all" onclick="QueueModule.dequeue()">
+                Dequeue (Front)
+              </button>
+              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="QueueModule.peek()">
+                Peek Front
+              </button>
+              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="QueueModule.reset()">
+                Reset
+              </button>
+            </div>
+
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="text-xs font-medium text-slate-400 mr-1">Presets:</span>
+              ${presets.map((p, i) => `
+                <button onclick="loadPreset(${i})" class="h-8 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[0.75rem] font-medium text-slate-700 transition-all">
+                  ${p.name}
+                </button>
+              `).join('')}
+            </div>
           </div>
         `;
       },
 
       renderCanvas() {
-        const panel = document.getElementById('ds-canvas-panel');
-        panel.innerHTML = `
+        const stage = document.getElementById('ds-stage-card');
+        stage.innerHTML = `
           <div class="w-full flex flex-col items-center">
-            <div class="flex justify-between w-full max-w-xl text-xs font-mono font-black mb-3">
-              <span class="text-[#059669] flex items-center gap-1">⬅️ FRONT (Click to Dequeue)</span>
-              <span class="text-[#2563eb] flex items-center gap-1">REAR (Entry) ⬅️</span>
+            <div class="flex justify-between w-full max-w-xl text-xs font-mono font-medium text-slate-400 uppercase tracking-wider mb-3">
+              <span class="text-emerald-600 flex items-center gap-1 font-semibold">⬅️ FRONT (Dequeue Out)</span>
+              <span class="text-indigo-600 flex items-center gap-1 font-semibold">REAR (Enqueue In) ⬅️</span>
             </div>
 
-            <div class="conveyor-belt w-full max-w-2xl justify-center">
+            <div class="conveyor-belt w-full max-w-2xl justify-center bg-slate-50 border border-slate-200">
               ${queueData.map((v, i) => `
                 <div class="flex flex-col items-center gap-2">
-                  <div onclick="${i === 0 ? 'QueueModule.dequeue()' : ''}" class="keycap-3d" style="${i === 0 ? 'background:linear-gradient(180deg,#6ee7b7,#10b981);color:#fff;' : i === queueData.length - 1 ? 'background:linear-gradient(180deg,#93c5fd,#3b82f6);color:#fff;' : ''}" title="${i === 0 ? 'Click to Dequeue!' : ''}">
+                  <div onclick="${i === 0 ? 'QueueModule.dequeue()' : ''}" class="w-14 h-14 rounded-xl border flex items-center justify-center font-bold text-base shadow-sm cursor-pointer transition-all ${i === 0 ? 'bg-emerald-600 text-white border-emerald-700 shadow-emerald-200' : i === queueData.length - 1 ? 'bg-indigo-600 text-white border-indigo-700 shadow-indigo-200' : 'bg-white text-slate-900 border-slate-200'}">
                     ${v}
                   </div>
-                  <span class="text-[0.7rem] font-mono font-black px-2.5 py-0.5 rounded-full border border-[#161a24] ${i === 0 ? 'bg-emerald-100 text-emerald-800' : i === queueData.length - 1 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-700'}">
-                    ${i === 0 ? 'FRONT' : i === queueData.length - 1 ? 'REAR' : `ITEM ${i}`}
+                  <span class="text-[0.65rem] font-mono font-semibold px-2 py-0.5 rounded ${i === 0 ? 'bg-emerald-100 text-emerald-800' : i === queueData.length - 1 ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-200 text-slate-600'}">
+                    ${i === 0 ? 'FRONT' : i === queueData.length - 1 ? 'REAR' : `pos ${i}`}
                   </span>
                 </div>
               `).join('')}
-              ${queueData.length === 0 ? '<div class="text-center font-bold text-slate-400">Queue conveyor is empty</div>' : ''}
+              ${queueData.length === 0 ? '<div class="text-sm font-medium text-slate-400">Queue is empty</div>' : ''}
             </div>
           </div>
         `;
       },
 
       enqueue() {
-        playKeyClick(600, 0.05);
+        playKeyClick(600, 0.04);
         const inp = document.getElementById('qu-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Enter a value.", "⚠️"); return; }
-        if (queueData.length >= 7) { logMsg("Queue full for visual layout.", "⚠️"); return; }
+        if (isNaN(v)) { logMsg("Please enter a numeric value."); return; }
+        if (queueData.length >= 7) { logMsg("Queue visualizer capacity limit reached."); return; }
         queueData.push(v);
         inp.value = '';
         setCodeLines(DS_CONFIG.queue.codeLines.enqueue);
         highlightCodeLine(0);
         this.renderCanvas();
-        logMsg(`Enqueue(${v}) joined the REAR line in O(1) time.`, "➕");
+        logMsg(`Enqueue(${v}) added to REAR in O(1) time.`);
       },
 
       dequeue() {
-        playKeyClick(420, 0.05);
-        if (queueData.length === 0) { logMsg("Queue empty!", "⚠️"); return; }
+        playKeyClick(420, 0.04);
+        if (queueData.length === 0) { logMsg("Queue is empty. Nothing to dequeue."); return; }
         setCodeLines(DS_CONFIG.queue.codeLines.dequeue);
         highlightCodeLine(1);
         const removed = queueData.shift();
         this.renderCanvas();
-        logMsg(`Dequeue() serviced <b>${removed}</b> from FRONT in FIFO order.`, "➖");
+        logMsg(`Dequeue() serviced <b>${removed}</b> from FRONT in FIFO order.`);
       },
 
       peek() {
-        playKeyClick(700, 0.04);
-        if (queueData.length === 0) { logMsg("Queue is empty.", "⚠️"); return; }
-        logMsg(`Peek: The next item to be serviced is <b>${queueData[0]}</b>.`, "👁️");
+        playKeyClick(700, 0.03);
+        if (queueData.length === 0) { logMsg("Queue is empty."); return; }
+        logMsg(`Peek: Front item waiting to be serviced is <b>${queueData[0]}</b>.`);
       },
 
       reset() {
-        playKeyClick(700, 0.05);
+        playKeyClick(700, 0.04);
         queueData = [15, 33, 72, 8];
         this.renderCanvas();
-        logMsg("Queue reset.", "↺");
+        logMsg("Queue reset to default line.");
       }
     };
 
-    /* ════════════════════════════════════════════════════
-       5. BST MODULE (Clickable Nodes & Path Step Tracing)
-    ════════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════════════
+       5. BST MODULE
+    ══════════════════════════════════════════════════════════ */
     const BSTModule = {
       renderControls() {
-        document.getElementById('ds-controls-panel').innerHTML = `
-          <div class="flex flex-wrap items-center gap-3">
-            <input id="bst-val-in" type="number" placeholder="Value (e.g. 44)" class="neo-input w-36" onkeydown="if(event.key==='Enter') BSTModule.insert()" />
-            <button class="key-btn key-btn-orange" onclick="BSTModule.insert()"><span class="text-base">➕</span> Insert</button>
-            <button class="key-btn key-btn-blue" onclick="BSTModule.search()"><span class="text-base">🔍</span> Search Path</button>
-            <button class="key-btn key-btn-yellow" onclick="BSTModule.inOrder()"><span class="text-base">📋</span> In-Order (Sorted)</button>
-            <button class="key-btn key-btn-white" onclick="BSTModule.reset()"><span class="text-base">↺</span> Reset</button>
+        const presets = DS_CONFIG.bst.presets;
+        document.getElementById('ds-toolbar-card').innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-2.5">
+              <input id="bst-val-in" type="number" placeholder="Node Value" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') BSTModule.insert()" />
+              <button class="h-9 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all" onclick="BSTModule.insert()">
+                Insert
+              </button>
+              <button class="h-9 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-sm transition-all" onclick="BSTModule.search()">
+                Search Path
+              </button>
+              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="BSTModule.inOrder()">
+                In-Order (Sorted)
+              </button>
+              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="BSTModule.reset()">
+                Reset
+              </button>
+            </div>
+
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="text-xs font-medium text-slate-400 mr-1">Presets:</span>
+              ${presets.map((p, i) => `
+                <button onclick="loadPreset(${i})" class="h-8 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[0.75rem] font-medium text-slate-700 transition-all">
+                  ${p.name}
+                </button>
+              `).join('')}
+            </div>
           </div>
         `;
       },
 
       renderCanvas(targetVal = null, pathVals = []) {
-        const panel = document.getElementById('ds-canvas-panel');
+        const stage = document.getElementById('ds-stage-card');
         const W = 650;
         const H = 280;
 
@@ -1544,12 +1405,12 @@
           const cur = posMap[n.val];
           if (n.left) {
             const lc = posMap[n.left.val];
-            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${lc.x}" y2="${lc.y}" stroke="#161a24" stroke-width="3" />`;
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${lc.x}" y2="${lc.y}" stroke="#cbd5e1" stroke-width="2" />`;
             drawLines(n.left);
           }
           if (n.right) {
             const rc = posMap[n.right.val];
-            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${rc.x}" y2="${rc.y}" stroke="#161a24" stroke-width="3" />`;
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${rc.x}" y2="${rc.y}" stroke="#cbd5e1" stroke-width="2" />`;
             drawLines(n.right);
           }
         }
@@ -1560,22 +1421,30 @@
           const inPath = pathVals.includes(n.val);
 
           let fill = '#ffffff';
-          let textColor = '#161a24';
-          if (isTarget) { fill = '#10b981'; textColor = '#ffffff'; }
-          else if (inPath) { fill = '#2563eb'; textColor = '#ffffff'; }
+          let stroke = '#cbd5e1';
+          let textColor = '#0f172a';
+
+          if (isTarget) {
+            fill = '#10b981';
+            stroke = '#059669';
+            textColor = '#ffffff';
+          } else if (inPath) {
+            fill = '#4f46e5';
+            stroke = '#4338ca';
+            textColor = '#ffffff';
+          }
 
           nodesSvg += `
             <g transform="translate(${x},${y})" onclick="BSTModule.inspect(${n.val})" class="cursor-pointer">
-              <circle r="22" cx="3" cy="3" fill="#161a24" />
-              <circle r="22" fill="${fill}" stroke="#161a24" stroke-width="3" />
-              <text text-anchor="middle" dy="5" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="900" fill="${textColor}">
+              <circle r="22" fill="${fill}" stroke="${stroke}" stroke-width="2.5" />
+              <text text-anchor="middle" dy="5" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="${textColor}">
                 ${n.val}
               </text>
             </g>
           `;
         });
 
-        panel.innerHTML = `
+        stage.innerHTML = `
           <div class="w-full flex justify-center overflow-x-auto">
             <svg viewBox="0 0 ${W} ${H}" class="w-full max-w-2xl h-auto" style="min-height:260px;">
               ${linesSvg}
@@ -1586,27 +1455,27 @@
       },
 
       inspect(val) {
-        playKeyClick(600, 0.04);
-        logMsg(`Selected node <b>${val}</b>. Left children < ${val}, right children > ${val}.`, "🌳");
+        playKeyClick(600, 0.03);
+        logMsg(`Selected node <b>${val}</b>. Left subtree < ${val}, Right subtree > ${val}.`);
         const inp = document.getElementById('bst-val-in');
         if (inp) inp.value = val;
       },
 
       insert() {
-        playKeyClick(550, 0.05);
+        playKeyClick(550, 0.04);
         const inp = document.getElementById('bst-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Enter a number.", "⚠️"); return; }
+        if (isNaN(v)) { logMsg("Please enter a numeric node value."); return; }
         bstRoot = bstInsert(bstRoot, v);
         inp.value = '';
         this.renderCanvas(v);
-        logMsg(`Inserted <b>${v}</b>: smaller branches left, larger branches right.`, "🌳");
+        logMsg(`Inserted node <b>${v}</b> into BST.`);
       },
 
       async search() {
         const inp = document.getElementById('bst-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Enter search value.", "⚠️"); return; }
+        if (isNaN(v)) { logMsg("Enter search target value."); return; }
 
         setLock(true);
         setCodeLines(DS_CONFIG.bst.codeLines.search);
@@ -1616,24 +1485,24 @@
         while (curr) {
           path.push(curr.val);
           this.renderCanvas(null, path);
-          playKeyClick(500 + path.length * 50, 0.04);
+          playKeyClick(500 + path.length * 50, 0.03);
 
           highlightCodeLine(1);
           if (curr.val === v) {
-            playKeyClick(850, 0.1);
+            playKeyClick(850, 0.08);
             this.renderCanvas(v, path);
-            logMsg(`Found target <b>${v}</b> in <b>${path.length}</b> comparisons (O(log n))!`, "🎯");
+            logMsg(`Found target <b>${v}</b> in <b>${path.length}</b> comparisons (O(log n) efficiency).`);
             setLock(false);
             return;
           }
 
           if (v < curr.val) {
             highlightCodeLine(2);
-            logMsg(`${v} < ${curr.val}: Branching LEFT (halving search space)...`, "🔍");
+            logMsg(`${v} < ${curr.val}: Branching LEFT (halving search space)...`);
             curr = curr.left;
           } else {
             highlightCodeLine(3);
-            logMsg(`${v} > ${curr.val}: Branching RIGHT (halving search space)...`, "🔍");
+            logMsg(`${v} > ${curr.val}: Branching RIGHT (halving search space)...`);
             curr = curr.right;
           }
           await waitStep();
@@ -1642,7 +1511,7 @@
         highlightCodeLine(4);
         this.renderCanvas(null, path);
         setLock(false);
-        logMsg(`Target ${v} is not in the tree.`, "❌");
+        logMsg(`Target value ${v} does not exist in the BST.`);
       },
 
       async inOrder() {
@@ -1660,7 +1529,7 @@
           highlightCodeLine(3);
           BSTModule.renderCanvas(node.val, path);
           playKeyClick(500 + sorted.length * 30, 0.03);
-          logMsg(`In-order traversal visited: [${sorted.join(', ')}]...`, "📋");
+          logMsg(`In-order traversal visited: [${sorted.join(', ')}]...`);
           await waitStep();
           highlightCodeLine(4);
           await traverse(node.right);
@@ -1668,58 +1537,79 @@
 
         await traverse(bstRoot);
         setLock(false);
-        logMsg(`In-order Complete: <b>[${sorted.join(', ')}]</b> — Perfectly sorted!`, "✅");
+        logMsg(`In-order traversal complete: <b>[${sorted.join(', ')}]</b> (Notice it is sorted).`);
       },
 
       reset() {
-        playKeyClick(700, 0.05);
+        playKeyClick(700, 0.04);
         bstRoot = buildBST([50, 25, 75, 12, 38, 60, 92]);
         this.renderCanvas();
-        logMsg("BST reset.", "↺");
+        logMsg("BST reset to default balanced tree.");
       }
     };
 
-    /* ════════════════════════════════════════════════════
+    /* ══════════════════════════════════════════════════════════
        6. HASH TABLE MODULE
-    ════════════════════════════════════════════════════ */
+    ══════════════════════════════════════════════════════════ */
     const HashTableModule = {
       renderControls() {
-        document.getElementById('ds-controls-panel').innerHTML = `
-          <div class="flex flex-wrap items-center gap-3">
-            <input id="ht-key-in" type="text" placeholder="Key (e.g. tag)" class="neo-input w-36" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
-            <input id="ht-val-in" type="text" placeholder="Value (e.g. nft)" class="neo-input w-36" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
-            <button class="key-btn key-btn-orange" onclick="HashTableModule.insert()"><span class="text-base">➕</span> Set Key</button>
-            <button class="key-btn key-btn-blue" onclick="HashTableModule.lookup()"><span class="text-base">🔍</span> Lookup Key</button>
-            <button class="key-btn key-btn-pink" onclick="HashTableModule.deleteKey()"><span class="text-base">🗑️</span> Delete Key</button>
-            <button class="key-btn key-btn-white" onclick="HashTableModule.reset()"><span class="text-base">↺</span> Reset</button>
+        const presets = DS_CONFIG.hashtable.presets;
+        document.getElementById('ds-toolbar-card').innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-2.5">
+              <input id="ht-key-in" type="text" placeholder="Key" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
+              <input id="ht-val-in" type="text" placeholder="Value" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
+              
+              <button class="h-9 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all" onclick="HashTableModule.insert()">
+                Set (Insert)
+              </button>
+              <button class="h-9 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-sm transition-all" onclick="HashTableModule.lookup()">
+                Lookup Key
+              </button>
+              <button class="h-9 px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all" onclick="HashTableModule.deleteKey()">
+                Delete Key
+              </button>
+              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="HashTableModule.reset()">
+                Reset
+              </button>
+            </div>
+
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="text-xs font-medium text-slate-400 mr-1">Presets:</span>
+              ${presets.map((p, i) => `
+                <button onclick="loadPreset(${i})" class="h-8 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[0.75rem] font-medium text-slate-700 transition-all">
+                  ${p.name}
+                </button>
+              `).join('')}
+            </div>
           </div>
         `;
       },
 
       renderCanvas(activeBucket = -1, targetKey = null) {
-        const panel = document.getElementById('ds-canvas-panel');
-        panel.innerHTML = `
-          <div class="w-full max-w-2xl flex flex-col gap-3 py-2">
-            <div class="flex items-center justify-between text-xs font-mono font-black text-slate-600 mb-1">
-              <span>Mailbox Buckets = ${HT_SIZE}</span>
-              <span class="bg-yellow-200 px-2 py-0.5 rounded border border-[#161a24]">hash(k) = sum(charCodes) % ${HT_SIZE}</span>
+        const stage = document.getElementById('ds-stage-card');
+        stage.innerHTML = `
+          <div class="w-full max-w-2xl flex flex-col gap-2.5 py-2">
+            <div class="flex items-center justify-between text-xs font-mono font-medium text-slate-400 mb-1">
+              <span>Buckets: ${HT_SIZE}</span>
+              <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">hash(key) = sum(charCodes) % ${HT_SIZE}</span>
             </div>
 
             ${htBuckets.map((bucket, i) => `
-              <div class="mailbox-slot ${i === activeBucket ? 'active-slot' : ''}">
-                <div class="w-14 flex items-center justify-center py-1 rounded-lg bg-[#161a24] text-white font-mono text-xs font-black flex-shrink-0">
+              <div class="flex items-center gap-3 p-3 rounded-xl border transition-all ${i === activeBucket ? 'bg-indigo-50/60 border-indigo-300' : 'bg-slate-50/70 border-slate-200/80'}">
+                <div class="w-14 flex items-center justify-center py-1 rounded-lg bg-slate-900 text-white font-mono text-xs font-bold flex-shrink-0">
                   [${i}]
                 </div>
 
                 <div class="flex items-center gap-2 flex-wrap flex-1">
                   ${bucket.length === 0 ? `
-                    <span class="text-xs font-mono text-slate-400 font-bold italic">Empty Mailbox Slot</span>
+                    <span class="text-xs font-mono text-slate-400 italic">Empty Slot</span>
                   ` : bucket.map((item, j) => `
-                    <div onclick="HashTableModule.inspect('${item.k}','${item.v}')" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border-2 border-[#161a24] text-xs font-mono font-bold shadow-[2px_2px_0_#161a24] ${item.k === targetKey ? 'bg-blue-500 text-white' : 'bg-white text-[#161a24]'} hover:scale-105 transition-all">
-                      <span class="font-black text-[#ff6b35]">${item.k}</span>:
+                    <div onclick="HashTableModule.inspect('${item.k}','${item.v}')" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-mono font-medium shadow-sm transition-all hover:border-slate-400 ${item.k === targetKey ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-slate-800 border-slate-200'}">
+                      <span class="font-bold ${item.k === targetKey ? 'text-indigo-200' : 'text-indigo-600'}">${item.k}:</span>
                       <span>${item.v}</span>
                     </div>
-                    ${j < bucket.length - 1 ? '<span class="font-black text-slate-600">→</span>' : ''}
+                    ${j < bucket.length - 1 ? '<span class="text-slate-400 font-bold text-xs">-></span>' : ''}
                   `).join('')}
                 </div>
               </div>
@@ -1729,8 +1619,8 @@
       },
 
       inspect(k, v) {
-        playKeyClick(600, 0.04);
-        logMsg(`Selected key <b>"${k}"</b> with value <b>"${v}"</b>.`, "🗂️");
+        playKeyClick(600, 0.03);
+        logMsg(`Selected key <b>"${k}"</b> with value <b>"${v}"</b>.`);
         const kInp = document.getElementById('ht-key-in');
         const vInp = document.getElementById('ht-val-in');
         if (kInp) kInp.value = k;
@@ -1738,12 +1628,12 @@
       },
 
       insert() {
-        playKeyClick(550, 0.05);
+        playKeyClick(550, 0.04);
         const kInp = document.getElementById('ht-key-in');
         const vInp = document.getElementById('ht-val-in');
         const k = kInp.value.trim();
         const v = vInp.value.trim();
-        if (!k || !v) { logMsg("Enter both a key and a value.", "⚠️"); return; }
+        if (!k || !v) { logMsg("Please enter both key and value."); return; }
 
         const idx = getHash(k);
         const bucket = htBuckets[idx];
@@ -1751,10 +1641,10 @@
 
         if (existing) {
           existing.v = v;
-          logMsg(`Updated key "${k}" to "${v}" in bucket [${idx}].`, "🔄");
+          logMsg(`Updated key "${k}" to "${v}" in bucket [${idx}].`);
         } else {
           bucket.push({ k, v });
-          logMsg(`Inserted "${k}": "${v}" into bucket [${idx}]. Hash index = ${idx}.`, "✅");
+          logMsg(`Inserted "${k}": "${v}" into bucket [${idx}].`);
         }
 
         kInp.value = '';
@@ -1765,7 +1655,7 @@
       async lookup() {
         const kInp = document.getElementById('ht-key-in');
         const k = kInp.value.trim();
-        if (!k) { logMsg("Enter key to search.", "⚠️"); return; }
+        if (!k) { logMsg("Enter key to search."); return; }
 
         setCodeLines(DS_CONFIG.hashtable.codeLines.lookup);
         highlightCodeLine(0);
@@ -1775,43 +1665,43 @@
 
         this.renderCanvas(idx, found ? k : null);
         highlightCodeLine(2);
-        playKeyClick(found ? 850 : 400, 0.06);
+        playKeyClick(found ? 850 : 400, 0.05);
 
         if (found) {
           highlightCodeLine(3);
-          logMsg(`Found "${k}" → "${found.v}" in bucket [${idx}]!`, "🎯");
+          logMsg(`Found key <b>"${k}"</b> with value <b>"${found.v}"</b> in bucket [${idx}].`);
         } else {
           highlightCodeLine(4);
-          logMsg(`Key "${k}" not found in bucket [${idx}].`, "❌");
+          logMsg(`Key "${k}" not found in bucket [${idx}].`);
         }
       },
 
       deleteKey() {
-        playKeyClick(420, 0.05);
+        playKeyClick(420, 0.04);
         const kInp = document.getElementById('ht-key-in');
         const k = kInp.value.trim();
-        if (!k) { logMsg("Enter key to delete.", "⚠️"); return; }
+        if (!k) { logMsg("Enter key to delete."); return; }
 
         const idx = getHash(k);
         const before = htBuckets[idx].length;
         htBuckets[idx] = htBuckets[idx].filter(e => e.k !== k);
 
         this.renderCanvas(idx);
-        if (htBuckets[idx].length < before) logMsg(`Deleted key "${k}" from bucket [${idx}].`, "🗑️");
-        else logMsg(`Key "${k}" not found.`, "❌");
+        if (htBuckets[idx].length < before) logMsg(`Deleted key "${k}" from bucket [${idx}].`);
+        else logMsg(`Key "${k}" was not found.`);
       },
 
       reset() {
-        playKeyClick(700, 0.05);
+        playKeyClick(700, 0.04);
         initHT();
         this.renderCanvas();
-        logMsg("Hash table reset.", "↺");
+        logMsg("Hash table reset to default entries.");
       }
     };
 
-    /* ════════════════════════════════════════════════════
-       MODULE REGISTRY
-    ════════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════════════
+       MODULE REGISTRY & SWITCHER
+    ══════════════════════════════════════════════════════════ */
     const MODULES = {
       array: ArrayModule,
       linkedlist: LinkedListModule,
@@ -1823,17 +1713,23 @@
 
     function switchDS(ds) {
       if (isLocked) return;
-      playKeyClick(700, 0.04);
+      playKeyClick(700, 0.03);
       currentDS = ds;
-      document.querySelectorAll('.keycap-nav').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.getAttribute('onclick').includes(ds)) btn.classList.add('active');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+        btn.classList.add('text-slate-600');
+        if (btn.getAttribute('onclick').includes(ds)) {
+          btn.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+          btn.classList.remove('text-slate-600');
+        }
       });
+
       renderApp();
-      logMsg(`Loaded ${DS_CONFIG[ds].title}. Tap any action or node to explore!`, "🚀");
+      logMsg(`Loaded <b>${DS_CONFIG[ds].title}</b>. Choose an operation or preset above.`);
     }
 
-    // Initial render
+    // Bootstrap first render
     renderApp();
   </script>
 </body>
