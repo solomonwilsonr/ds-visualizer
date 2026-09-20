@@ -3,230 +3,369 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AlgoStudio — Interactive Data Structures Lab</title>
+  <title>MOJO DS — 3D Mascot & Street-Tech Data Structures Playground</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,600;0,700;0,800;0,900;1,800;1,900&family=JetBrains+Mono:wght@600;800&display=swap');
 
     :root {
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --bg-dark: #0c0e17;
+      --card-dark: #161928;
+      --card-border: #262c45;
+      --purple-main: #7c3aed;
+      --purple-glow: #8b5cf6;
+      --pink-neon: #ff3b81;
+      --green-slime: #22c55e;
+      --cyan-electric: #06b6d4;
+      --yellow-burst: #fbbf24;
     }
 
     * {
       box-sizing: border-box;
-      font-family: var(--font-sans);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
     }
 
     .font-mono {
-      font-family: var(--font-mono);
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    /* Subtle dot grid for studio canvas */
-    .bg-dot-grid {
-      background-color: #fafbfc;
-      background-image: radial-gradient(#e2e8f0 1.2px, transparent 1.2px);
-      background-size: 24px 24px;
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(rgba(124, 58, 237, 0.15) 1.5px, transparent 1.5px),
+        radial-gradient(rgba(34, 197, 94, 0.08) 1.5px, transparent 1.5px);
+      background-size: 36px 36px, 18px 18px;
+      color: #ffffff;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    /* Custom subtle shadows */
-    .shadow-soft {
-      box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 4px 12px -2px rgba(15, 23, 42, 0.05);
-    }
-
-    .shadow-card {
-      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04), 0 8px 24px -4px rgba(15, 23, 42, 0.06);
-    }
-
-    .shadow-active {
-      box-shadow: 0 0 0 2px #4f46e5, 0 8px 20px -4px rgba(79, 70, 229, 0.25);
-    }
-
-    /* Polished Array Cell */
-    .arr-cell-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .arr-tile {
-      width: 64px;
-      height: 64px;
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: #0f172a;
-      box-shadow: 0 2px 8px -1px rgba(15, 23, 42, 0.06), 0 1px 3px 0 rgba(15, 23, 42, 0.04);
-      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-      cursor: pointer;
+    /* Chunky Street-Tech Bento Cards */
+    .mojo-card {
+      background: var(--card-dark);
+      border: 2px solid var(--card-border);
+      border-radius: 24px;
+      box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
       position: relative;
     }
 
-    .arr-tile:hover {
-      border-color: #cbd5e1;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px -2px rgba(15, 23, 42, 0.1);
+    /* Glossy 3D Pill & Action Buttons */
+    .mojo-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      height: 46px;
+      padding: 0 1.35rem;
+      border-radius: 9999px;
+      font-size: 0.9rem;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: none;
+      outline: none;
+      overflow: hidden;
+      white-space: nowrap;
     }
 
-    .arr-tile.active-scan {
-      background: #4f46e5;
-      color: #ffffff;
-      border-color: #4338ca;
-      transform: translateY(-6px) scale(1.05);
-      box-shadow: 0 10px 25px -3px rgba(79, 70, 229, 0.35);
+    .mojo-btn::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 10%;
+      right: 10%;
+      height: 40%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+      border-radius: 9999px;
+      pointer-events: none;
     }
 
-    .arr-tile.found-match {
-      background: #10b981;
-      color: #ffffff;
-      border-color: #059669;
-      transform: translateY(-8px) scale(1.08);
-      box-shadow: 0 12px 28px -3px rgba(16, 185, 129, 0.4);
+    .mojo-btn:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.02);
+    }
+    .mojo-btn:active:not(:disabled) {
+      transform: translateY(2px) scale(0.98);
+    }
+    .mojo-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
     }
 
-    .arr-tile.removing {
-      background: #f43f5e;
+    .btn-green {
+      background: linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%);
+      color: #032e18;
+      box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.5), inset 0 -3px 0 #047857;
+    }
+    .btn-pink {
+      background: linear-gradient(180deg, #fb7185 0%, #ff3b81 50%, #e11d48 100%);
       color: #ffffff;
-      transform: scale(0.6);
+      box-shadow: 0 8px 20px -4px rgba(255, 59, 129, 0.5), inset 0 -3px 0 #be123c;
+    }
+    .btn-purple {
+      background: linear-gradient(180deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%);
+      color: #ffffff;
+      box-shadow: 0 8px 20px -4px rgba(124, 58, 237, 0.5), inset 0 -3px 0 #5b21b6;
+    }
+    .btn-dark {
+      background: #22283d;
+      color: #e2e8f0;
+      border: 1.5px solid #333d5e;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    /* Glossy 3D Input */
+    .mojo-input {
+      height: 46px;
+      background: #101322;
+      border: 2px solid #28304d;
+      border-radius: 9999px;
+      padding: 0 1.25rem;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #ffffff;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .mojo-input:focus {
+      border-color: var(--purple-glow);
+      box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.25);
+    }
+
+    /* Sticker Pills inspired by MOJO & N+ Store */
+    .sticker-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      transform: rotate(-1.5deg);
+      transition: transform 0.2s;
+    }
+    .sticker-tag:hover {
+      transform: rotate(0deg) scale(1.05);
+    }
+
+    /* ══════════════════════════════════════════════
+       GLOSSY 3D SLIME / JELLY TILES (Array & Canvas)
+    ══════════════════════════════════════════════ */
+    .jelly-tile-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding-top: 36px;
+    }
+
+    .jelly-tile {
+      width: 72px;
+      height: 72px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #2a314d 0%, #1a1e33 100%);
+      border: 2.5px solid #3d4770;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: #ffffff;
+      box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.25), inset 0 -4px 6px rgba(0, 0, 0, 0.4);
+      position: relative;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      user-select: none;
+    }
+
+    .jelly-tile::before {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 12px;
+      right: 12px;
+      height: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.05) 100%);
+      border-radius: 9999px;
+      pointer-events: none;
+    }
+
+    .jelly-tile:hover {
+      transform: translateY(-6px) scale(1.06);
+      border-color: #8b5cf6;
+      box-shadow: 0 18px 30px -4px rgba(139, 92, 246, 0.4);
+    }
+
+    .jelly-tile.scanning {
+      background: linear-gradient(180deg, #a78bfa 0%, #7c3aed 100%);
+      border-color: #c4b5fd;
+      color: #ffffff;
+      transform: translateY(-10px) scale(1.12);
+      box-shadow: 0 20px 35px -2px rgba(124, 58, 237, 0.7);
+    }
+
+    .jelly-tile.matched {
+      background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
+      border-color: #86efac;
+      color: #052e16;
+      transform: translateY(-12px) scale(1.15);
+      box-shadow: 0 22px 40px -2px rgba(34, 197, 94, 0.75);
+    }
+
+    .jelly-tile.removing {
+      background: linear-gradient(180deg, #fb7185 0%, #e11d48 100%);
+      transform: scale(0.4);
       opacity: 0;
     }
 
-    /* Linked List Node */
-    .ll-node-box {
-      display: flex;
-      align-items: stretch;
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px -1px rgba(15, 23, 42, 0.06);
-      cursor: pointer;
-      transition: all 0.25s ease;
+    /* Floating Monster Pointer Tag */
+    .mojo-pointer {
+      position: absolute;
+      top: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      background: var(--pink-neon);
+      color: #ffffff;
+      font-size: 0.75rem;
+      font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+      border-radius: 9999px;
+      box-shadow: 0 4px 14px rgba(255, 59, 129, 0.6);
+      animation: bounceMojo 0.8s infinite alternate ease-in-out;
+      z-index: 10;
     }
 
-    .ll-node-box:hover {
-      border-color: #cbd5e1;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px -2px rgba(15, 23, 42, 0.1);
+    @keyframes bounceMojo {
+      from { transform: translateY(0px) scale(1); }
+      to   { transform: translateY(-6px) scale(1.05); }
     }
 
-    .ll-node-box.highlight {
-      border-color: #4f46e5;
-      transform: translateY(-4px);
-      box-shadow: 0 0 0 2px #4f46e5, 0 10px 20px -3px rgba(79, 70, 229, 0.2);
+    /* Reactive Slime Mascot Animation */
+    .mascot-eye {
+      transition: transform 0.15s ease;
+    }
+    .mascot-bounce {
+      animation: mascotFloat 3s infinite ease-in-out alternate;
+    }
+    @keyframes mascotFloat {
+      0%   { transform: translateY(0px) rotate(0deg); }
+      50%  { transform: translateY(-5px) rotate(1.5deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
     }
 
-    /* Stack Container */
-    .stack-chamber {
-      width: 260px;
-      min-height: 280px;
-      border: 2px dashed #cbd5e1;
+    /* Stack Chute in Street-Tech Style */
+    .mojo-stack-chute {
+      width: 300px;
+      min-height: 290px;
+      background: rgba(16, 19, 34, 0.7);
+      border: 3px dashed #333d61;
       border-top: none;
-      border-radius: 0 0 16px 16px;
-      background: #f8fafc;
+      border-radius: 0 0 28px 28px;
       display: flex;
       flex-direction: column-reverse;
-      padding: 1rem;
-      gap: 0.6rem;
+      padding: 1.25rem;
+      gap: 0.75rem;
+      box-shadow: inset 0 -20px 30px rgba(0,0,0,0.5);
     }
 
-    .stack-slab {
+    .stack-candy-bar {
       width: 100%;
-      padding: 0.75rem 1rem;
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      font-weight: 700;
+      padding: 0.9rem;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #2a314d 0%, #1a1e33 100%);
+      border: 2px solid #3d4770;
+      font-size: 1.25rem;
+      font-weight: 900;
       text-align: center;
-      color: #0f172a;
-      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04);
-      animation: dropSlam 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      color: #ffffff;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.4), inset 0 2px 2px rgba(255,255,255,0.2);
       cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .stack-candy-bar.is-top {
+      background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%);
+      border-color: #e9d5ff;
+      box-shadow: 0 10px 25px rgba(147, 51, 234, 0.6);
+    }
+
+    /* Live Code Block */
+    .code-row {
+      display: block;
+      padding: 0.25rem 0.85rem;
+      border-radius: 6px;
+      line-height: 1.6;
       transition: all 0.15s;
     }
-
-    .stack-slab:hover {
-      border-color: #cbd5e1;
-      transform: scale(1.02);
-    }
-
-    .stack-slab.is-top {
-      background: #4f46e5;
+    .code-row.active-row {
+      background: rgba(124, 58, 237, 0.35);
+      border-left: 3.5px solid var(--pink-neon);
       color: #ffffff;
-      border-color: #4338ca;
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-    }
-
-    /* Code Highlighting */
-    .code-line {
-      display: block;
-      padding: 0.2rem 0.75rem;
-      border-radius: 4px;
-      transition: background 0.15s;
-      line-height: 1.6;
-    }
-
-    .code-line.active-line {
-      background: rgba(99, 102, 241, 0.2);
-      border-left: 3px solid #818cf8;
-      color: #ffffff;
-      font-weight: 600;
-    }
-
-    @keyframes dropSlam {
-      from { transform: translateY(-30px); opacity: 0; }
-      to   { transform: translateY(0); opacity: 1; }
+      font-weight: 700;
     }
   </style>
 </head>
-<body class="h-full flex flex-col bg-dot-grid text-slate-900 antialiased selection:bg-indigo-500 selection:text-white">
+<body class="h-full flex flex-col antialiased selection:bg-pink-500 selection:text-white">
 
   <!-- ══════════════════════════════════════════════════════════
-       TOP NAVIGATION BAR
+       TOP MOJO HEADER (Mascot & Street-Tech Navigation)
   ══════════════════════════════════════════════════════════ -->
-  <header class="h-16 border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-6">
+  <header class="h-20 border-b border-[#1e2338] bg-[#0c0e17]/90 backdrop-blur-xl sticky top-0 z-30 flex items-center justify-between px-6 md:px-10">
     
-    <!-- Brand -->
-    <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white font-bold text-sm shadow-sm">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+    <!-- Brand with MOJO Mascot Monster -->
+    <div class="flex items-center gap-3.5">
+      <!-- Reactive SVG Monster Mascot (Blinks & Smiles) -->
+      <div id="mascot-face" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#7c3aed] to-[#ff3b81] p-0.5 shadow-[0_0_25px_rgba(124,58,237,0.5)] flex items-center justify-center mascot-bounce cursor-pointer" onclick="pokeMascot()">
+        <svg viewBox="0 0 100 100" class="w-full h-full rounded-[14px]">
+          <!-- Slime Monster Body -->
+          <rect width="100" height="100" rx="14" fill="#8b5cf6"/>
+          <!-- Little monster horns -->
+          <polygon points="18,12 28,30 10,28" fill="#34d399"/>
+          <polygon points="82,12 72,30 90,28" fill="#34d399"/>
+          <!-- Eyes -->
+          <circle id="mascot-left-eye" cx="35" cy="46" r="10" fill="#ffffff"/>
+          <circle id="mascot-left-pupil" cx="36" cy="47" r="5" fill="#0c0e17" class="mascot-eye"/>
+          <circle id="mascot-right-eye" cx="65" cy="46" r="10" fill="#ffffff"/>
+          <circle id="mascot-right-pupil" cx="64" cy="47" r="5" fill="#0c0e17" class="mascot-eye"/>
+          <!-- Mouth -->
+          <path id="mascot-mouth" d="M 36 68 Q 50 82 64 68" stroke="#0c0e17" stroke-width="6" stroke-linecap="round" fill="none"/>
         </svg>
       </div>
+
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-sm font-bold tracking-tight text-slate-900">AlgoStudio</h1>
-          <span class="text-[0.65rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">Interactive Lab</span>
+          <h1 class="text-xl font-black tracking-tight text-white uppercase italic">MOJO<span class="text-[#ff3b81] not-italic">.DS</span></h1>
+          <span class="sticker-tag bg-[#ff3b81] text-white text-[0.65rem] px-2 py-0.5">2026 POP</span>
         </div>
+        <p class="text-[0.7rem] font-bold text-slate-400 tracking-wider uppercase">Interactive Street-Tech Lab</p>
       </div>
     </div>
 
-    <!-- Segmented Navigation -->
-    <nav class="hidden md:flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200/80 text-xs font-semibold text-slate-600">
-      <button class="nav-btn px-3 py-1.5 rounded-lg transition-all text-slate-900 bg-white shadow-sm" onclick="switchDS('array')">Array</button>
-      <button class="nav-btn px-3 py-1.5 rounded-lg transition-all hover:text-slate-900" onclick="switchDS('linkedlist')">Linked List</button>
-      <button class="nav-btn px-3 py-1.5 rounded-lg transition-all hover:text-slate-900" onclick="switchDS('stack')">Stack</button>
-      <button class="nav-btn px-3 py-1.5 rounded-lg transition-all hover:text-slate-900" onclick="switchDS('queue')">Queue</button>
-      <button class="nav-btn px-3 py-1.5 rounded-lg transition-all hover:text-slate-900" onclick="switchDS('bst')">Binary Search Tree</button>
-      <button class="nav-btn px-3 py-1.5 rounded-lg transition-all hover:text-slate-900" onclick="switchDS('hashtable')">Hash Table</button>
+    <!-- Segmented Navigation Pills -->
+    <nav class="hidden lg:flex items-center p-1.5 rounded-full bg-[#151929] border border-[#242b44] text-xs font-black">
+      <button class="nav-pill px-4 py-2 rounded-full transition-all text-white bg-gradient-to-r from-[#7c3aed] to-[#ff3b81] shadow-lg shadow-purple-500/30" onclick="switchDS('array')">Array</button>
+      <button class="nav-pill px-4 py-2 rounded-full transition-all text-slate-400 hover:text-white" onclick="switchDS('linkedlist')">Linked List</button>
+      <button class="nav-pill px-4 py-2 rounded-full transition-all text-slate-400 hover:text-white" onclick="switchDS('stack')">Stack</button>
+      <button class="nav-pill px-4 py-2 rounded-full transition-all text-slate-400 hover:text-white" onclick="switchDS('queue')">Queue</button>
+      <button class="nav-pill px-4 py-2 rounded-full transition-all text-slate-400 hover:text-white" onclick="switchDS('bst')">BST</button>
+      <button class="nav-pill px-4 py-2 rounded-full transition-all text-slate-400 hover:text-white" onclick="switchDS('hashtable')">Hash Table</button>
     </nav>
 
-    <!-- Header Actions -->
-    <div class="flex items-center gap-2.5">
-      <!-- Audio Switch -->
-      <button id="sound-btn" onclick="toggleSound()" class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-xs font-medium text-slate-700 flex items-center gap-1.5 transition-all">
+    <!-- Sound & GitHub Actions -->
+    <div class="flex items-center gap-3">
+      <button id="sound-btn" onclick="toggleSound()" class="h-10 px-4 rounded-full bg-[#1a1f33] hover:bg-[#232a45] border border-[#293252] text-xs font-black text-slate-200 flex items-center gap-1.5 transition-all">
         <span id="sound-icon">🔊</span>
-        <span id="sound-text" class="hidden sm:inline">Audio</span>
+        <span id="sound-text" class="hidden sm:inline">SFX</span>
       </button>
 
-      <!-- GitHub Link -->
-      <a href="https://github.com/solomonwilsonr/ds-visualizer" target="_blank" rel="noopener" class="h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
+      <a href="https://github.com/solomonwilsonr/ds-visualizer" target="_blank" rel="noopener" class="h-10 px-4 rounded-full bg-gradient-to-r from-[#22c55e] to-[#10b981] hover:opacity-90 text-[#042813] text-xs font-black flex items-center gap-1.5 transition-all shadow-md shadow-emerald-500/30">
         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
         </svg>
@@ -236,61 +375,55 @@
 
   </header>
 
-  <!-- Mobile Segmented Navigation -->
-  <div class="md:hidden overflow-x-auto p-2 bg-slate-100 border-b border-slate-200 flex gap-1">
-    <button class="nav-btn text-xs px-3 py-1.5 rounded-lg bg-white shadow-sm font-semibold" onclick="switchDS('array')">Array</button>
-    <button class="nav-btn text-xs px-3 py-1.5 rounded-lg font-medium text-slate-600" onclick="switchDS('linkedlist')">Linked List</button>
-    <button class="nav-btn text-xs px-3 py-1.5 rounded-lg font-medium text-slate-600" onclick="switchDS('stack')">Stack</button>
-    <button class="nav-btn text-xs px-3 py-1.5 rounded-lg font-medium text-slate-600" onclick="switchDS('queue')">Queue</button>
-    <button class="nav-btn text-xs px-3 py-1.5 rounded-lg font-medium text-slate-600" onclick="switchDS('bst')">BST</button>
-    <button class="nav-btn text-xs px-3 py-1.5 rounded-lg font-medium text-slate-600" onclick="switchDS('hashtable')">Hash Table</button>
+  <!-- Mobile Navigation Pill Bar -->
+  <div class="lg:hidden overflow-x-auto p-2.5 bg-[#101322] border-b border-[#1e2338] flex gap-1.5">
+    <button class="nav-pill text-xs px-3.5 py-1.5 rounded-full font-black text-white bg-gradient-to-r from-[#7c3aed] to-[#ff3b81]" onclick="switchDS('array')">Array</button>
+    <button class="nav-pill text-xs px-3.5 py-1.5 rounded-full font-black text-slate-400" onclick="switchDS('linkedlist')">Linked List</button>
+    <button class="nav-pill text-xs px-3.5 py-1.5 rounded-full font-black text-slate-400" onclick="switchDS('stack')">Stack</button>
+    <button class="nav-pill text-xs px-3.5 py-1.5 rounded-full font-black text-slate-400" onclick="switchDS('queue')">Queue</button>
+    <button class="nav-pill text-xs px-3.5 py-1.5 rounded-full font-black text-slate-400" onclick="switchDS('bst')">BST</button>
+    <button class="nav-pill text-xs px-3.5 py-1.5 rounded-full font-black text-slate-400" onclick="switchDS('hashtable')">Hash Table</button>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════
-       MAIN CONTENT CONTAINER
+       MAIN WORKSPACE BENTO GRID
   ══════════════════════════════════════════════════════════ -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-6 md:p-8 flex flex-col gap-6">
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 flex flex-col gap-6">
 
-    <!-- Structure Overview & Complexity Card -->
-    <section class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-soft" id="ds-hero-card">
+    <!-- Top Bento: Title & Split Complexity Badges -->
+    <section class="mojo-card p-6 md:p-8 bg-gradient-to-br from-[#161928] via-[#1a1f33] to-[#161928]" id="ds-hero-card">
       <!-- Rendered by JS -->
     </section>
 
-    <!-- Action Toolbar (Operations & Presets) -->
-    <section class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-soft flex flex-col gap-3" id="ds-toolbar-card">
+    <!-- Controls Bar -->
+    <section class="mojo-card p-4 md:p-5" id="ds-toolbar-card">
       <!-- Rendered by JS -->
     </section>
 
-    <!-- Visual Interactive Stage -->
-    <section class="bg-white rounded-2xl border border-slate-200/80 p-8 min-h-[340px] flex flex-col justify-center items-center relative shadow-soft overflow-hidden" id="ds-stage-card">
+    <!-- Interactive Visual Stage (The Main Attraction) -->
+    <section class="mojo-card p-6 md:p-10 min-h-[350px] flex flex-col justify-center items-center relative overflow-hidden bg-[#0d101d]" id="ds-stage-card">
       <!-- Rendered by JS -->
     </section>
 
-    <!-- Live Execution Console & Playback Controls -->
-    <section class="bg-slate-900 rounded-2xl border border-slate-800 p-4 text-white flex flex-col md:flex-row items-center justify-between gap-4 shadow-soft">
-      <!-- Live Log Message -->
+    <!-- Live Ticker & Stepper Controller -->
+    <section class="mojo-card p-4 bg-[#090b12] border-[#20273d] flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-3 overflow-hidden w-full md:w-auto">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
-        <span class="text-xs font-mono font-semibold text-slate-400 flex-shrink-0">CONSOLE:</span>
-        <span id="log-msg" class="text-xs font-mono text-slate-200 truncate">Ready. Select an operation or preset above to begin.</span>
+        <span class="w-3 h-3 rounded-full bg-[#22c55e] animate-ping flex-shrink-0"></span>
+        <span class="text-xs font-mono font-black text-[#ff3b81] flex-shrink-0 uppercase">CONSOLE:</span>
+        <span id="log-msg" class="text-xs font-mono text-slate-200 truncate">Ready! Choose an operation or preset above to animate.</span>
       </div>
 
-      <!-- Player Controls -->
+      <!-- Playback Controls -->
       <div class="flex items-center gap-3 flex-shrink-0">
-        <!-- Manual Step Button -->
-        <button id="btn-step-fwd" onclick="stepForward()" disabled class="h-8 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 transition-all">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-          </svg>
-          <span>Step Next</span>
+        <button id="btn-step-fwd" onclick="stepForward()" disabled class="h-9 px-4 rounded-full bg-[#242b44] hover:bg-[#313a5c] text-white text-xs font-black disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 transition-all">
+          <span>⏭️</span> Step Next
         </button>
 
-        <div class="h-4 w-px bg-slate-700"></div>
+        <div class="h-5 w-px bg-[#262c45]"></div>
 
-        <!-- Speed Dropdown -->
         <div class="flex items-center gap-2">
-          <span class="text-xs font-mono text-slate-400 font-medium">Speed:</span>
-          <select id="anim-speed" class="h-8 bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-2.5 font-mono font-medium outline-none cursor-pointer">
+          <span class="text-xs font-mono text-slate-400 font-bold uppercase">Speed:</span>
+          <select id="anim-speed" class="h-9 bg-[#191e30] border border-[#2e3757] text-white text-xs rounded-full px-3 font-mono font-bold outline-none cursor-pointer">
             <option value="900">Slow (0.5x)</option>
             <option value="450" selected>Normal (1x)</option>
             <option value="180">Fast (2x)</option>
@@ -299,7 +432,7 @@
       </div>
     </section>
 
-    <!-- Bottom Split: Step Guide & Code Tracing -->
+    <!-- Bottom Bento: Guidance & Live Code Tracing -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="ds-details-grid">
       <!-- Rendered by JS -->
     </div>
@@ -308,7 +441,7 @@
 
   <script>
     /* ══════════════════════════════════════════════════════════
-       AUDIO SYNTHESIZER (Polished subtle click)
+       AUDIO SYNTHESIZER
     ══════════════════════════════════════════════════════════ */
     let audioCtx = null;
     let soundEnabled = true;
@@ -333,7 +466,7 @@
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + duration);
 
-        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
 
         osc.connect(gain);
@@ -347,41 +480,73 @@
     function toggleSound() {
       soundEnabled = !soundEnabled;
       document.getElementById('sound-icon').textContent = soundEnabled ? '🔊' : '🔇';
-      document.getElementById('sound-text').textContent = soundEnabled ? 'Audio' : 'Muted';
+      document.getElementById('sound-text').textContent = soundEnabled ? 'SFX' : 'Muted';
       if (soundEnabled) playKeyClick(800, 0.04);
     }
 
     /* ══════════════════════════════════════════════════════════
-       DATA STRUCTURES METADATA & CONFIG
+       REACTIVE MASCOT EMOTIONS (MOJO Monster Reactions)
+    ══════════════════════════════════════════════════════════ */
+    function setMascotMood(mood = 'normal') {
+      const mouth = document.getElementById('mascot-mouth');
+      const leftEye = document.getElementById('mascot-left-pupil');
+      const rightEye = document.getElementById('mascot-right-pupil');
+      if (!mouth) return;
+
+      if (mood === 'happy') {
+        mouth.setAttribute('d', 'M 30 62 Q 50 90 70 62'); // Big smile
+        if (leftEye) leftEye.setAttribute('cy', '44');
+        if (rightEye) rightEye.setAttribute('cy', '44');
+      } else if (mood === 'shock') {
+        mouth.setAttribute('d', 'M 40 70 A 10 10 0 1 0 60 70 A 10 10 0 1 0 40 70'); // Open O mouth
+      } else if (mood === 'focused') {
+        mouth.setAttribute('d', 'M 38 70 L 62 70'); // Straight line
+      } else {
+        mouth.setAttribute('d', 'M 36 68 Q 50 82 64 68'); // Default smile
+        if (leftEye) leftEye.setAttribute('cy', '47');
+        if (rightEye) rightEye.setAttribute('cy', '47');
+      }
+    }
+
+    function pokeMascot() {
+      playKeyClick(900, 0.08);
+      setMascotMood('happy');
+      logMsg("🎉 <b>MOJO Mascot:</b> Let's master Data Structures together!");
+      setTimeout(() => setMascotMood('normal'), 1200);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       METADATA & DATA STRUCTURE CONFIG
     ══════════════════════════════════════════════════════════ */
     const DS_CONFIG = {
       array: {
         title: "Array",
-        typeTag: "Linear Contiguous Memory",
-        summary: "Arrays allocate unbroken, sequential address blocks in memory. Element lookup by numeric index is instantaneous O(1). Inserting or deleting items in the middle requires shifting trailing elements in O(n) time.",
+        typeTag: "Contiguous Memory Tape",
+        accent: "#7c3aed",
+        summary: "Arrays allocate unbroken, consecutive memory addresses for elements. Reading any element by index is instantaneous O(1), but deleting or inserting in the middle causes downstream items to shift in O(n) time.",
         complexities: [
-          { label: "Access", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Search", value: "O(n)", badge: "bg-amber-50 text-amber-700 border-amber-200" },
-          { label: "Insert", value: "O(n)", badge: "bg-amber-50 text-amber-700 border-amber-200" },
-          { label: "Delete", value: "O(n)", badge: "bg-rose-50 text-rose-700 border-rose-200" }
+          { label: "Access", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
+          { label: "Search", value: "O(n)", bg: "#f59e0b", textColor: "#2d1600" },
+          { label: "Insert", value: "O(n)", bg: "#f59e0b", textColor: "#2d1600" },
+          { label: "Delete", value: "O(n)", bg: "#ff3b81", textColor: "#ffffff" }
         ],
         presets: [
           { name: "Default (7)", data: [12, 45, 7, 23, 56, 8, 89] },
           { name: "Worst-Case Scan", data: [10, 20, 30, 40, 50, 60, 99] },
-          { name: "Sorted Sequence", data: [4, 11, 19, 28, 42, 65, 80] }
+          { name: "Sorted Ascending", data: [4, 11, 19, 28, 42, 65, 80] }
         ],
         steps: [
-          { title: "Direct Index Access", desc: "Memory address = base + (index * size), executed in a single CPU instruction O(1)." },
-          { title: "Push / Insert", desc: "Appends element at the next free index or slides downstream elements right to insert." },
-          { title: "Delete by Index", desc: "Removes target index and slides subsequent elements left by one position in O(n)." }
+          { title: "Direct Index Access", desc: "Memory offset = Base + (Index * CellSize). Computes in a single CPU instruction O(1)." },
+          { title: "Insert / Append", desc: "Appends element at the next vacant index or slides elements right to make room." },
+          { title: "Delete by Index", desc: "Extracts element at index [i], sliding trailing elements left to close the gap." }
         ],
         codeLines: {
           search: [
             "def linear_search(arr, target):",
             "    for i in range(len(arr)):",
             "        if arr[i] == target:",
-            "            return i  # Match found at index i",
-            "    return -1  # Target not in array"
+            "            return i  # Match found at index i!",
+            "    return -1  # Target not present"
           ],
           insert: [
             "# Append at tail (O(1) amortized)",
@@ -389,7 +554,7 @@
             "# Array length updated"
           ],
           delete: [
-            "removed_item = arr[index]",
+            "removed_val = arr[index]",
             "for j in range(index, len(arr) - 1):",
             "    arr[j] = arr[j + 1]  # Shift elements left",
             "arr.pop()"
@@ -398,14 +563,15 @@
       },
 
       linkedlist: {
-        title: "Singly Linked List",
-        typeTag: "Node Pointer Chain",
-        summary: "Linked lists chain individual node objects containing a payload value and a reference pointer to the next node. Nodes can be allocated anywhere in memory. Inserting or deleting at the HEAD is an instant O(1) pointer swap.",
+        title: "Linked List",
+        typeTag: "Chained Memory Nodes",
+        accent: "#ff3b81",
+        summary: "Linked lists chain individual node objects containing a payload value and a pointer to the next node. Nodes can live anywhere in RAM. Inserting or deleting at the HEAD is an instant O(1) pointer swap.",
         complexities: [
-          { label: "Access", value: "O(n)", badge: "bg-amber-50 text-amber-700 border-amber-200" },
-          { label: "Search", value: "O(n)", badge: "bg-amber-50 text-amber-700 border-amber-200" },
-          { label: "Insert Head", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Delete Head", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" }
+          { label: "Access", value: "O(n)", bg: "#f59e0b", textColor: "#2d1600" },
+          { label: "Search", value: "O(n)", bg: "#f59e0b", textColor: "#2d1600" },
+          { label: "Insert Head", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
+          { label: "Delete Head", value: "O(1)", bg: "#10b981", textColor: "#032e18" }
         ],
         presets: [
           { name: "Default (4 Nodes)", data: [18, 42, 9, 65] },
@@ -413,23 +579,23 @@
           { name: "Chain of 6", data: [10, 20, 30, 40, 50, 60] }
         ],
         steps: [
-          { title: "Insert Head", desc: "Instantiates a new node, points its next reference to the existing HEAD, and updates HEAD in O(1)." },
-          { title: "Insert Tail", desc: "Traverses to the node whose next pointer is NULL, linking the new node in O(n)." },
-          { title: "Delete Head", desc: "Repoints HEAD to HEAD.next. The detached node is automatically garbage collected." }
+          { title: "Insert Head", desc: "Instantiates new node, points its next reference to existing HEAD in O(1)." },
+          { title: "Insert Tail", desc: "Traverses to node whose next pointer is NULL, attaching the new node." },
+          { title: "Delete Head", desc: "Repoints HEAD to HEAD.next. The unlinked node is automatically freed." }
         ],
         codeLines: {
           search: [
             "curr = head",
             "while curr is not None:",
             "    if curr.val == target:",
-            "        return True  # Found matching node",
+            "        return True  # Found matching node!",
             "    curr = curr.next",
             "return False"
           ],
           insert: [
             "new_node = Node(value)",
             "new_node.next = head",
-            "head = new_node  # O(1) Head assignment"
+            "head = new_node  # O(1) Head assigned"
           ],
           delete: [
             "if not head: return None",
@@ -440,29 +606,30 @@
       },
 
       stack: {
-        title: "Stack",
-        typeTag: "LIFO Container",
-        summary: "Follows Last-In, First-Out (LIFO) semantics. Elements are pushed and popped exclusively from the top of the stack. Crucial for execution call stacks, parenthesis matching, and undo/redo operations.",
+        title: "Stack (LIFO)",
+        typeTag: "Vertical Drop Chute",
+        accent: "#8b5cf6",
+        summary: "Follows Last-In, First-Out (LIFO) order. Elements are pushed and popped exclusively from the top of the stack. Used in recursion call stacks, undo/redo buffers, and expression syntax parsing.",
         complexities: [
-          { label: "Push", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Pop", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Peek", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Search", value: "O(n)", badge: "bg-amber-50 text-amber-700 border-amber-200" }
+          { label: "Push", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
+          { label: "Pop", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
+          { label: "Peek", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
+          { label: "Search", value: "O(n)", bg: "#f59e0b", textColor: "#2d1600" }
         ],
         presets: [
-          { name: "Default Stack (4)", data: [14, 28, 55, 90] },
+          { name: "Default Stack", data: [14, 28, 55, 90] },
           { name: "Full Stack (5)", data: [10, 20, 30, 40, 50] },
           { name: "Empty Chute", data: [] }
         ],
         steps: [
-          { title: "Push", desc: "Places an item directly on top of the stack. Stack depth increments by 1." },
-          { title: "Pop", desc: "Removes and returns the topmost item in instant O(1) time." },
+          { title: "Push", desc: "Drops an item directly on top of the stack chute in O(1)." },
+          { title: "Pop", desc: "Pulls and removes the current TOP element in O(1)." },
           { title: "Peek", desc: "Reads the current top element without altering the stack." }
         ],
         codeLines: {
           push: [
             "stack.append(value)  # Push to TOP",
-            "top_pointer = len(stack) - 1"
+            "top_ptr = len(stack) - 1"
           ],
           pop: [
             "if len(stack) == 0: raise UnderflowError",
@@ -476,14 +643,15 @@
       },
 
       queue: {
-        title: "Queue",
-        typeTag: "FIFO Pipeline",
-        summary: "Follows First-In, First-Out (FIFO) semantics. Elements enter at the REAR (Enqueue) and leave from the FRONT (Dequeue). Essential for BFS graph traversals, print queues, and task scheduling.",
+        title: "Queue (FIFO)",
+        typeTag: "High-Speed Conveyor",
+        accent: "#10b981",
+        summary: "Follows First-In, First-Out (FIFO) semantics. Elements enter at the REAR and exit from the FRONT. Essential for BFS graph traversals, print queues, and task scheduling.",
         complexities: [
-          { label: "Enqueue", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Dequeue", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Peek", value: "O(1)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Search", value: "O(n)", badge: "bg-amber-50 text-amber-700 border-amber-200" }
+          { label: "Enqueue", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
+          { label: "Dequeue", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
+          { label: "Peek", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
+          { label: "Search", value: "O(n)", bg: "#f59e0b", textColor: "#2d1600" }
         ],
         presets: [
           { name: "Standard (4)", data: [15, 33, 72, 8] },
@@ -491,9 +659,9 @@
           { name: "Busy Line (6)", data: [5, 10, 15, 20, 25, 30] }
         ],
         steps: [
-          { title: "Enqueue (Rear)", desc: "Appends the new element to the back of the queue." },
+          { title: "Enqueue (Rear)", desc: "Appends the new element to the back of the conveyor." },
           { title: "Dequeue (Front)", desc: "Serves and removes the front-most element in FIFO order." },
-          { title: "Peek", desc: "Inspects the next element to be dequeued without removing it." }
+          { title: "Peek", desc: "Inspects the next element to exit without removing it." }
         ],
         codeLines: {
           enqueue: [
@@ -509,13 +677,14 @@
 
       bst: {
         title: "Binary Search Tree",
-        typeTag: "Hierarchical Search Tree",
-        summary: "Every node holds at most two children. The left child must have a value strictly less than the node, and the right child strictly greater. In-order traversal visits nodes in perfectly sorted order.",
+        typeTag: "Logarithmic Search Tree",
+        accent: "#06b6d4",
+        summary: "Every node has at most two children. The left child must have a value strictly less than the node, and the right child strictly greater. In-order traversal visits nodes in ascending sorted order.",
         complexities: [
-          { label: "Search", value: "O(log n)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Insert", value: "O(log n)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Delete", value: "O(log n)", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Worst Case", value: "O(n)", badge: "bg-rose-50 text-rose-700 border-rose-200" }
+          { label: "Search", value: "O(log n)", bg: "#10b981", textColor: "#032e18" },
+          { label: "Insert", value: "O(log n)", bg: "#10b981", textColor: "#032e18" },
+          { label: "Delete", value: "O(log n)", bg: "#10b981", textColor: "#032e18" },
+          { label: "Worst Case", value: "O(n)", bg: "#ff3b81", textColor: "#ffffff" }
         ],
         presets: [
           { name: "Balanced (7)", data: [50, 25, 75, 12, 38, 60, 92] },
@@ -524,8 +693,8 @@
         ],
         steps: [
           { title: "Binary Search", desc: "Compares target against root: move Left if smaller, Right if larger. Halves search space each step." },
-          { title: "Insert", desc: "Navigates down the comparison path and binds the new node to an empty leaf position." },
-          { title: "In-Order Walk", desc: "Recursively visits Left Subtree -> Node -> Right Subtree, printing items in ascending order." }
+          { title: "Insert", desc: "Navigates down the branch path and attaches new node to an empty leaf position." },
+          { title: "In-Order Walk", desc: "Recursively visits Left Subtree -> Node -> Right Subtree, producing a sorted sequence." }
         ],
         codeLines: {
           search: [
@@ -533,7 +702,7 @@
             "    if target == curr.val: return curr",
             "    elif target < curr.val: curr = curr.left",
             "    else: curr = curr.right",
-            "return None  # Value not in tree"
+            "return None  # Value not found"
           ],
           inorder: [
             "def in_order(node):",
@@ -547,22 +716,23 @@
 
       hashtable: {
         title: "Hash Table",
-        typeTag: "Associative Key-Value Map",
-        summary: "Uses a deterministic mathematical hash function to convert string keys into numeric bucket indices. In this implementation, collisions are resolved via Separate Chaining within each bucket array.",
+        typeTag: "Key-Value Vault",
+        accent: "#fbbf24",
+        summary: "Uses a deterministic hash function to convert string keys into numeric bucket indices. Collisions are resolved through separate chaining within each bucket slot.",
         complexities: [
-          { label: "Lookup", value: "O(1) avg", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Insert", value: "O(1) avg", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Delete", value: "O(1) avg", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-          { label: "Worst Case", value: "O(n)", badge: "bg-rose-50 text-rose-700 border-rose-200" }
+          { label: "Lookup", value: "O(1) avg", bg: "#10b981", textColor: "#032e18" },
+          { label: "Insert", value: "O(1) avg", bg: "#10b981", textColor: "#032e18" },
+          { label: "Delete", value: "O(1) avg", bg: "#10b981", textColor: "#032e18" },
+          { label: "Worst Case", value: "O(n)", bg: "#ff3b81", textColor: "#ffffff" }
         ],
         presets: [
-          { name: "Default (5 Keys)", data: [["user", "alex"], ["role", "admin"], ["team", "core"], ["mode", "fast"], ["zoom", "100%"]] },
+          { name: "Default (5 Keys)", data: [["user", "mojo"], ["role", "mascot"], ["city", "tokyo"], ["mode", "fast"], ["zoom", "100%"]] },
           { name: "Forced Collision", data: [["cat", "feline"], ["act", "theatre"], ["tac", "tic"]] }
         ],
         steps: [
-          { title: "Hash Calculation", desc: "Converts key string characters to numeric ASCII codes: index = sum(charCodes) % bucketCount." },
-          { title: "Bucket Lookup", desc: "Jumps directly to bucket[index] in O(1) time." },
-          { title: "Separate Chaining", desc: "If keys collide on the same bucket, they form an inline chained list." }
+          { title: "Hash Formula", desc: "index = sum(charCodes) % bucketCount." },
+          { title: "Direct Bucket Lookup", desc: "Jumps directly to bucket[index] in O(1) average time." },
+          { title: "Separate Chaining", desc: "Colliding keys form a linked list within that bucket." }
         ],
         codeLines: {
           lookup: [
@@ -577,16 +747,14 @@
     };
 
     /* ══════════════════════════════════════════════════════════
-       STATE REPOSITORIES
+       DATA STORES
     ══════════════════════════════════════════════════════════ */
     let currentDS = 'array';
     let isLocked = false;
     let stepResolver = null;
 
-    // Array state
     let arrData = [12, 45, 7, 23, 56, 8, 89];
 
-    // Linked list state
     class LLNode { constructor(v) { this.val = v; this.next = null; } }
     function buildLL(arr) {
       let h = null;
@@ -597,13 +765,9 @@
     }
     let llHead = buildLL([18, 42, 9, 65]);
 
-    // Stack state
     let stackData = [14, 28, 55, 90];
-
-    // Queue state
     let queueData = [15, 33, 72, 8];
 
-    // BST state
     class BSTNode { constructor(v) { this.val = v; this.left = null; this.right = null; } }
     function bstInsert(r, v) {
       if (!r) return new BSTNode(v);
@@ -618,7 +782,6 @@
     }
     let bstRoot = buildBST([50, 25, 75, 12, 38, 60, 92]);
 
-    // Hash table state
     const HT_SIZE = 5;
     let htBuckets = Array.from({ length: HT_SIZE }, () => []);
     function getHash(k) {
@@ -628,13 +791,13 @@
     }
     function initHT(data = null) {
       htBuckets = Array.from({ length: HT_SIZE }, () => []);
-      const sample = data || [["user", "alex"], ["role", "admin"], ["team", "core"], ["mode", "fast"], ["zoom", "100%"]];
+      const sample = data || [["user", "mojo"], ["role", "mascot"], ["city", "tokyo"], ["mode", "fast"], ["zoom", "100%"]];
       sample.forEach(([k, v]) => htBuckets[getHash(k)].push({ k, v }));
     }
     initHT();
 
     /* ══════════════════════════════════════════════════════════
-       STEPPER ENGINE & HELPERS
+       STEPPER & RUNTIME CONTROLS
     ══════════════════════════════════════════════════════════ */
     function getDelay() {
       const el = document.getElementById('anim-speed');
@@ -673,44 +836,44 @@
     }
 
     function highlightCodeLine(lineIdx) {
-      document.querySelectorAll('.code-line').forEach((el, i) => {
-        if (i === lineIdx) el.classList.add('active-line');
-        else el.classList.remove('active-line');
+      document.querySelectorAll('.code-row').forEach((el, i) => {
+        if (i === lineIdx) el.classList.add('active-row');
+        else el.classList.remove('active-row');
       });
     }
 
     function setLock(locked) {
       isLocked = locked;
       document.querySelectorAll('input, button').forEach(b => {
-        if (!b.id.includes('anim-speed') && b.id !== 'btn-step-fwd' && !b.classList.contains('nav-btn')) {
+        if (!b.id.includes('anim-speed') && b.id !== 'btn-step-fwd' && !b.classList.contains('nav-pill') && b.id !== 'sound-btn') {
           b.disabled = locked;
         }
       });
     }
 
     /* ══════════════════════════════════════════════════════════
-       MAIN RENDER DISPATCHER
+       RENDER ENGINE
     ══════════════════════════════════════════════════════════ */
     function renderApp() {
       const cfg = DS_CONFIG[currentDS];
 
-      // 1. Hero Card
+      // 1. Hero Card with Split N+ / MOJO Badges
       document.getElementById('ds-hero-card').innerHTML = `
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
-            <div class="flex items-center gap-2.5 flex-wrap">
-              <h2 class="text-2xl font-bold tracking-tight text-slate-900">${cfg.title}</h2>
-              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-100">${cfg.typeTag}</span>
+            <div class="flex items-center gap-3 flex-wrap">
+              <h2 class="text-3xl font-black italic tracking-tight text-white uppercase">${cfg.title}</h2>
+              <span class="sticker-tag bg-[#7c3aed] text-white px-3 py-1 shadow-md shadow-purple-500/40">${cfg.typeTag}</span>
             </div>
-            <p class="text-sm text-slate-500 mt-1 max-w-3xl leading-relaxed">${cfg.summary}</p>
+            <p class="text-sm font-semibold text-slate-300 mt-2 max-w-3xl leading-relaxed">${cfg.summary}</p>
           </div>
 
-          <!-- Complexity Badges -->
-          <div class="flex flex-wrap items-center gap-2 flex-shrink-0">
+          <!-- Split Badges inspired by N+ Store (Image 3) -->
+          <div class="flex flex-wrap items-center gap-2.5 flex-shrink-0">
             ${cfg.complexities.map(c => `
-              <div class="flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-mono font-semibold ${c.badge}">
-                <span class="text-slate-500 font-sans font-medium text-[0.7rem] uppercase">${c.label}:</span>
-                <span>${c.value}</span>
+              <div class="flex items-stretch rounded-full overflow-hidden border-2 border-[#2b3352] shadow-md font-mono text-xs font-black">
+                <span class="bg-[#191e32] text-slate-300 px-3 py-1.5 flex items-center">${c.label}</span>
+                <span style="background:${c.bg}; color:${c.textColor};" class="px-3 py-1.5 flex items-center">${c.value}</span>
               </div>
             `).join('')}
           </div>
@@ -723,38 +886,38 @@
       // 3. Stage
       MODULES[currentDS].renderCanvas();
 
-      // 4. Details Grid (Step Guide & Code Viewer)
+      // 4. Guidance & Code Tracing
       const defaultLines = cfg.codeLines.search || cfg.codeLines.insert || cfg.codeLines.push || cfg.codeLines.lookup;
       document.getElementById('ds-details-grid').innerHTML = `
-        <!-- Step-by-Step Educational Rules -->
-        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-soft flex flex-col gap-3">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Operation Mechanics</h3>
-            <span class="text-xs font-mono text-slate-400 font-medium">Guide</span>
+        <!-- Left: MOJO Playbook Steps -->
+        <div class="mojo-card p-6 flex flex-col gap-4">
+          <div class="flex items-center justify-between pb-3 border-b border-[#242b44]">
+            <h3 class="text-xs font-black uppercase tracking-wider text-[#ff3b81]">📖 Playbook Mechanics</h3>
+            <span class="sticker-tag bg-[#10b981] text-[#052e16] text-[0.65rem] px-2.5 py-0.5">Rules</span>
           </div>
-          <div class="flex flex-col gap-3 mt-1">
+          <div class="flex flex-col gap-3">
             ${cfg.steps.map((st, i) => `
-              <div class="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                <div class="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 mt-0.5">
+              <div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-[#121524] border border-[#222840]">
+                <div class="w-7 h-7 rounded-xl bg-gradient-to-tr from-[#7c3aed] to-[#ff3b81] text-white flex items-center justify-center text-xs font-mono font-black flex-shrink-0 shadow-sm mt-0.5">
                   ${i + 1}
                 </div>
                 <div>
-                  <h4 class="text-xs font-bold text-slate-900">${st.title}</h4>
-                  <p class="text-xs text-slate-600 mt-0.5 leading-relaxed">${st.desc}</p>
+                  <h4 class="text-xs font-black text-white uppercase">${st.title}</h4>
+                  <p class="text-xs text-slate-400 mt-1 font-semibold leading-relaxed">${st.desc}</p>
                 </div>
               </div>
             `).join('')}
           </div>
         </div>
 
-        <!-- Live Code Execution Viewer -->
-        <div class="bg-slate-950 rounded-2xl border border-slate-800 p-6 shadow-soft flex flex-col gap-3">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Live Tracing Code</h3>
-            <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">Python</span>
+        <!-- Right: Real-time Code Engine -->
+        <div class="mojo-card p-6 flex flex-col gap-4 bg-[#0d0f1a]">
+          <div class="flex items-center justify-between pb-3 border-b border-[#242b44]">
+            <h3 class="text-xs font-black uppercase tracking-wider text-[#06b6d4]">💻 Live Execution Engine</h3>
+            <span class="sticker-tag bg-[#7c3aed] text-white text-[0.65rem] px-2.5 py-0.5">Python 3.12</span>
           </div>
           <div id="code-box" class="p-3 font-mono text-xs text-slate-300 overflow-x-auto min-h-[170px] flex flex-col justify-center">
-            ${defaultLines.map(l => `<span class="code-line">${l}</span>`).join('')}
+            ${defaultLines.map(l => `<span class="code-row">${l}</span>`).join('')}
           </div>
         </div>
       `;
@@ -763,7 +926,7 @@
     function setCodeLines(lines) {
       const box = document.getElementById('code-box');
       if (box) {
-        box.innerHTML = lines.map(l => `<span class="code-line">${l}</span>`).join('');
+        box.innerHTML = lines.map(l => `<span class="code-row">${l}</span>`).join('');
       }
     }
 
@@ -782,47 +945,43 @@
     }
 
     /* ══════════════════════════════════════════════════════════
-       1. ARRAY MODULE
+       1. ARRAY MODULE (Glossy 3D Tiles)
     ══════════════════════════════════════════════════════════ */
     const ArrayModule = {
       renderControls() {
         const presets = DS_CONFIG.array.presets;
         document.getElementById('ds-toolbar-card').innerHTML = `
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <!-- Action Inputs & Buttons -->
+            <!-- Action Buttons -->
             <div class="flex flex-wrap items-center gap-2.5">
-              <div class="flex items-center gap-1.5">
-                <input id="arr-val-in" type="number" placeholder="Value" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') ArrayModule.insert()" />
-                <button class="h-9 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1" onclick="ArrayModule.insert()">
-                  <span>Insert</span>
-                </button>
-              </div>
-
-              <div class="h-5 w-px bg-slate-200 hidden sm:block"></div>
-
-              <div class="flex items-center gap-1.5">
-                <input id="arr-idx-in" type="number" placeholder="Index [i]" class="h-9 w-24 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') ArrayModule.deleteIdx()" />
-                <button class="h-9 px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all" onclick="ArrayModule.deleteIdx()">
-                  Delete [i]
-                </button>
-              </div>
-
-              <div class="h-5 w-px bg-slate-200 hidden sm:block"></div>
-
-              <button class="h-9 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-sm transition-all" onclick="ArrayModule.search()">
-                Search Value
+              <input id="arr-val-in" type="number" placeholder="Value" class="mojo-input w-28" onkeydown="if(event.key==='Enter') ArrayModule.insert()" />
+              <button class="mojo-btn btn-green" onclick="ArrayModule.insert()">
+                <span>➕ Insert</span>
               </button>
 
-              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="ArrayModule.reset()">
-                Reset
+              <div class="h-6 w-px bg-[#262c45] hidden sm:block"></div>
+
+              <input id="arr-idx-in" type="number" placeholder="[i]" class="mojo-input w-20" onkeydown="if(event.key==='Enter') ArrayModule.deleteIdx()" />
+              <button class="mojo-btn btn-pink" onclick="ArrayModule.deleteIdx()">
+                <span>🗑️ Delete [i]</span>
+              </button>
+
+              <div class="h-6 w-px bg-[#262c45] hidden sm:block"></div>
+
+              <button class="mojo-btn btn-purple" onclick="ArrayModule.search()">
+                <span>🔍 Search</span>
+              </button>
+
+              <button class="mojo-btn btn-dark" onclick="ArrayModule.reset()">
+                <span>↺ Reset</span>
               </button>
             </div>
 
             <!-- Presets -->
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-              <span class="text-xs font-medium text-slate-400 mr-1">Presets:</span>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span class="text-xs font-black uppercase text-slate-400">Presets:</span>
               ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="h-8 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[0.75rem] font-medium text-slate-700 transition-all">
+                <button onclick="loadPreset(${i})" class="sticker-tag bg-[#20263d] hover:bg-[#2e3757] text-white px-3 py-1.5 border border-[#333d5e] cursor-pointer">
                   ${p.name}
                 </button>
               `).join('')}
@@ -831,31 +990,36 @@
         `;
       },
 
-      renderCanvas(highlightIdx = -1, styleType = 'active-scan') {
+      renderCanvas(highlightIdx = -1, styleType = 'scanning') {
         const stage = document.getElementById('ds-stage-card');
         if (arrData.length === 0) {
-          stage.innerHTML = `<div class="text-sm font-medium text-slate-400 py-12">Array is empty. Insert an element or select a preset.</div>`;
+          stage.innerHTML = `<div class="text-sm font-bold text-slate-500 py-12">Array tape is empty. Insert items or choose a preset!</div>`;
           return;
         }
 
         stage.innerHTML = `
           <div class="w-full flex flex-col items-center">
-            <div class="flex items-center gap-2 text-xs font-mono font-medium text-slate-400 uppercase tracking-wider mb-6">
-              <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
-              Memory Block: Total Items = ${arrData.length} (Click cell to inspect)
+            <div class="flex items-center gap-2 text-xs font-mono font-bold text-slate-400 uppercase tracking-widest mb-6">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#34d399] animate-pulse"></span>
+              Memory Tape: ${arrData.length} Elements (Tap any tile!)
             </div>
 
-            <div class="flex items-end justify-center gap-3 flex-wrap py-2">
+            <div class="flex items-end justify-center gap-3.5 flex-wrap py-2">
               ${arrData.map((val, i) => `
-                <div class="arr-cell-wrap">
-                  <div id="arr-cell-${i}" onclick="ArrayModule.inspect(${i})" class="arr-tile ${i === highlightIdx ? styleType : ''}">
+                <div class="jelly-tile-wrap">
+                  ${i === highlightIdx ? `
+                    <div class="mojo-pointer">
+                      i = ${i} ⬇️
+                    </div>
+                  ` : ''}
+                  <div id="arr-tile-${i}" onclick="ArrayModule.inspect(${i})" class="jelly-tile ${i === highlightIdx ? styleType : ''}">
                     ${val}
                   </div>
-                  <div class="text-center mt-2">
-                    <span class="text-[0.75rem] font-mono font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                  <div class="text-center mt-2.5">
+                    <span class="text-[0.75rem] font-mono font-black text-slate-300 bg-[#1e2338] px-2.5 py-0.5 rounded-full border border-[#2f3757]">
                       [${i}]
                     </span>
-                    <div class="text-[0.65rem] font-mono text-slate-400 mt-1">
+                    <div class="text-[0.65rem] font-mono text-slate-500 mt-1">
                       0x${(1000 + i * 4).toString(16).toUpperCase()}
                     </div>
                   </div>
@@ -869,10 +1033,11 @@
       inspect(idx) {
         playKeyClick(650, 0.03);
         const val = arrData[idx];
-        logMsg(`Inspected cell <b>[${idx}]</b> with value <b>${val}</b> at memory address <b>0x${(1000 + idx * 4).toString(16).toUpperCase()}</b>.`);
+        setMascotMood('happy');
+        logMsg(`Inspecting index <b>[${idx}]</b> with value <b>${val}</b> at memory address <b>0x${(1000 + idx * 4).toString(16).toUpperCase()}</b>.`);
         const inp = document.getElementById('arr-idx-in');
         if (inp) inp.value = idx;
-        this.renderCanvas(idx, 'active-scan');
+        this.renderCanvas(idx, 'scanning');
       },
 
       insert() {
@@ -883,10 +1048,11 @@
         if (arrData.length >= 10) { logMsg("Visualizer capacity limit reached (max 10 elements)."); return; }
         arrData.push(v);
         inp.value = '';
+        setMascotMood('happy');
         setCodeLines(DS_CONFIG.array.codeLines.insert);
         highlightCodeLine(1);
-        this.renderCanvas(arrData.length - 1, 'active-scan');
-        logMsg(`Appended value <b>${v}</b> at index [${arrData.length - 1}] in O(1) amortized time.`);
+        this.renderCanvas(arrData.length - 1, 'scanning');
+        logMsg(`🎉 Appended jelly tile <b>${v}</b> at index [${arrData.length - 1}] in O(1) time!`);
       },
 
       async deleteIdx() {
@@ -899,12 +1065,13 @@
         }
 
         setLock(true);
+        setMascotMood('shock');
         setCodeLines(DS_CONFIG.array.codeLines.delete);
         highlightCodeLine(0);
-        const el = document.getElementById(`arr-cell-${idx}`);
-        if (el) el.className = "arr-tile removing";
-        logMsg(`Removing index [${idx}]... shifting remaining elements left.`);
-        await sleep(300);
+        const el = document.getElementById(`arr-tile-${idx}`);
+        if (el) el.className = "jelly-tile removing";
+        logMsg(`Deleting index [${idx}]... sliding trailing items left.`);
+        await sleep(320);
 
         highlightCodeLine(2);
         const removed = arrData.splice(idx, 1)[0];
@@ -912,21 +1079,23 @@
         this.renderCanvas();
         highlightCodeLine(3);
         setLock(false);
-        logMsg(`Removed <b>${removed}</b>. Trailing elements shifted left in O(n) time.`);
+        setMascotMood('normal');
+        logMsg(`Removed <b>${removed}</b>. Subsequent elements shifted in O(n) time.`);
       },
 
       async search() {
         const inp = document.getElementById('arr-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Enter a target value in the Value input to search."); return; }
+        if (isNaN(v)) { logMsg("Enter a target value in the Value box to search."); return; }
 
         setLock(true);
+        setMascotMood('focused');
         setCodeLines(DS_CONFIG.array.codeLines.search);
         logMsg(`Scanning array for target value: <b>${v}</b>...`);
 
         for (let i = 0; i < arrData.length; i++) {
           highlightCodeLine(1);
-          this.renderCanvas(i, 'active-scan');
+          this.renderCanvas(i, 'scanning');
           playKeyClick(500 + i * 40, 0.03);
           logMsg(`Checking index [${i}] -> compare ${arrData[i]} === ${v}...`);
           await waitStep();
@@ -935,8 +1104,9 @@
           if (arrData[i] === v) {
             highlightCodeLine(3);
             playKeyClick(850, 0.08);
-            this.renderCanvas(i, 'found-match');
-            logMsg(`Match found! Value <b>${v}</b> located at index <b>[${i}]</b> in ${i + 1} steps.`);
+            setMascotMood('happy');
+            this.renderCanvas(i, 'matched');
+            logMsg(`🎯 Match found! Target <b>${v}</b> located at index <b>[${i}]</b> in ${i + 1} steps!`);
             setLock(false);
             return;
           }
@@ -945,6 +1115,7 @@
         highlightCodeLine(4);
         this.renderCanvas();
         setLock(false);
+        setMascotMood('normal');
         logMsg(`Target <b>${v}</b> was not found in the array.`);
       },
 
@@ -952,7 +1123,7 @@
         playKeyClick(700, 0.04);
         arrData = [12, 45, 7, 23, 56, 8, 89];
         this.renderCanvas();
-        logMsg("Array reset to default elements.");
+        logMsg("Array reset to default values.");
       }
     };
 
@@ -965,29 +1136,28 @@
         document.getElementById('ds-toolbar-card').innerHTML = `
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-2.5">
-              <input id="ll-val-in" type="number" placeholder="Node Value" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') LinkedListModule.insertHead()" />
-              
-              <button class="h-9 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all" onclick="LinkedListModule.insertHead()">
-                Insert Head (O(1))
+              <input id="ll-val-in" type="number" placeholder="Node Value" class="mojo-input w-28" onkeydown="if(event.key==='Enter') LinkedListModule.insertHead()" />
+              <button class="mojo-btn btn-green" onclick="LinkedListModule.insertHead()">
+                <span>⬅️ Insert Head (O(1))</span>
               </button>
-              <button class="h-9 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold shadow-sm transition-all" onclick="LinkedListModule.insertTail()">
-                Insert Tail
+              <button class="mojo-btn btn-purple" onclick="LinkedListModule.insertTail()">
+                <span>➡️ Insert Tail</span>
               </button>
-              <button class="h-9 px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all" onclick="LinkedListModule.deleteHead()">
-                Delete Head
+              <button class="mojo-btn btn-pink" onclick="LinkedListModule.deleteHead()">
+                <span>🗑️ Delete Head</span>
               </button>
-              <button class="h-9 px-3.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="LinkedListModule.search()">
-                Search
+              <button class="mojo-btn btn-dark" onclick="LinkedListModule.search()">
+                <span>🔍 Search</span>
               </button>
-              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="LinkedListModule.reset()">
-                Reset
+              <button class="mojo-btn btn-dark" onclick="LinkedListModule.reset()">
+                <span>↺ Reset</span>
               </button>
             </div>
 
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-              <span class="text-xs font-medium text-slate-400 mr-1">Presets:</span>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span class="text-xs font-black uppercase text-slate-400">Presets:</span>
               ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="h-8 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[0.75rem] font-medium text-slate-700 transition-all">
+                <button onclick="loadPreset(${i})" class="sticker-tag bg-[#20263d] hover:bg-[#2e3757] text-white px-3 py-1.5 border border-[#333d5e] cursor-pointer">
                   ${p.name}
                 </button>
               `).join('')}
@@ -1003,7 +1173,7 @@
         while (curr) { nodes.push(curr.val); curr = curr.next; }
 
         if (nodes.length === 0) {
-          stage.innerHTML = `<div class="text-sm font-medium text-slate-400 py-12">Linked list is empty (HEAD -> NULL).</div>`;
+          stage.innerHTML = `<div class="text-sm font-bold text-slate-500 py-12">Linked list is empty (HEAD -> NULL).</div>`;
           return;
         }
 
@@ -1011,36 +1181,28 @@
           <div class="w-full flex items-center justify-center overflow-x-auto py-6">
             <div class="flex items-center gap-3 px-4">
               <!-- HEAD Chip -->
-              <span class="px-2.5 py-1 rounded-md bg-indigo-50 border border-indigo-200 text-indigo-700 font-mono text-xs font-bold">
+              <span class="sticker-tag bg-[#7c3aed] text-white px-3 py-1 shadow-md shadow-purple-500/40">
                 HEAD
               </span>
-              <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-              </svg>
+              <span class="text-2xl font-black text-slate-500">→</span>
 
               <!-- Node Capsules -->
               ${nodes.map((v, i) => `
                 <div class="flex items-center gap-3">
-                  <div onclick="LinkedListModule.inspect(${v})" class="ll-node-box ${v === highlightVal ? 'highlight' : ''}">
-                    <div class="px-4 py-3 text-base font-bold text-slate-900 bg-white min-w-[52px] text-center">
+                  <div onclick="LinkedListModule.inspect(${v})" class="flex items-stretch rounded-2xl overflow-hidden border-2 cursor-pointer transition-all shadow-lg ${v === highlightVal ? 'border-[#ff3b81] shadow-pink-500/30 scale-105' : 'border-[#2f385c] bg-[#161a2c]'}">
+                    <div class="px-4 py-3 text-lg font-black text-white bg-[#1a1f33] min-w-[54px] text-center">
                       ${v}
                     </div>
-                    <div class="px-3 py-3 bg-slate-50 border-l border-slate-200 font-mono text-[0.7rem] text-slate-500 font-semibold flex items-center">
+                    <div class="px-3 py-3 bg-[#111422] border-l border-[#242b44] font-mono text-[0.7rem] text-[#34d399] font-bold flex items-center">
                       next
                     </div>
                   </div>
-                  ${i < nodes.length - 1 ? `
-                    <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                    </svg>
-                  ` : ''}
+                  ${i < nodes.length - 1 ? `<span class="text-2xl font-black text-slate-500">→</span>` : ''}
                 </div>
               `).join('')}
 
-              <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-              </svg>
-              <span class="px-2.5 py-1 rounded-md bg-rose-50 border border-rose-200 text-rose-700 font-mono text-xs font-bold">
+              <span class="text-2xl font-black text-slate-500">→</span>
+              <span class="sticker-tag bg-[#ff3b81] text-white px-3 py-1 shadow-md shadow-pink-500/40">
                 NULL
               </span>
             </div>
@@ -1050,7 +1212,8 @@
 
       inspect(val) {
         playKeyClick(600, 0.03);
-        logMsg(`Inspected node <b>${val}</b>. Reference pointer connects to next node address in heap memory.`);
+        setMascotMood('happy');
+        logMsg(`Inspected node <b>${val}</b>. Reference pointer connects to next node address.`);
         this.renderCanvas(val);
       },
 
@@ -1063,10 +1226,11 @@
         n.next = llHead;
         llHead = n;
         inp.value = '';
+        setMascotMood('happy');
         setCodeLines(DS_CONFIG.linkedlist.codeLines.insert);
         highlightCodeLine(2);
         this.renderCanvas(v);
-        logMsg(`Inserted node <b>${v}</b> at HEAD in instant O(1) time.`);
+        logMsg(`Inserted node <b>${v}</b> at HEAD in instant O(1) time!`);
       },
 
       insertTail() {
@@ -1083,7 +1247,7 @@
         }
         inp.value = '';
         this.renderCanvas(v);
-        logMsg(`Traversed to end and appended node <b>${v}</b> at TAIL.`);
+        logMsg(`Traversed to end and hooked up node <b>${v}</b> at TAIL.`);
       },
 
       deleteHead() {
@@ -1103,6 +1267,7 @@
         if (isNaN(v)) { logMsg("Enter search target value."); return; }
 
         setLock(true);
+        setMascotMood('focused');
         setCodeLines(DS_CONFIG.linkedlist.codeLines.search);
         let curr = llHead;
         let count = 0;
@@ -1111,14 +1276,15 @@
           highlightCodeLine(1);
           this.renderCanvas(curr.val);
           playKeyClick(520 + count * 40, 0.03);
-          logMsg(`Traversing node ${count}: checking value <b>${curr.val}</b> === ${v}...`);
+          logMsg(`Traversing node ${count}: comparing ${curr.val} === ${v}...`);
           await waitStep();
 
           highlightCodeLine(2);
           if (curr.val === v) {
             highlightCodeLine(3);
             playKeyClick(850, 0.08);
-            logMsg(`Target node <b>${v}</b> located after ${count + 1} pointer transitions.`);
+            setMascotMood('happy');
+            logMsg(`Target node <b>${v}</b> located after ${count + 1} pointer steps!`);
             setLock(false);
             return;
           }
@@ -1130,6 +1296,7 @@
         highlightCodeLine(5);
         this.renderCanvas(null);
         setLock(false);
+        setMascotMood('normal');
         logMsg(`Node <b>${v}</b> was not found in the linked list.`);
       },
 
@@ -1142,7 +1309,7 @@
     };
 
     /* ══════════════════════════════════════════════════════════
-       3. STACK MODULE
+       3. STACK MODULE (Arcade Hopper)
     ══════════════════════════════════════════════════════════ */
     const StackModule = {
       renderControls() {
@@ -1150,25 +1317,25 @@
         document.getElementById('ds-toolbar-card').innerHTML = `
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-2.5">
-              <input id="st-val-in" type="number" placeholder="Value" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') StackModule.push()" />
-              <button class="h-9 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all" onclick="StackModule.push()">
-                Push (Top)
+              <input id="st-val-in" type="number" placeholder="Value" class="mojo-input w-28" onkeydown="if(event.key==='Enter') StackModule.push()" />
+              <button class="mojo-btn btn-purple" onclick="StackModule.push()">
+                <span>⬆️ Push (Top)</span>
               </button>
-              <button class="h-9 px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all" onclick="StackModule.pop()">
-                Pop (Top)
+              <button class="mojo-btn btn-pink" onclick="StackModule.pop()">
+                <span>⬇️ Pop (Top)</span>
               </button>
-              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="StackModule.peek()">
-                Peek Top
+              <button class="mojo-btn btn-dark" onclick="StackModule.peek()">
+                <span>👁️ Peek</span>
               </button>
-              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="StackModule.reset()">
-                Reset
+              <button class="mojo-btn btn-dark" onclick="StackModule.reset()">
+                <span>↺ Reset</span>
               </button>
             </div>
 
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-              <span class="text-xs font-medium text-slate-400 mr-1">Presets:</span>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span class="text-xs font-black uppercase text-slate-400">Presets:</span>
               ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="h-8 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[0.75rem] font-medium text-slate-700 transition-all">
+                <button onclick="loadPreset(${i})" class="sticker-tag bg-[#20263d] hover:bg-[#2e3757] text-white px-3 py-1.5 border border-[#333d5e] cursor-pointer">
                   ${p.name}
                 </button>
               `).join('')}
@@ -1183,22 +1350,22 @@
 
         stage.innerHTML = `
           <div class="flex flex-col items-center justify-center py-2">
-            <div class="text-xs font-mono font-medium text-slate-400 uppercase tracking-wider mb-3">
-              LIFO Chute: Push & Pop exclusively at the TOP
+            <div class="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest mb-3">
+              ⬇️ LIFO Chute: Push & Pop only at the TOP ⬇️
             </div>
 
-            <div class="stack-chamber">
+            <div class="mojo-stack-chute">
               ${stackData.map((v, i) => `
-                <div onclick="${i === topIdx ? 'StackModule.pop()' : ''}" class="stack-slab ${i === topIdx ? 'is-top' : ''}" title="${i === topIdx ? 'Click to Pop' : ''}">
-                  <span class="text-sm font-bold">${v}</span>
-                  ${i === topIdx ? '<span class="ml-2 text-[0.65rem] font-mono px-2 py-0.5 rounded bg-white/20 text-white font-semibold">TOP</span>' : ''}
+                <div onclick="${i === topIdx ? 'StackModule.pop()' : ''}" class="stack-candy-bar ${i === topIdx ? 'is-top' : ''}" title="${i === topIdx ? 'Click to Pop' : ''}">
+                  <span>${v}</span>
+                  ${i === topIdx ? '<span class="ml-2 text-[0.65rem] font-mono px-2 py-0.5 rounded-full bg-white/20 text-white font-black">TOP (Click)</span>' : ''}
                 </div>
               `).join('')}
-              ${stackData.length === 0 ? '<div class="text-center text-xs font-medium text-slate-400 my-auto">Stack is Empty</div>' : ''}
+              ${stackData.length === 0 ? '<div class="text-center text-xs font-bold text-slate-500 my-auto">Stack Chute is Empty</div>' : ''}
             </div>
 
-            <div class="w-64 border-t-2 border-slate-300 text-center pt-2 mt-2">
-              <span class="text-[0.65rem] font-mono font-semibold uppercase tracking-wider text-slate-400">Base of Stack (Closed)</span>
+            <div class="w-72 border-t-2 border-[#333d61] text-center pt-2 mt-2">
+              <span class="text-[0.65rem] font-mono font-bold uppercase tracking-wider text-slate-500">Base of Chute (Closed)</span>
             </div>
           </div>
         `;
@@ -1209,23 +1376,26 @@
         const inp = document.getElementById('st-val-in');
         const v = parseInt(inp.value);
         if (isNaN(v)) { logMsg("Please enter a value to push."); return; }
-        if (stackData.length >= 6) { logMsg("Stack height limit reached for visual stage."); return; }
+        if (stackData.length >= 6) { logMsg("Stack chute full for visual stage."); return; }
         stackData.push(v);
         inp.value = '';
+        setMascotMood('happy');
         setCodeLines(DS_CONFIG.stack.codeLines.push);
         highlightCodeLine(0);
         this.renderCanvas();
-        logMsg(`Push(${v}) placed on TOP in O(1) time. Depth = ${stackData.length}.`);
+        logMsg(`Push(${v}) dropped onto TOP in O(1) time. Depth = ${stackData.length}.`);
       },
 
       pop() {
         playKeyClick(420, 0.05);
-        if (stackData.length === 0) { logMsg("Stack Underflow. Cannot pop from empty stack."); return; }
+        if (stackData.length === 0) { logMsg("Stack Underflow! Nothing to pop."); return; }
         setCodeLines(DS_CONFIG.stack.codeLines.pop);
         highlightCodeLine(1);
         const removed = stackData.pop();
         this.renderCanvas();
+        setMascotMood('shock');
         logMsg(`Pop() retrieved <b>${removed}</b> from TOP in O(1) time.`);
+        setTimeout(() => setMascotMood('normal'), 800);
       },
 
       peek() {
@@ -1245,7 +1415,7 @@
     };
 
     /* ══════════════════════════════════════════════════════════
-       4. QUEUE MODULE
+       4. QUEUE MODULE (Conveyor Pipeline)
     ══════════════════════════════════════════════════════════ */
     const QueueModule = {
       renderControls() {
@@ -1253,25 +1423,25 @@
         document.getElementById('ds-toolbar-card').innerHTML = `
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-2.5">
-              <input id="qu-val-in" type="number" placeholder="Value" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') QueueModule.enqueue()" />
-              <button class="h-9 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all" onclick="QueueModule.enqueue()">
-                Enqueue (Rear)
+              <input id="qu-val-in" type="number" placeholder="Value" class="mojo-input w-28" onkeydown="if(event.key==='Enter') QueueModule.enqueue()" />
+              <button class="mojo-btn btn-green" onclick="QueueModule.enqueue()">
+                <span>➕ Enqueue (Rear)</span>
               </button>
-              <button class="h-9 px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all" onclick="QueueModule.dequeue()">
-                Dequeue (Front)
+              <button class="mojo-btn btn-pink" onclick="QueueModule.dequeue()">
+                <span>➖ Dequeue (Front)</span>
               </button>
-              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="QueueModule.peek()">
-                Peek Front
+              <button class="mojo-btn btn-dark" onclick="QueueModule.peek()">
+                <span>👁️ Peek</span>
               </button>
-              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="QueueModule.reset()">
-                Reset
+              <button class="mojo-btn btn-dark" onclick="QueueModule.reset()">
+                <span>↺ Reset</span>
               </button>
             </div>
 
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-              <span class="text-xs font-medium text-slate-400 mr-1">Presets:</span>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span class="text-xs font-black uppercase text-slate-400">Presets:</span>
               ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="h-8 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[0.75rem] font-medium text-slate-700 transition-all">
+                <button onclick="loadPreset(${i})" class="sticker-tag bg-[#20263d] hover:bg-[#2e3757] text-white px-3 py-1.5 border border-[#333d5e] cursor-pointer">
                   ${p.name}
                 </button>
               `).join('')}
@@ -1284,23 +1454,23 @@
         const stage = document.getElementById('ds-stage-card');
         stage.innerHTML = `
           <div class="w-full flex flex-col items-center">
-            <div class="flex justify-between w-full max-w-xl text-xs font-mono font-medium text-slate-400 uppercase tracking-wider mb-3">
-              <span class="text-emerald-600 flex items-center gap-1 font-semibold">⬅️ FRONT (Dequeue Out)</span>
-              <span class="text-indigo-600 flex items-center gap-1 font-semibold">REAR (Enqueue In) ⬅️</span>
+            <div class="flex justify-between w-full max-w-xl text-xs font-mono font-bold text-slate-400 uppercase tracking-wider mb-3">
+              <span class="text-[#22c55e] flex items-center gap-1 font-black">⬅️ FRONT (Dequeue Out)</span>
+              <span class="text-[#7c3aed] flex items-center gap-1 font-black">REAR (Enqueue In) ⬅️</span>
             </div>
 
-            <div class="conveyor-belt w-full max-w-2xl justify-center bg-slate-50 border border-slate-200">
+            <div class="flex items-center gap-3.5 p-6 rounded-3xl bg-[#121524] border-2 border-[#222840] overflow-x-auto w-full max-w-2xl justify-center">
               ${queueData.map((v, i) => `
                 <div class="flex flex-col items-center gap-2">
-                  <div onclick="${i === 0 ? 'QueueModule.dequeue()' : ''}" class="w-14 h-14 rounded-xl border flex items-center justify-center font-bold text-base shadow-sm cursor-pointer transition-all ${i === 0 ? 'bg-emerald-600 text-white border-emerald-700 shadow-emerald-200' : i === queueData.length - 1 ? 'bg-indigo-600 text-white border-indigo-700 shadow-indigo-200' : 'bg-white text-slate-900 border-slate-200'}">
+                  <div onclick="${i === 0 ? 'QueueModule.dequeue()' : ''}" class="w-16 h-16 rounded-2xl border-2 flex items-center justify-center font-black text-xl shadow-lg cursor-pointer transition-all ${i === 0 ? 'bg-gradient-to-tr from-[#10b981] to-[#34d399] text-[#032e18] border-[#86efac] shadow-emerald-500/30' : i === queueData.length - 1 ? 'bg-gradient-to-tr from-[#6d28d9] to-[#a78bfa] text-white border-[#c4b5fd] shadow-purple-500/30' : 'bg-[#1e2338] text-white border-[#333d61]'}">
                     ${v}
                   </div>
-                  <span class="text-[0.65rem] font-mono font-semibold px-2 py-0.5 rounded ${i === 0 ? 'bg-emerald-100 text-emerald-800' : i === queueData.length - 1 ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-200 text-slate-600'}">
+                  <span class="text-[0.65rem] font-mono font-black px-2 py-0.5 rounded-full ${i === 0 ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : i === queueData.length - 1 ? 'bg-purple-950 text-purple-300 border border-purple-800' : 'bg-slate-800 text-slate-400'}">
                     ${i === 0 ? 'FRONT' : i === queueData.length - 1 ? 'REAR' : `pos ${i}`}
                   </span>
                 </div>
               `).join('')}
-              ${queueData.length === 0 ? '<div class="text-sm font-medium text-slate-400">Queue is empty</div>' : ''}
+              ${queueData.length === 0 ? '<div class="text-sm font-bold text-slate-500">Queue is empty</div>' : ''}
             </div>
           </div>
         `;
@@ -1314,10 +1484,11 @@
         if (queueData.length >= 7) { logMsg("Queue visualizer capacity limit reached."); return; }
         queueData.push(v);
         inp.value = '';
+        setMascotMood('happy');
         setCodeLines(DS_CONFIG.queue.codeLines.enqueue);
         highlightCodeLine(0);
         this.renderCanvas();
-        logMsg(`Enqueue(${v}) added to REAR in O(1) time.`);
+        logMsg(`Enqueue(${v}) joined the REAR line in O(1) time.`);
       },
 
       dequeue() {
@@ -1327,7 +1498,9 @@
         highlightCodeLine(1);
         const removed = queueData.shift();
         this.renderCanvas();
+        setMascotMood('shock');
         logMsg(`Dequeue() serviced <b>${removed}</b> from FRONT in FIFO order.`);
+        setTimeout(() => setMascotMood('normal'), 800);
       },
 
       peek() {
@@ -1345,7 +1518,7 @@
     };
 
     /* ══════════════════════════════════════════════════════════
-       5. BST MODULE
+       5. BST MODULE (Neon Vector Tree)
     ══════════════════════════════════════════════════════════ */
     const BSTModule = {
       renderControls() {
@@ -1353,25 +1526,25 @@
         document.getElementById('ds-toolbar-card').innerHTML = `
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-2.5">
-              <input id="bst-val-in" type="number" placeholder="Node Value" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') BSTModule.insert()" />
-              <button class="h-9 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all" onclick="BSTModule.insert()">
-                Insert
+              <input id="bst-val-in" type="number" placeholder="Value" class="mojo-input w-28" onkeydown="if(event.key==='Enter') BSTModule.insert()" />
+              <button class="mojo-btn btn-green" onclick="BSTModule.insert()">
+                <span>➕ Insert</span>
               </button>
-              <button class="h-9 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-sm transition-all" onclick="BSTModule.search()">
-                Search Path
+              <button class="mojo-btn btn-purple" onclick="BSTModule.search()">
+                <span>🔍 Search Path</span>
               </button>
-              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="BSTModule.inOrder()">
-                In-Order (Sorted)
+              <button class="mojo-btn btn-pink" onclick="BSTModule.inOrder()">
+                <span>📋 In-Order (Sorted)</span>
               </button>
-              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="BSTModule.reset()">
-                Reset
+              <button class="mojo-btn btn-dark" onclick="BSTModule.reset()">
+                <span>↺ Reset</span>
               </button>
             </div>
 
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-              <span class="text-xs font-medium text-slate-400 mr-1">Presets:</span>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span class="text-xs font-black uppercase text-slate-400">Presets:</span>
               ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="h-8 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[0.75rem] font-medium text-slate-700 transition-all">
+                <button onclick="loadPreset(${i})" class="sticker-tag bg-[#20263d] hover:bg-[#2e3757] text-white px-3 py-1.5 border border-[#333d5e] cursor-pointer">
                   ${p.name}
                 </button>
               `).join('')}
@@ -1405,12 +1578,12 @@
           const cur = posMap[n.val];
           if (n.left) {
             const lc = posMap[n.left.val];
-            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${lc.x}" y2="${lc.y}" stroke="#cbd5e1" stroke-width="2" />`;
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${lc.x}" y2="${lc.y}" stroke="#333d61" stroke-width="2.5" />`;
             drawLines(n.left);
           }
           if (n.right) {
             const rc = posMap[n.right.val];
-            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${rc.x}" y2="${rc.y}" stroke="#cbd5e1" stroke-width="2" />`;
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${rc.x}" y2="${rc.y}" stroke="#333d61" stroke-width="2.5" />`;
             drawLines(n.right);
           }
         }
@@ -1420,24 +1593,24 @@
           const isTarget = n.val === targetVal;
           const inPath = pathVals.includes(n.val);
 
-          let fill = '#ffffff';
-          let stroke = '#cbd5e1';
-          let textColor = '#0f172a';
+          let fill = '#1a1f33';
+          let stroke = '#3d4770';
+          let textColor = '#ffffff';
 
           if (isTarget) {
-            fill = '#10b981';
-            stroke = '#059669';
-            textColor = '#ffffff';
+            fill = '#22c55e';
+            stroke = '#86efac';
+            textColor = '#052e16';
           } else if (inPath) {
-            fill = '#4f46e5';
-            stroke = '#4338ca';
+            fill = '#7c3aed';
+            stroke = '#c4b5fd';
             textColor = '#ffffff';
           }
 
           nodesSvg += `
             <g transform="translate(${x},${y})" onclick="BSTModule.inspect(${n.val})" class="cursor-pointer">
               <circle r="22" fill="${fill}" stroke="${stroke}" stroke-width="2.5" />
-              <text text-anchor="middle" dy="5" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="${textColor}">
+              <text text-anchor="middle" dy="5" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="900" fill="${textColor}">
                 ${n.val}
               </text>
             </g>
@@ -1456,6 +1629,7 @@
 
       inspect(val) {
         playKeyClick(600, 0.03);
+        setMascotMood('happy');
         logMsg(`Selected node <b>${val}</b>. Left subtree < ${val}, Right subtree > ${val}.`);
         const inp = document.getElementById('bst-val-in');
         if (inp) inp.value = val;
@@ -1478,6 +1652,7 @@
         if (isNaN(v)) { logMsg("Enter search target value."); return; }
 
         setLock(true);
+        setMascotMood('focused');
         setCodeLines(DS_CONFIG.bst.codeLines.search);
         let curr = bstRoot;
         let path = [];
@@ -1490,6 +1665,7 @@
           highlightCodeLine(1);
           if (curr.val === v) {
             playKeyClick(850, 0.08);
+            setMascotMood('happy');
             this.renderCanvas(v, path);
             logMsg(`Found target <b>${v}</b> in <b>${path.length}</b> comparisons (O(log n) efficiency).`);
             setLock(false);
@@ -1511,11 +1687,13 @@
         highlightCodeLine(4);
         this.renderCanvas(null, path);
         setLock(false);
+        setMascotMood('normal');
         logMsg(`Target value ${v} does not exist in the BST.`);
       },
 
       async inOrder() {
         setLock(true);
+        setMascotMood('focused');
         setCodeLines(DS_CONFIG.bst.codeLines.inorder);
         const sorted = [];
         const path = [];
@@ -1537,6 +1715,7 @@
 
         await traverse(bstRoot);
         setLock(false);
+        setMascotMood('happy');
         logMsg(`In-order traversal complete: <b>[${sorted.join(', ')}]</b> (Notice it is sorted).`);
       },
 
@@ -1549,7 +1728,7 @@
     };
 
     /* ══════════════════════════════════════════════════════════
-       6. HASH TABLE MODULE
+       6. HASH TABLE MODULE (Split-Color Vault)
     ══════════════════════════════════════════════════════════ */
     const HashTableModule = {
       renderControls() {
@@ -1557,27 +1736,27 @@
         document.getElementById('ds-toolbar-card').innerHTML = `
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-2.5">
-              <input id="ht-key-in" type="text" placeholder="Key" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
-              <input id="ht-val-in" type="text" placeholder="Value" class="h-9 w-28 px-3 rounded-lg border border-slate-200 text-xs font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
+              <input id="ht-key-in" type="text" placeholder="Key" class="mojo-input w-28" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
+              <input id="ht-val-in" type="text" placeholder="Value" class="mojo-input w-28" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
               
-              <button class="h-9 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all" onclick="HashTableModule.insert()">
-                Set (Insert)
+              <button class="mojo-btn btn-green" onclick="HashTableModule.insert()">
+                <span>Set Key</span>
               </button>
-              <button class="h-9 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-sm transition-all" onclick="HashTableModule.lookup()">
-                Lookup Key
+              <button class="mojo-btn btn-purple" onclick="HashTableModule.lookup()">
+                <span>Lookup Key</span>
               </button>
-              <button class="h-9 px-3 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all" onclick="HashTableModule.deleteKey()">
-                Delete Key
+              <button class="mojo-btn btn-pink" onclick="HashTableModule.deleteKey()">
+                <span>Delete Key</span>
               </button>
-              <button class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-all" onclick="HashTableModule.reset()">
-                Reset
+              <button class="mojo-btn btn-dark" onclick="HashTableModule.reset()">
+                <span>↺ Reset</span>
               </button>
             </div>
 
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-              <span class="text-xs font-medium text-slate-400 mr-1">Presets:</span>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span class="text-xs font-black uppercase text-slate-400">Presets:</span>
               ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="h-8 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[0.75rem] font-medium text-slate-700 transition-all">
+                <button onclick="loadPreset(${i})" class="sticker-tag bg-[#20263d] hover:bg-[#2e3757] text-white px-3 py-1.5 border border-[#333d5e] cursor-pointer">
                   ${p.name}
                 </button>
               `).join('')}
@@ -1589,27 +1768,27 @@
       renderCanvas(activeBucket = -1, targetKey = null) {
         const stage = document.getElementById('ds-stage-card');
         stage.innerHTML = `
-          <div class="w-full max-w-2xl flex flex-col gap-2.5 py-2">
-            <div class="flex items-center justify-between text-xs font-mono font-medium text-slate-400 mb-1">
+          <div class="w-full max-w-2xl flex flex-col gap-3 py-2">
+            <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-400 mb-1">
               <span>Buckets: ${HT_SIZE}</span>
-              <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">hash(key) = sum(charCodes) % ${HT_SIZE}</span>
+              <span class="sticker-tag bg-[#7c3aed] text-white text-[0.65rem] px-2.5 py-0.5">hash(k) = sum(charCodes) % ${HT_SIZE}</span>
             </div>
 
             ${htBuckets.map((bucket, i) => `
-              <div class="flex items-center gap-3 p-3 rounded-xl border transition-all ${i === activeBucket ? 'bg-indigo-50/60 border-indigo-300' : 'bg-slate-50/70 border-slate-200/80'}">
-                <div class="w-14 flex items-center justify-center py-1 rounded-lg bg-slate-900 text-white font-mono text-xs font-bold flex-shrink-0">
+              <div class="flex items-center gap-3.5 p-3 rounded-2xl border transition-all ${i === activeBucket ? 'bg-[#7c3aed]/20 border-[#ff3b81] shadow-lg shadow-purple-500/20' : 'bg-[#151929] border-[#222840]'}">
+                <div class="w-14 h-10 flex items-center justify-center rounded-xl bg-gradient-to-tr from-[#7c3aed] to-[#ff3b81] text-white font-mono text-xs font-black flex-shrink-0 shadow-sm">
                   [${i}]
                 </div>
 
                 <div class="flex items-center gap-2 flex-wrap flex-1">
                   ${bucket.length === 0 ? `
-                    <span class="text-xs font-mono text-slate-400 italic">Empty Slot</span>
+                    <span class="text-xs font-mono text-slate-500 italic">Empty Vault Slot</span>
                   ` : bucket.map((item, j) => `
-                    <div onclick="HashTableModule.inspect('${item.k}','${item.v}')" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-mono font-medium shadow-sm transition-all hover:border-slate-400 ${item.k === targetKey ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-slate-800 border-slate-200'}">
-                      <span class="font-bold ${item.k === targetKey ? 'text-indigo-200' : 'text-indigo-600'}">${item.k}:</span>
-                      <span>${item.v}</span>
+                    <div onclick="HashTableModule.inspect('${item.k}','${item.v}')" class="cursor-pointer flex items-stretch rounded-xl overflow-hidden border border-[#2f385c] text-xs font-mono font-bold shadow-md transition-all hover:scale-105 ${item.k === targetKey ? 'border-[#22c55e]' : ''}">
+                      <span class="px-2.5 py-1.5 bg-[#ff3b81] text-white">${item.k}</span>
+                      <span class="px-2.5 py-1.5 bg-[#1e2338] text-slate-200">${item.v}</span>
                     </div>
-                    ${j < bucket.length - 1 ? '<span class="text-slate-400 font-bold text-xs">-></span>' : ''}
+                    ${j < bucket.length - 1 ? '<span class="text-slate-500 font-bold text-sm">→</span>' : ''}
                   `).join('')}
                 </div>
               </div>
@@ -1620,6 +1799,7 @@
 
       inspect(k, v) {
         playKeyClick(600, 0.03);
+        setMascotMood('happy');
         logMsg(`Selected key <b>"${k}"</b> with value <b>"${v}"</b>.`);
         const kInp = document.getElementById('ht-key-in');
         const vInp = document.getElementById('ht-val-in');
@@ -1647,6 +1827,7 @@
           logMsg(`Inserted "${k}": "${v}" into bucket [${idx}].`);
         }
 
+        setMascotMood('happy');
         kInp.value = '';
         vInp.value = '';
         this.renderCanvas(idx, k);
@@ -1669,9 +1850,11 @@
 
         if (found) {
           highlightCodeLine(3);
-          logMsg(`Found key <b>"${k}"</b> with value <b>"${found.v}"</b> in bucket [${idx}].`);
+          setMascotMood('happy');
+          logMsg(`Found key <b>"${k}"</b> with value <b>"${found.v}"</b> in bucket [${idx}]!`);
         } else {
           highlightCodeLine(4);
+          setMascotMood('shock');
           logMsg(`Key "${k}" not found in bucket [${idx}].`);
         }
       },
@@ -1716,20 +1899,20 @@
       playKeyClick(700, 0.03);
       currentDS = ds;
 
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
-        btn.classList.add('text-slate-600');
+      document.querySelectorAll('.nav-pill').forEach(btn => {
+        btn.classList.remove('text-white', 'bg-gradient-to-r', 'from-[#7c3aed]', 'to-[#ff3b81]', 'shadow-lg');
+        btn.classList.add('text-slate-400');
         if (btn.getAttribute('onclick').includes(ds)) {
-          btn.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
-          btn.classList.remove('text-slate-600');
+          btn.classList.add('text-white', 'bg-gradient-to-r', 'from-[#7c3aed]', 'to-[#ff3b81]', 'shadow-lg');
+          btn.classList.remove('text-slate-400');
         }
       });
 
       renderApp();
-      logMsg(`Loaded <b>${DS_CONFIG[ds].title}</b>. Choose an operation or preset above.`);
+      logMsg(`Loaded <b>${DS_CONFIG[ds].title}</b>. Tap any operation or node!`);
     }
 
-    // Bootstrap first render
+    // Initialize first render
     renderApp();
   </script>
 </body>
