@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" class="h-full bg-black">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CSQUARE / DS — Isometric Technical Data Structures Lab</title>
+  <title>CSQUARE / DS — Obsidian Bento Data Structures Lab</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500;1,6..72,600&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-
     :root {
-      --bg-canvas: #f8fafc;
-      --bg-dark: #090a0f;
-      --border-light: #e2e8f0;
-      --border-dark: #1e222d;
-      --accent-green: #10b981;
-      --accent-magenta: #e11d48;
+      --bg-pitch: #000000;
+      --card-base: #0a0b0f;
+      --card-surface: #10121a;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-border-hover: rgba(255, 255, 255, 0.16);
+      --accent-emerald: #10b981;
       --accent-cyan: #06b6d4;
+      --accent-rose: #f43f5e;
     }
 
     * {
@@ -27,263 +29,311 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
-    /* Technical blueprint dot grid */
-    .blueprint-grid {
-      background-color: #f8fafc;
-      background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-      background-size: 24px 24px;
+    .font-editorial {
+      font-family: 'Newsreader', Georgia, serif;
+      font-style: italic;
     }
 
-    /* Dark isometric stage grid */
-    .stage-dark-grid {
-      background-color: #0c0e14;
+    /* Ambient glow background */
+    .ambient-canvas {
+      background-color: #000000;
       background-image: 
-        linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 32px 32px;
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16, 185, 129, 0.08), transparent 70%),
+        radial-gradient(circle at 100% 100%, rgba(6, 182, 212, 0.05), transparent 50%);
     }
 
-    /* Swiss Architectural Buttons */
-    .btn-swiss-dark {
-      background: #090a0f;
-      color: #ffffff;
-      font-size: 0.825rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      padding: 0.6rem 1.25rem;
-      border-radius: 4px;
-      transition: all 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      border: 1px solid transparent;
-      white-space: nowrap;
+    /* Obsidian Bento Card */
+    .bento-card {
+      background: linear-gradient(180deg, rgba(16, 18, 26, 0.85) 0%, rgba(10, 11, 15, 0.95) 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
     }
-    .btn-swiss-dark:hover:not(:disabled) {
-      background: #1e222d;
-      border-color: #333d4e;
-    }
-    .btn-swiss-dark:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
+    .bento-card:hover {
+      border-color: var(--card-border-hover);
     }
 
-    .btn-swiss-outline {
+    /* Subtle stage grid */
+    .stage-canvas-grid {
+      background-color: #07080c;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    /* Obsidian Buttons */
+    .btn-obsidian-primary {
       background: #ffffff;
-      color: #090a0f;
-      border: 1px solid #cbd5e1;
+      color: #000000;
       font-size: 0.825rem;
       font-weight: 600;
-      padding: 0.6rem 1.15rem;
-      border-radius: 4px;
-      transition: all 0.15s ease;
+      padding: 0.55rem 1.15rem;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 0.4rem;
       white-space: nowrap;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
     }
-    .btn-swiss-outline:hover:not(:disabled) {
+    .btn-obsidian-primary:hover:not(:disabled) {
       background: #f1f5f9;
-      border-color: #94a3b8;
+      transform: translateY(-1px);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
     }
-    .btn-swiss-outline:disabled {
-      opacity: 0.4;
+    .btn-obsidian-primary:disabled {
+      opacity: 0.35;
       cursor: not-allowed;
     }
 
-    .btn-swiss-danger {
-      background: #fff1f2;
-      color: #e11d48;
-      border: 1px solid #fecdd3;
+    .btn-obsidian-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: #f1f5f9;
+      border: 1px solid rgba(255, 255, 255, 0.1);
       font-size: 0.825rem;
-      font-weight: 600;
-      padding: 0.6rem 1.15rem;
-      border-radius: 4px;
-      transition: all 0.15s ease;
+      font-weight: 500;
+      padding: 0.55rem 1.05rem;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 0.4rem;
       white-space: nowrap;
     }
-    .btn-swiss-danger:hover:not(:disabled) {
-      background: #ffe4e6;
-      border-color: #fda4af;
+    .btn-obsidian-secondary:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+    .btn-obsidian-secondary:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
     }
 
-    /* Swiss Input */
-    .swiss-input {
+    .btn-obsidian-danger {
+      background: rgba(244, 63, 94, 0.1);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.25);
+      font-size: 0.825rem;
+      font-weight: 500;
+      padding: 0.55rem 1.05rem;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+    }
+    .btn-obsidian-danger:hover:not(:disabled) {
+      background: rgba(244, 63, 94, 0.2);
+      border-color: rgba(244, 63, 94, 0.45);
+      color: #ffffff;
+    }
+    .btn-obsidian-danger:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* Obsidian Input */
+    .obsidian-input {
       height: 38px;
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
       padding: 0 0.85rem;
       font-size: 0.85rem;
       font-weight: 500;
-      color: #090a0f;
+      color: #ffffff;
       outline: none;
-      transition: all 0.15s;
+      transition: all 0.2s ease;
     }
-    .swiss-input:focus {
-      border-color: #090a0f;
-      box-shadow: 0 0 0 2px rgba(9, 10, 15, 0.1);
+    .obsidian-input:focus {
+      border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
     }
-
-    /* Technical Callout Tag */
-    .telemetry-chip {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 0.25rem 0.65rem;
-      border-radius: 4px;
-      letter-spacing: -0.01em;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
+    .obsidian-input::placeholder {
+      color: #64748b;
     }
 
-    /* Isometric Block Renderings (SVG & CSS 3D Orthogonal) */
+    /* Isometric Interactive SVG */
     .iso-cube {
-      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
       cursor: pointer;
     }
     .iso-cube:hover {
-      transform: translateY(-6px);
-      filter: drop-shadow(0 12px 18px rgba(16, 185, 129, 0.25));
+      transform: translateY(-5px);
+      filter: drop-shadow(0 10px 16px rgba(16, 185, 129, 0.3));
     }
     .iso-cube.active-scan {
       transform: translateY(-8px) scale(1.08);
-      filter: drop-shadow(0 16px 24px rgba(16, 185, 129, 0.5));
+      filter: drop-shadow(0 14px 22px rgba(6, 182, 212, 0.5));
     }
     .iso-cube.found-target {
       transform: translateY(-10px) scale(1.12);
-      filter: drop-shadow(0 20px 28px rgba(6, 182, 212, 0.6));
+      filter: drop-shadow(0 18px 26px rgba(16, 185, 129, 0.65));
     }
 
     /* Code Line Highlight */
     .code-row {
       display: block;
-      padding: 0.2rem 0.75rem;
-      border-radius: 2px;
+      padding: 0.22rem 0.85rem;
+      border-radius: 4px;
       line-height: 1.65;
-      transition: background 0.15s;
+      transition: background 0.15s, color 0.15s;
     }
     .code-row.active-row {
-      background: rgba(16, 185, 129, 0.15);
+      background: rgba(16, 185, 129, 0.12);
       border-left: 2.5px solid #10b981;
       color: #34d399;
       font-weight: 600;
     }
   </style>
 </head>
-<body class="h-full flex flex-col blueprint-grid text-slate-900 selection:bg-slate-900 selection:text-white">
+<body class="h-full flex flex-col ambient-canvas text-slate-100 selection:bg-emerald-500/30 selection:text-white">
 
   <!-- ══════════════════════════════════════════════════════════
-       ARCHITECTURAL HEADER (Swiss Minimalist)
+       FLOATING OBSIDIAN NAVBAR
   ══════════════════════════════════════════════════════════ -->
-  <header class="h-16 border-b border-slate-200 bg-white/95 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-6 lg:px-10">
-    
-    <!-- Brand -->
-    <div class="flex items-center gap-4">
-      <div class="w-8 h-8 bg-black flex items-center justify-center text-white font-bold text-xs">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-        </svg>
-      </div>
-      <div class="flex items-baseline gap-2">
-        <span class="text-sm font-bold tracking-tight text-black">CSQUARE</span>
-        <span class="text-slate-400 font-mono text-xs">/</span>
-        <span class="text-xs font-mono text-slate-600 font-medium tracking-tight uppercase">DATA STRUCTURES ARCHITECTURE</span>
-      </div>
-    </div>
-
-    <!-- Navigation Tabs (Editorial Clean) -->
-    <nav class="hidden md:flex items-center gap-1 text-xs font-medium text-slate-600">
-      <button class="nav-tab px-3.5 py-1.5 rounded text-black font-semibold bg-slate-100" onclick="switchDS('array')">01. Array</button>
-      <button class="nav-tab px-3.5 py-1.5 rounded hover:text-black hover:bg-slate-50 transition-all" onclick="switchDS('linkedlist')">02. Linked List</button>
-      <button class="nav-tab px-3.5 py-1.5 rounded hover:text-black hover:bg-slate-50 transition-all" onclick="switchDS('stack')">03. Stack</button>
-      <button class="nav-tab px-3.5 py-1.5 rounded hover:text-black hover:bg-slate-50 transition-all" onclick="switchDS('queue')">04. Queue</button>
-      <button class="nav-tab px-3.5 py-1.5 rounded hover:text-black hover:bg-slate-50 transition-all" onclick="switchDS('bst')">05. BST</button>
-      <button class="nav-tab px-3.5 py-1.5 rounded hover:text-black hover:bg-slate-50 transition-all" onclick="switchDS('hashtable')">06. Hash Table</button>
-    </nav>
-
-    <!-- Right Controls -->
-    <div class="flex items-center gap-3">
-      <button id="sound-btn" onclick="toggleSound()" class="h-8 px-2.5 rounded border border-slate-200 text-xs font-mono text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition-all">
-        <span id="sound-icon">🔊</span>
-        <span id="sound-text" class="hidden sm:inline">Audio</span>
-      </button>
-
-      <a href="https://github.com/solomonwilsonr/ds-visualizer" target="_blank" rel="noopener" class="h-8 px-3 rounded bg-black text-white text-xs font-medium flex items-center gap-1.5 hover:bg-slate-800 transition-all">
-        <span>Repository</span>
-        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-        </svg>
-      </a>
-    </div>
-
-  </header>
-
-  <!-- Mobile Tab Bar -->
-  <div class="md:hidden overflow-x-auto p-2 bg-white border-b border-slate-200 flex gap-1 text-xs">
-    <button class="nav-tab px-3 py-1 rounded font-semibold bg-slate-100 text-black" onclick="switchDS('array')">Array</button>
-    <button class="nav-tab px-3 py-1 rounded text-slate-600" onclick="switchDS('linkedlist')">Linked List</button>
-    <button class="nav-tab px-3 py-1 rounded text-slate-600" onclick="switchDS('stack')">Stack</button>
-    <button class="nav-tab px-3 py-1 rounded text-slate-600" onclick="switchDS('queue')">Queue</button>
-    <button class="nav-tab px-3 py-1 rounded text-slate-600" onclick="switchDS('bst')">BST</button>
-    <button class="nav-tab px-3 py-1 rounded text-slate-600" onclick="switchDS('hashtable')">Hash Table</button>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════════
-       MAIN ARCHITECTURAL STAGE (Csquare Split Grid Layout)
-  ══════════════════════════════════════════════════════════ -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-6 md:p-10 flex flex-col gap-8">
-
-    <!-- Hero / Architecture Overview (Csquare Split Card) -->
-    <section class="grid grid-cols-1 lg:grid-cols-12 border border-slate-200 bg-white shadow-sm" id="ds-hero-section">
-      <!-- Rendered by JS -->
-    </section>
-
-    <!-- Operation Command Bar -->
-    <section class="border border-slate-200 bg-white p-4 shadow-sm" id="ds-command-bar">
-      <!-- Rendered by JS -->
-    </section>
-
-    <!-- Live Execution Telemetry Bar -->
-    <section class="bg-black text-white p-4 border border-slate-900 flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
-      <div class="flex items-center gap-3 overflow-hidden w-full md:w-auto">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
-        <span class="text-slate-400 font-semibold uppercase flex-shrink-0">TELEMETRY:</span>
-        <span id="log-msg" class="text-slate-200 truncate">System initialized. Awaiting execution command.</span>
-      </div>
-
-      <div class="flex items-center gap-3 flex-shrink-0">
-        <button id="btn-step-fwd" onclick="stepForward()" disabled class="h-7 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono text-[0.75rem] border border-slate-700 rounded-none disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1.5 transition-all">
-          <span>STEP_FWD [⏭]</span>
-        </button>
-
-        <div class="h-4 w-px bg-slate-800"></div>
-
-        <div class="flex items-center gap-2">
-          <span class="text-slate-400">CLK_SPEED:</span>
-          <select id="anim-speed" class="h-7 bg-slate-900 border border-slate-700 text-slate-200 text-[0.75rem] px-2 font-mono outline-none cursor-pointer">
-            <option value="900">0.5x (SLOW)</option>
-            <option value="450" selected>1.0x (NOMINAL)</option>
-            <option value="180">2.0x (BURST)</option>
-          </select>
+  <header class="sticky top-0 z-40 w-full px-4 sm:px-8 pt-4 pb-2">
+    <div class="max-w-7xl mx-auto h-16 bg-[#0c0e14]/80 backdrop-blur-xl border border-white/[0.08] rounded-2xl flex items-center justify-between px-5 sm:px-6 shadow-2xl">
+      
+      <!-- Brand / Logo -->
+      <div class="flex items-center gap-3.5">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-white/20 to-white/5 border border-white/10 flex items-center justify-center text-white shadow-inner">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-sm font-extrabold tracking-tight text-white">CSQUARE</span>
+          <span class="text-slate-600 font-mono text-xs">/</span>
+          <span class="text-[0.7rem] font-mono text-slate-400 tracking-wider uppercase font-semibold">OBSIDIAN ARCHITECTURE</span>
         </div>
       </div>
+
+      <!-- Pill Tab Navigation (Desktop) -->
+      <nav class="hidden md:flex items-center gap-1.5 p-1 bg-white/[0.03] border border-white/[0.06] rounded-full text-xs font-medium">
+        <button class="nav-tab px-4 py-1.5 rounded-full bg-white text-black font-semibold shadow-sm transition-all" onclick="switchDS('array')">01. Array</button>
+        <button class="nav-tab px-4 py-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/[0.06] transition-all" onclick="switchDS('linkedlist')">02. Linked List</button>
+        <button class="nav-tab px-4 py-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/[0.06] transition-all" onclick="switchDS('stack')">03. Stack</button>
+        <button class="nav-tab px-4 py-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/[0.06] transition-all" onclick="switchDS('queue')">04. Queue</button>
+        <button class="nav-tab px-4 py-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/[0.06] transition-all" onclick="switchDS('bst')">05. BST</button>
+        <button class="nav-tab px-4 py-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/[0.06] transition-all" onclick="switchDS('hashtable')">06. Hash Table</button>
+      </nav>
+
+      <!-- Right Tooling -->
+      <div class="flex items-center gap-2.5">
+        <button id="sound-btn" onclick="toggleSound()" class="h-8 px-3 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-mono text-slate-300 flex items-center gap-1.5 transition-all">
+          <span id="sound-icon">🔊</span>
+          <span id="sound-text" class="hidden sm:inline">Audio</span>
+        </button>
+
+        <a href="https://github.com/solomonwilsonr/ds-visualizer" target="_blank" rel="noopener" class="h-8 px-3.5 rounded-full bg-white text-black font-semibold text-xs flex items-center gap-1.5 hover:bg-slate-200 transition-all shadow-sm">
+          <span>GitHub</span>
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Mobile Tab Scroller -->
+    <div class="md:hidden overflow-x-auto mt-2 p-1.5 bg-[#0c0e14]/90 backdrop-blur-md border border-white/[0.06] rounded-2xl flex gap-1 text-xs">
+      <button class="nav-tab px-3 py-1 rounded-full bg-white text-black font-semibold flex-shrink-0" onclick="switchDS('array')">Array</button>
+      <button class="nav-tab px-3 py-1 rounded-full text-slate-400 flex-shrink-0" onclick="switchDS('linkedlist')">Linked List</button>
+      <button class="nav-tab px-3 py-1 rounded-full text-slate-400 flex-shrink-0" onclick="switchDS('stack')">Stack</button>
+      <button class="nav-tab px-3 py-1 rounded-full text-slate-400 flex-shrink-0" onclick="switchDS('queue')">Queue</button>
+      <button class="nav-tab px-3 py-1 rounded-full text-slate-400 flex-shrink-0" onclick="switchDS('bst')">BST</button>
+      <button class="nav-tab px-3 py-1 rounded-full text-slate-400 flex-shrink-0" onclick="switchDS('hashtable')">Hash Table</button>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════
+       MAIN BENTO GRID WORKSPACE
+  ══════════════════════════════════════════════════════════ -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-6 flex flex-col gap-6">
+
+    <!-- HERO EDITORIAL TITLE -->
+    <section class="flex flex-col md:flex-row md:items-end justify-between gap-4 px-2 pt-2">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-[0.7rem] font-mono tracking-widest uppercase text-slate-400">LABORATORY // RUNTIME VERIFICATION</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
+          Data Structures that actually — <span class="font-editorial text-emerald-400 font-normal">make memory click</span>
+        </h1>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-400 max-w-md leading-relaxed font-normal">
+        An interactive isometric architecture visualizing physical memory addresses, clock cycle penalties, and pointer re-assignments in real-time.
+      </p>
     </section>
 
-    <!-- Bottom Architectural Blueprint (Technical Spec + Code Implementation) -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8" id="ds-blueprint-section">
+    <!-- 1. PRIMARY HERO BENTO CARD: 3D ISOMETRIC VISUALIZER + INTEGRATED COMMAND DECK -->
+    <div class="bento-card p-6 sm:p-8 flex flex-col gap-6" id="ds-hero-card">
+      
+      <!-- Dynamic Top Info Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-white/[0.08]" id="ds-header-bar">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- 3D Interactive Stage Canvas -->
+      <div class="stage-canvas-grid w-full rounded-2xl border border-white/[0.06] p-6 sm:p-8 min-h-[300px] flex flex-col items-center justify-center relative overflow-hidden" id="ds-stage-container">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Integrated Command Deck -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-2" id="ds-command-deck">
+        <!-- Rendered by Module -->
+      </div>
+
+      <!-- Telemetry & Clock Stepper Control Bar -->
+      <div class="bg-black/60 border border-white/[0.08] rounded-xl px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3 font-mono text-xs">
+        <div class="flex items-center gap-2.5 overflow-hidden w-full md:w-auto">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 flex-shrink-0 animate-ping"></span>
+          <span class="text-slate-500 font-semibold uppercase flex-shrink-0">TELEMETRY:</span>
+          <span id="log-msg" class="text-slate-200 truncate">System initialized. Awaiting execution command.</span>
+        </div>
+
+        <div class="flex items-center gap-3 flex-shrink-0">
+          <button id="btn-step-fwd" onclick="stepForward()" disabled class="h-8 px-3.5 bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 font-mono text-[0.72rem] border border-white/[0.1] rounded-lg disabled:opacity-25 disabled:cursor-not-allowed flex items-center gap-1.5 transition-all">
+            <span>STEP [⏭]</span>
+          </button>
+
+          <div class="h-4 w-px bg-white/[0.1]"></div>
+
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500 text-[0.72rem]">CLK_SPEED:</span>
+            <select id="anim-speed" class="h-8 bg-[#10121a] border border-white/[0.1] text-slate-200 text-[0.72rem] px-2.5 rounded-lg font-mono outline-none cursor-pointer">
+              <option value="900">0.5x (SLOW)</option>
+              <option value="450" selected>1.0x (NOMINAL)</option>
+              <option value="180">2.0x (BURST)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 2. LOWER BENTO GRID (COMPLEXITY + HARDWARE SPECS + PYTHON AST CODE) -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6" id="ds-secondary-bento">
       <!-- Rendered by JS -->
     </div>
 
   </main>
 
+  <!-- ══════════════════════════════════════════════════════════
+       JAVASCRIPT ARCHITECTURAL LOGIC
+  ══════════════════════════════════════════════════════════ -->
   <script>
     /* ══════════════════════════════════════════════════════════
        AUDIO ENGINE (Minimalist subtle feedback)
@@ -337,7 +387,7 @@
         title: "Contiguous Array",
         codeNum: "01",
         category: "Sequential Physical Memory",
-        summary: "An array stores a static sequence of elements in contiguous physical memory addresses. Direct element retrieval via arithmetic address calculation requires a single CPU clock cycle O(1). Inserting or deleting in arbitrary positions requires shifting elements left or right in O(n) linear time.",
+        summary: "An array stores elements in contiguous physical memory addresses. Direct element retrieval via arithmetic address calculation requires a single CPU clock cycle O(1). Arbitrary insertions and deletions require element shifting in O(n) linear time.",
         complexities: [
           { name: "Access", time: "O(1)", type: "optimal" },
           { name: "Search", time: "O(n)", type: "linear" },
@@ -350,9 +400,9 @@
           { name: "Ordered Sequence", data: [4, 11, 19, 28, 42, 65, 80] }
         ],
         specs: [
-          { label: "Memory Topology", desc: "Monolithic contiguous RAM allocation" },
-          { label: "Indexing Formula", desc: "Address = Base_Addr + (Index × Element_Size)" },
-          { label: "Cache Spatial Locality", desc: "Optimal (high cache-line utilization)" }
+          { label: "Memory Topology", desc: "Monolithic contiguous RAM allocation block" },
+          { label: "Indexing Formula", desc: "Addr = Base + (Index × Word_Size)" },
+          { label: "Cache Spatial Locality", desc: "Optimal (high cache-line preload efficiency)" }
         ],
         codeLines: {
           search: [
@@ -382,7 +432,7 @@
         title: "Singly Linked List",
         codeNum: "02",
         category: "Pointer-Chained Dispersed Nodes",
-        summary: "A linked list consists of dynamically allocated node structures interconnected via pointer references. Memory addresses need not be adjacent. Prepending or deleting elements at the HEAD requires only pointer modification in O(1) time without memory reorganization.",
+        summary: "A linked list consists of dynamically allocated heap nodes interconnected via reference pointers. Addresses need not be adjacent. Prepending or deleting elements at HEAD executes in O(1) time without reorganizing memory.",
         complexities: [
           { name: "Access", time: "O(n)", type: "linear" },
           { name: "Search", time: "O(n)", type: "linear" },
@@ -395,9 +445,9 @@
           { name: "Pipeline of 6", data: [10, 20, 30, 40, 50, 60] }
         ],
         specs: [
-          { label: "Memory Topology", desc: "Non-contiguous heap-allocated node entities" },
-          { label: "Pointer Overhead", desc: "8 bytes per node reference pointer (64-bit)" },
-          { label: "Head Manipulation", desc: "Instantaneous O(1) reference reassignment" }
+          { label: "Memory Topology", desc: "Dispersed heap-allocated node structures" },
+          { label: "Pointer Overhead", desc: "8 bytes per reference pointer on 64-bit architecture" },
+          { label: "Head Manipulation", desc: "Instantaneous O(1) pointer reassignment" }
         ],
         codeLines: {
           search: [
@@ -424,7 +474,7 @@
         title: "Stack Architecture",
         codeNum: "03",
         category: "LIFO Register Column",
-        summary: "Follows strict Last-In, First-Out (LIFO) architectural constraints. Pointers restrict insertion and removal strictly to the top of the column. Fundamental to processor call frames, bracket syntax verification, and execution history.",
+        summary: "Enforces strict Last-In, First-Out (LIFO) architectural boundaries. Pointers restrict insertion and removal strictly to the top of the column. Fundamental to processor call frames, bracket syntax verification, and execution history.",
         complexities: [
           { name: "Push", time: "O(1)", type: "optimal" },
           { name: "Pop", time: "O(1)", type: "optimal" },
@@ -537,7 +587,7 @@
         title: "Hash Map / Bucket Array",
         codeNum: "06",
         category: "Constant-Time Key-Address Indexing",
-        summary: "Maps arbitrary alphanumeric keys to memory bucket offsets via a deterministic mathematical hashing algorithm. Collisions are handled via isolated linked chaining within bucket segments.",
+        summary: "Maps arbitrary alphanumeric keys to memory bucket offsets via a deterministic mathematical hashing algorithm. Collisions are resolved via separate linked chaining within individual bucket segments.",
         complexities: [
           { name: "Lookup", time: "O(1) avg", type: "optimal" },
           { name: "Insert", time: "O(1) avg", type: "optimal" },
@@ -684,48 +734,47 @@
     }
 
     /* ══════════════════════════════════════════════════════════
-       SVG ISOMETRIC GENERATOR HELPER
+       SVG ISOMETRIC GENERATOR (Dark Obsidian Specular Blocks)
     ══════════════════════════════════════════════════════════ */
-    // Generates high-end isometric cube path with 3 distinct shading faces
     function generateIsometricCubeSvg(x, y, size, val, isHighlighted = false, isFound = false) {
       const w = size;
       const h = size * 0.58;
       const depth = size * 0.7;
 
-      // Color scheme (Emerald / Green or Magenta)
-      let topFill = '#ffffff';
-      let leftFill = '#f1f5f9';
-      let rightFill = '#e2e8f0';
-      let stroke = '#cbd5e1';
-      let textColor = '#090a0f';
+      // Obsidian specular dark block palette
+      let topFill = '#1c202e';
+      let leftFill = '#11141e';
+      let rightFill = '#0a0c14';
+      let stroke = '#2d3348';
+      let textColor = '#f1f5f9';
 
       if (isFound) {
         topFill = '#34d399';
         leftFill = '#10b981';
         rightFill = '#059669';
-        stroke = '#047857';
-        textColor = '#ffffff';
+        stroke = '#6ee7b7';
+        textColor = '#022c22';
       } else if (isHighlighted) {
         topFill = '#38bdf8';
         leftFill = '#0ea5e9';
         rightFill = '#0284c7';
-        stroke = '#0369a1';
-        textColor = '#ffffff';
+        stroke = '#7dd3fc';
+        textColor = '#082f49';
       }
 
       return `
         <g class="iso-cube ${isHighlighted ? 'active-scan' : ''} ${isFound ? 'found-target' : ''}">
           <!-- Top Face -->
-          <polygon points="${x},${y - h/2} ${x + w/2},${y} ${x},${y + h/2} ${x - w/2},${y}" fill="${topFill}" stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round" />
+          <polygon points="${x},${y - h/2} ${x + w/2},${y} ${x},${y + h/2} ${x - w/2},${y}" fill="${topFill}" stroke="${stroke}" stroke-width="1.2" stroke-linejoin="round" />
           
           <!-- Left Face -->
-          <polygon points="${x - w/2},${y} ${x},${y + h/2} ${x},${y + h/2 + depth} ${x - w/2},${y + depth}" fill="${leftFill}" stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round" />
+          <polygon points="${x - w/2},${y} ${x},${y + h/2} ${x},${y + h/2 + depth} ${x - w/2},${y + depth}" fill="${leftFill}" stroke="${stroke}" stroke-width="1.2" stroke-linejoin="round" />
           
           <!-- Right Face -->
-          <polygon points="${x},${y + h/2} ${x + w/2},${y} ${x + w/2},${y + depth} ${x},${y + h/2 + depth}" fill="${rightFill}" stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round" />
+          <polygon points="${x},${y + h/2} ${x + w/2},${y} ${x + w/2},${y + depth} ${x},${y + h/2 + depth}" fill="${rightFill}" stroke="${stroke}" stroke-width="1.2" stroke-linejoin="round" />
           
-          <!-- Centered Scalar Value on Top Face -->
-          <text x="${x}" y="${y + 4}" text-anchor="middle" font-family="'Inter', sans-serif" font-size="14" font-weight="700" fill="${textColor}">
+          <!-- Value on Top Face -->
+          <text x="${x}" y="${y + 4.5}" text-anchor="middle" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="${textColor}">
             ${val}
           </text>
         </g>
@@ -733,92 +782,105 @@
     }
 
     /* ══════════════════════════════════════════════════════════
-       MAIN RENDER ENGINE
+       MAIN BENTO RENDER ENGINE
     ══════════════════════════════════════════════════════════ */
     function renderApp() {
       const cfg = DS_CONFIG[currentDS];
 
-      // 1. Hero Split Section (Csquare Style: Dark Visual Left, Swiss Editorial Right)
-      document.getElementById('ds-hero-section').innerHTML = `
-        <!-- Left 5-Cols: Isometric Interactive Visual Stage -->
-        <div class="lg:col-span-5 stage-dark-grid p-8 min-h-[320px] flex flex-col justify-center items-center relative border-b lg:border-b-0 lg:border-r border-slate-800" id="ds-stage-container">
-          <!-- Rendered by Component Canvas -->
-        </div>
-
-        <!-- Right 7-Cols: Csquare Clean Editorial Information -->
-        <div class="lg:col-span-7 p-8 lg:p-10 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center gap-2 font-mono text-xs text-slate-400 mb-2">
-              <span>INDEX: ${cfg.codeNum}</span>
-              <span>//</span>
-              <span class="text-emerald-600 font-semibold uppercase">${cfg.category}</span>
-            </div>
-
-            <h2 class="text-3xl font-extrabold tracking-tight text-black mb-3">${cfg.title}</h2>
-            <p class="text-sm text-slate-600 leading-relaxed max-w-2xl">${cfg.summary}</p>
+      // 1. Dynamic Header of Hero Bento Card
+      document.getElementById('ds-header-bar').innerHTML = `
+        <div>
+          <div class="flex items-center gap-2 font-mono text-[0.7rem] text-slate-400 mb-1">
+            <span class="px-2 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] text-white">INDEX ${cfg.codeNum}</span>
+            <span class="text-slate-600">//</span>
+            <span class="text-emerald-400 font-semibold tracking-wider uppercase">${cfg.category}</span>
           </div>
-
-          <!-- Technical Metrics Matrix -->
-          <div class="mt-8 pt-6 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-4">
-            ${cfg.complexities.map(c => `
-              <div>
-                <span class="text-[0.7rem] font-mono uppercase text-slate-400 tracking-wider block">${c.name}</span>
-                <span class="text-base font-bold font-mono text-slate-900 mt-0.5 block">${c.time}</span>
-              </div>
-            `).join('')}
-          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">${cfg.title}</h2>
         </div>
+        <p class="text-xs sm:text-sm text-slate-400 max-w-xl leading-relaxed">
+          ${cfg.summary}
+        </p>
       `;
 
-      // 2. Command Bar & Presets
+      // 2. Render Command Deck
       MODULES[currentDS].renderControls();
 
       // 3. Render Canvas
       MODULES[currentDS].renderCanvas();
 
-      // 4. Bottom Blueprint & Code
+      // 4. Render Lower Bento Cards (Complexity + Invariants + Python IDE)
       const defaultLines = cfg.codeLines.search || cfg.codeLines.insert || cfg.codeLines.push || cfg.codeLines.lookup;
-      document.getElementById('ds-blueprint-section').innerHTML = `
-        <!-- Left: Technical Specification Checklist -->
-        <div class="lg:col-span-6 bg-white border border-slate-200 p-8 shadow-sm flex flex-col justify-between">
+      
+      document.getElementById('ds-secondary-bento').innerHTML = `
+        <!-- Card 1: Time Complexity Matrix (4-Cols) -->
+        <div class="md:col-span-6 lg:col-span-4 bento-card p-6 flex flex-col justify-between">
           <div>
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-              <span class="text-xs font-mono font-semibold uppercase text-slate-400">Architectural Specifications</span>
-              <span class="text-xs font-mono text-emerald-600 font-semibold">VERIFIED</span>
+            <div class="flex items-center justify-between pb-3 border-b border-white/[0.08] mb-4">
+              <span class="text-xs font-mono font-semibold uppercase text-slate-400">Time Complexity</span>
+              <span class="text-[0.65rem] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">EMPIRICAL</span>
             </div>
 
-            <div class="space-y-4">
-              ${cfg.specs.map(s => `
-                <div class="border-b border-slate-100 pb-3">
-                  <span class="text-xs font-semibold text-black uppercase tracking-wider block">${s.label}</span>
-                  <span class="text-xs text-slate-600 font-mono mt-1 block">${s.desc}</span>
+            <div class="grid grid-cols-2 gap-3">
+              ${cfg.complexities.map(c => `
+                <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+                  <span class="text-[0.68rem] font-mono uppercase text-slate-400 tracking-wider block">${c.name}</span>
+                  <span class="text-lg font-bold font-mono ${c.type === 'optimal' ? 'text-emerald-400' : c.type === 'critical' ? 'text-rose-400' : 'text-cyan-300'} mt-0.5 block">${c.time}</span>
                 </div>
               `).join('')}
             </div>
           </div>
 
-          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-mono">
-            <span>SPECIFICATION_REV: 2026.02</span>
+          <div class="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-[0.7rem] text-slate-500 font-mono">
+            <span>METRIC: CPU_CYCLES</span>
+            <span>NOTATION: BIG_O</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Hardware & Architectural Specs (4-Cols) -->
+        <div class="md:col-span-6 lg:col-span-4 bento-card p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-white/[0.08] mb-4">
+              <span class="text-xs font-mono font-semibold uppercase text-slate-400">Architectural Invariants</span>
+              <span class="text-[0.65rem] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-semibold">VERIFIED</span>
+            </div>
+
+            <div class="space-y-3">
+              ${cfg.specs.map(s => `
+                <div class="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+                  <span class="text-[0.7rem] font-bold text-white uppercase tracking-wider block">${s.label}</span>
+                  <span class="text-[0.72rem] text-slate-400 font-mono mt-0.5 block leading-normal">${s.desc}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-[0.7rem] text-slate-500 font-mono">
+            <span>TOPOLOGY: 64-BIT_ALIGNED</span>
             <span>MEMORY_SAFE: TRUE</span>
           </div>
         </div>
 
-        <!-- Right: Code Implementation -->
-        <div class="lg:col-span-6 bg-[#0c0e14] border border-slate-800 p-8 text-white flex flex-col justify-between">
+        <!-- Card 3: Verified Python AST Tracing IDE (4-Cols / Full on smaller) -->
+        <div class="md:col-span-12 lg:col-span-4 bento-card p-6 flex flex-col justify-between">
           <div>
-            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-              <span class="text-xs font-mono font-semibold uppercase text-slate-400">Verified Algorithm Implementation</span>
-              <span class="text-[0.7rem] font-mono px-2 py-0.5 bg-slate-800 text-slate-300 rounded">Python 3.12</span>
+            <div class="flex items-center justify-between pb-3 border-b border-white/[0.08] mb-4">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                <span class="text-xs font-mono font-semibold uppercase text-slate-400 ml-1.5">Python 3.12 AST</span>
+              </div>
+              <span class="text-[0.65rem] font-mono px-2 py-0.5 rounded bg-white/[0.06] text-slate-300">RUNTIME</span>
             </div>
 
-            <div id="code-box" class="font-mono text-xs text-slate-300 overflow-x-auto min-h-[170px] flex flex-col justify-center">
+            <div id="code-box" class="font-mono text-xs text-slate-300 overflow-x-auto min-h-[160px] flex flex-col justify-center bg-black/40 p-3 rounded-xl border border-white/[0.04]">
               ${defaultLines.map(l => `<span class="code-row">${l}</span>`).join('')}
             </div>
           </div>
 
-          <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-500 font-mono">
+          <div class="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-[0.7rem] text-slate-500 font-mono">
             <span>SYNTAX: PYTHON_AST</span>
-            <span>STATUS: ACTIVE_TRACING</span>
+            <span class="text-emerald-400">ACTIVE_TRACING</span>
           </div>
         </div>
       `;
@@ -843,7 +905,7 @@
       else if (currentDS === 'hashtable') initHT(preset.data);
 
       MODULES[currentDS].renderCanvas();
-      logMsg(`Scenario loaded: <b>${preset.name}</b>`);
+      logMsg(`Vector preset loaded: <b>${preset.name}</b>`);
     }
 
     /* ══════════════════════════════════════════════════════════
@@ -852,42 +914,39 @@
     const ArrayModule = {
       renderControls() {
         const presets = DS_CONFIG.array.presets;
-        document.getElementById('ds-command-bar').innerHTML = `
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <!-- Command Inputs -->
-            <div class="flex flex-wrap items-center gap-2.5">
-              <input id="arr-val-in" type="number" placeholder="Value" class="swiss-input w-24" onkeydown="if(event.key==='Enter') ArrayModule.insert()" />
-              <button class="btn-swiss-dark" onclick="ArrayModule.insert()">
-                <span>+ Insert</span>
+        document.getElementById('ds-command-deck').innerHTML = `
+          <div class="flex flex-wrap items-center gap-2.5">
+            <input id="arr-val-in" type="number" placeholder="Value" class="obsidian-input w-24" onkeydown="if(event.key==='Enter') ArrayModule.insert()" />
+            <button class="btn-obsidian-primary" onclick="ArrayModule.insert()">
+              <span>+ Insert</span>
+            </button>
+
+            <div class="h-5 w-px bg-white/[0.08] hidden sm:block"></div>
+
+            <input id="arr-idx-in" type="number" placeholder="Offset [i]" class="obsidian-input w-28" onkeydown="if(event.key==='Enter') ArrayModule.deleteIdx()" />
+            <button class="btn-obsidian-danger" onclick="ArrayModule.deleteIdx()">
+              <span>Delete [i]</span>
+            </button>
+
+            <div class="h-5 w-px bg-white/[0.08] hidden sm:block"></div>
+
+            <button class="btn-obsidian-secondary" onclick="ArrayModule.search()">
+              <span>Search</span>
+            </button>
+
+            <button class="btn-obsidian-secondary" onclick="ArrayModule.reset()">
+              <span>Reset</span>
+            </button>
+          </div>
+
+          <!-- Presets -->
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <span class="text-xs font-mono text-slate-500">VECTORS:</span>
+            ${presets.map((p, i) => `
+              <button onclick="loadPreset(${i})" class="px-3 py-1 text-xs font-mono rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 transition-all">
+                ${p.name}
               </button>
-
-              <div class="h-5 w-px bg-slate-200 hidden sm:block"></div>
-
-              <input id="arr-idx-in" type="number" placeholder="[Offset]" class="swiss-input w-24" onkeydown="if(event.key==='Enter') ArrayModule.deleteIdx()" />
-              <button class="btn-swiss-danger" onclick="ArrayModule.deleteIdx()">
-                <span>Delete [i]</span>
-              </button>
-
-              <div class="h-5 w-px bg-slate-200 hidden sm:block"></div>
-
-              <button class="btn-swiss-outline" onclick="ArrayModule.search()">
-                <span>Search</span>
-              </button>
-
-              <button class="btn-swiss-outline" onclick="ArrayModule.reset()">
-                <span>Reset</span>
-              </button>
-            </div>
-
-            <!-- Presets -->
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-xs font-mono text-slate-400">VECTORS:</span>
-              ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="px-2.5 py-1 text-xs font-mono border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all rounded-sm">
-                  ${p.name}
-                </button>
-              `).join('')}
-            </div>
+            `).join('')}
           </div>
         `;
       },
@@ -896,29 +955,29 @@
         const stage = document.getElementById('ds-stage-container');
         if (!stage) return;
         if (arrData.length === 0) {
-          stage.innerHTML = `<div class="text-xs font-mono text-slate-500">Vector buffer is unallocated.</div>`;
+          stage.innerHTML = `<div class="text-xs font-mono text-slate-500">Vector memory buffer is unallocated.</div>`;
           return;
         }
 
-        const W = 460;
+        const W = 480;
         const H = 220;
         const startX = 50;
-        const spacing = Math.min(54, (W - 100) / arrData.length);
+        const spacing = Math.min(56, (W - 90) / arrData.length);
 
         let cubesSvg = '';
         arrData.forEach((val, i) => {
           const cx = startX + i * spacing;
-          const cy = 110;
+          const cy = 105;
           const isScan = i === highlightIdx;
           const isFound = styleType === 'found-target' && isScan;
-          cubesSvg += generateIsometricCubeSvg(cx, cy, 48, val, isScan, isFound);
+          cubesSvg += generateIsometricCubeSvg(cx, cy, 46, val, isScan, isFound);
 
-          // Blueprint memory address tag below
+          // Address tag below
           cubesSvg += `
-            <text x="${cx}" y="${cy + 60}" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="#64748b">
+            <text x="${cx}" y="${cy + 58}" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="#94a3b8">
               [${i}]
             </text>
-            <text x="${cx}" y="${cy + 74}" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#475569">
+            <text x="${cx}" y="${cy + 72}" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#475569">
               0x${(1000 + i * 4).toString(16).toUpperCase()}
             </text>
           `;
@@ -927,8 +986,8 @@
         stage.innerHTML = `
           <div class="w-full flex flex-col items-center">
             <div class="flex items-center justify-between w-full text-[0.7rem] font-mono text-slate-500 mb-2">
-              <span>PHYSICAL_MEMORY_BLOCK: 0x1000</span>
-              <span class="text-emerald-500">LENGTH = ${arrData.length} WORDS</span>
+              <span>PHYSICAL_BLOCK: 0x1000</span>
+              <span class="text-emerald-400 font-semibold">LENGTH = ${arrData.length} WORDS</span>
             </div>
             <svg viewBox="0 0 ${W} ${H}" class="w-full max-w-lg h-auto">
               ${cubesSvg}
@@ -1033,35 +1092,33 @@
     const LinkedListModule = {
       renderControls() {
         const presets = DS_CONFIG.linkedlist.presets;
-        document.getElementById('ds-command-bar').innerHTML = `
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex flex-wrap items-center gap-2.5">
-              <input id="ll-val-in" type="number" placeholder="Value" class="swiss-input w-24" onkeydown="if(event.key==='Enter') LinkedListModule.insertHead()" />
-              <button class="btn-swiss-dark" onclick="LinkedListModule.insertHead()">
-                <span>+ Insert Head (O(1))</span>
-              </button>
-              <button class="btn-swiss-outline" onclick="LinkedListModule.insertTail()">
-                <span>+ Insert Tail</span>
-              </button>
-              <button class="btn-swiss-danger" onclick="LinkedListModule.deleteHead()">
-                <span>Delete Head</span>
-              </button>
-              <button class="btn-swiss-outline" onclick="LinkedListModule.search()">
-                <span>Search</span>
-              </button>
-              <button class="btn-swiss-outline" onclick="LinkedListModule.reset()">
-                <span>Reset</span>
-              </button>
-            </div>
+        document.getElementById('ds-command-deck').innerHTML = `
+          <div class="flex flex-wrap items-center gap-2.5">
+            <input id="ll-val-in" type="number" placeholder="Value" class="obsidian-input w-24" onkeydown="if(event.key==='Enter') LinkedListModule.insertHead()" />
+            <button class="btn-obsidian-primary" onclick="LinkedListModule.insertHead()">
+              <span>+ Insert Head (O(1))</span>
+            </button>
+            <button class="btn-obsidian-secondary" onclick="LinkedListModule.insertTail()">
+              <span>+ Insert Tail</span>
+            </button>
+            <button class="btn-obsidian-danger" onclick="LinkedListModule.deleteHead()">
+              <span>Delete Head</span>
+            </button>
+            <button class="btn-obsidian-secondary" onclick="LinkedListModule.search()">
+              <span>Search</span>
+            </button>
+            <button class="btn-obsidian-secondary" onclick="LinkedListModule.reset()">
+              <span>Reset</span>
+            </button>
+          </div>
 
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-xs font-mono text-slate-400">VECTORS:</span>
-              ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="px-2.5 py-1 text-xs font-mono border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all rounded-sm">
-                  ${p.name}
-                </button>
-              `).join('')}
-            </div>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <span class="text-xs font-mono text-slate-500">VECTORS:</span>
+            ${presets.map((p, i) => `
+              <button onclick="loadPreset(${i})" class="px-3 py-1 text-xs font-mono rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 transition-all">
+                ${p.name}
+              </button>
+            `).join('')}
           </div>
         `;
       },
@@ -1083,11 +1140,11 @@
           return;
         }
 
-        const W = 460;
+        const W = 480;
         const H = 200;
         const count = nodes.length;
-        const spacing = count <= 4 ? 84 : count === 5 ? 74 : 64;
-        const nodeWidth = count <= 4 ? 56 : count === 5 ? 48 : 42;
+        const spacing = count <= 4 ? 88 : count === 5 ? 78 : 66;
+        const nodeWidth = count <= 4 ? 58 : count === 5 ? 50 : 44;
         const startX = Math.max(16, (W - ((count - 1) * spacing + nodeWidth)) / 2);
 
         let svgContent = '';
@@ -1109,13 +1166,13 @@
           svgContent += `
             <g class="cursor-pointer">
               <!-- Value Section -->
-              <rect x="${nx}" y="${ny}" width="${nodeWidth * 0.65}" height="36" fill="${isHigh ? '#10b981' : '#1e293b'}" stroke="${isHigh ? '#34d399' : '#334155'}" stroke-width="1.5" />
+              <rect x="${nx}" y="${ny}" width="${nodeWidth * 0.65}" height="36" rx="3" fill="${isHigh ? '#10b981' : '#141824'}" stroke="${isHigh ? '#34d399' : '#283046'}" stroke-width="1.2" />
               <text x="${nx + nodeWidth * 0.325}" y="${ny + 23}" text-anchor="middle" font-family="'Inter', sans-serif" font-size="${count > 5 ? 11 : 12}" font-weight="700" fill="#ffffff">
                 ${val}
               </text>
               
               <!-- Pointer Section -->
-              <rect x="${nx + nodeWidth * 0.65}" y="${ny}" width="${nodeWidth * 0.35}" height="36" fill="#0f172a" stroke="${isHigh ? '#34d399' : '#334155'}" stroke-width="1.5" />
+              <rect x="${nx + nodeWidth * 0.65}" y="${ny}" width="${nodeWidth * 0.35}" height="36" rx="3" fill="#0b0e17" stroke="${isHigh ? '#34d399' : '#283046'}" stroke-width="1.2" />
               <circle cx="${nx + nodeWidth * 0.825}" cy="${ny + 18}" r="2.5" fill="#38bdf8" />
               
               <!-- Address label -->
@@ -1130,7 +1187,7 @@
           <div class="w-full flex flex-col items-center">
             <div class="flex items-center justify-between w-full text-[0.7rem] font-mono text-slate-500 mb-2">
               <span>HEAD -> 0x${(2048).toString(16).toUpperCase()}</span>
-              <span class="text-cyan-400">CHAIN NODES: ${nodes.length}</span>
+              <span class="text-cyan-400 font-semibold">CHAIN NODES: ${nodes.length}</span>
             </div>
             <svg viewBox="0 0 ${W} ${H}" class="w-full max-w-lg h-auto">
               ${svgContent}
@@ -1241,32 +1298,30 @@
     const StackModule = {
       renderControls() {
         const presets = DS_CONFIG.stack.presets;
-        document.getElementById('ds-command-bar').innerHTML = `
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex flex-wrap items-center gap-2.5">
-              <input id="st-val-in" type="number" placeholder="Value" class="swiss-input w-24" onkeydown="if(event.key==='Enter') StackModule.push()" />
-              <button class="btn-swiss-dark" onclick="StackModule.push()">
-                <span>+ Push (Top)</span>
-              </button>
-              <button class="btn-swiss-danger" onclick="StackModule.pop()">
-                <span>- Pop (Top)</span>
-              </button>
-              <button class="btn-swiss-outline" onclick="StackModule.peek()">
-                <span>Peek</span>
-              </button>
-              <button class="btn-swiss-outline" onclick="StackModule.reset()">
-                <span>Reset</span>
-              </button>
-            </div>
+        document.getElementById('ds-command-deck').innerHTML = `
+          <div class="flex flex-wrap items-center gap-2.5">
+            <input id="st-val-in" type="number" placeholder="Value" class="obsidian-input w-24" onkeydown="if(event.key==='Enter') StackModule.push()" />
+            <button class="btn-obsidian-primary" onclick="StackModule.push()">
+              <span>+ Push (Top)</span>
+            </button>
+            <button class="btn-obsidian-danger" onclick="StackModule.pop()">
+              <span>- Pop (Top)</span>
+            </button>
+            <button class="btn-obsidian-secondary" onclick="StackModule.peek()">
+              <span>Peek</span>
+            </button>
+            <button class="btn-obsidian-secondary" onclick="StackModule.reset()">
+              <span>Reset</span>
+            </button>
+          </div>
 
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-xs font-mono text-slate-400">VECTORS:</span>
-              ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="px-2.5 py-1 text-xs font-mono border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all rounded-sm">
-                  ${p.name}
-                </button>
-              `).join('')}
-            </div>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <span class="text-xs font-mono text-slate-500">VECTORS:</span>
+            ${presets.map((p, i) => `
+              <button onclick="loadPreset(${i})" class="px-3 py-1 text-xs font-mono rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 transition-all">
+                ${p.name}
+              </button>
+            `).join('')}
           </div>
         `;
       },
@@ -1280,12 +1335,12 @@
           <div class="w-full flex flex-col items-center py-2">
             <div class="flex items-center justify-between w-full max-w-xs text-[0.7rem] font-mono text-slate-500 mb-2">
               <span>STACK_POINTER: [SP = ${stackData.length}]</span>
-              <span class="text-emerald-400">LIFO INVARIANT</span>
+              <span class="text-emerald-400 font-semibold">LIFO INVARIANT</span>
             </div>
 
-            <div class="w-64 min-h-[220px] border-x border-b border-slate-800 bg-[#0f1118] flex flex-col-reverse p-3 gap-2">
+            <div class="w-64 min-h-[220px] border-x border-b border-white/[0.08] bg-[#0c0e15] rounded-b-xl flex flex-col-reverse p-3 gap-2 shadow-inner">
               ${stackData.map((v, i) => `
-                <div class="w-full p-2.5 border flex items-center justify-between font-mono text-xs ${i === topIdx ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300' : 'bg-slate-900 border-slate-800 text-slate-300'}">
+                <div class="w-full p-2.5 rounded-lg border flex items-center justify-between font-mono text-xs ${i === topIdx ? 'bg-emerald-950/50 border-emerald-500/80 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.15)]' : 'bg-white/[0.03] border-white/[0.06] text-slate-300'}">
                   <span class="font-bold text-sm text-white">${v}</span>
                   <span class="text-[0.65rem] text-slate-500">${i === topIdx ? '← SP (TOP)' : `OFFSET [${i}]`}</span>
                 </div>
@@ -1293,8 +1348,8 @@
               ${stackData.length === 0 ? '<div class="text-center font-mono text-xs text-slate-600 my-auto">Stack column is empty</div>' : ''}
             </div>
             
-            <div class="w-64 border-t-2 border-slate-700 text-center pt-2 mt-1">
-              <span class="text-[0.65rem] font-mono text-slate-600 uppercase">BASE_REGISTER (RESTRICTED)</span>
+            <div class="w-64 border-t-2 border-white/[0.1] text-center pt-2 mt-1">
+              <span class="text-[0.65rem] font-mono text-slate-500 uppercase tracking-wider">BASE_REGISTER (RESTRICTED)</span>
             </div>
           </div>
         `;
@@ -1347,32 +1402,30 @@
     const QueueModule = {
       renderControls() {
         const presets = DS_CONFIG.queue.presets;
-        document.getElementById('ds-command-bar').innerHTML = `
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex flex-wrap items-center gap-2.5">
-              <input id="qu-val-in" type="number" placeholder="Value" class="swiss-input w-24" onkeydown="if(event.key==='Enter') QueueModule.enqueue()" />
-              <button class="btn-swiss-dark" onclick="QueueModule.enqueue()">
-                <span>+ Enqueue (Rear)</span>
-              </button>
-              <button class="btn-swiss-danger" onclick="QueueModule.dequeue()">
-                <span>- Dequeue (Front)</span>
-              </button>
-              <button class="btn-swiss-outline" onclick="QueueModule.peek()">
-                <span>Peek</span>
-              </button>
-              <button class="btn-swiss-outline" onclick="QueueModule.reset()">
-                <span>Reset</span>
-              </button>
-            </div>
+        document.getElementById('ds-command-deck').innerHTML = `
+          <div class="flex flex-wrap items-center gap-2.5">
+            <input id="qu-val-in" type="number" placeholder="Value" class="obsidian-input w-24" onkeydown="if(event.key==='Enter') QueueModule.enqueue()" />
+            <button class="btn-obsidian-primary" onclick="QueueModule.enqueue()">
+              <span>+ Enqueue (Rear)</span>
+            </button>
+            <button class="btn-obsidian-danger" onclick="QueueModule.dequeue()">
+              <span>- Dequeue (Front)</span>
+            </button>
+            <button class="btn-obsidian-secondary" onclick="QueueModule.peek()">
+              <span>Peek</span>
+            </button>
+            <button class="btn-obsidian-secondary" onclick="QueueModule.reset()">
+              <span>Reset</span>
+            </button>
+          </div>
 
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-xs font-mono text-slate-400">VECTORS:</span>
-              ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="px-2.5 py-1 text-xs font-mono border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all rounded-sm">
-                  ${p.name}
-                </button>
-              `).join('')}
-            </div>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <span class="text-xs font-mono text-slate-500">VECTORS:</span>
+            ${presets.map((p, i) => `
+              <button onclick="loadPreset(${i})" class="px-3 py-1 text-xs font-mono rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 transition-all">
+                ${p.name}
+              </button>
+            `).join('')}
           </div>
         `;
       },
@@ -1387,10 +1440,10 @@
               <span class="text-cyan-400 font-semibold">⬅️ REAR_PORT (IN)</span>
             </div>
 
-            <div class="flex items-center gap-2 p-4 border border-slate-800 bg-[#0f1118] w-full max-w-md overflow-x-auto justify-center min-h-[110px]">
+            <div class="flex items-center gap-2.5 p-4 border border-white/[0.08] bg-[#0c0e15] rounded-xl w-full max-w-md overflow-x-auto justify-center min-h-[110px] shadow-inner">
               ${queueData.map((v, i) => `
                 <div class="flex flex-col items-center gap-1.5 flex-shrink-0">
-                  <div class="w-12 h-12 border flex items-center justify-center font-mono font-bold text-sm ${i === 0 ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300' : i === queueData.length - 1 ? 'bg-cyan-950/60 border-cyan-500 text-cyan-300' : 'bg-slate-900 border-slate-800 text-slate-300'}">
+                  <div class="w-12 h-12 rounded-lg border flex items-center justify-center font-mono font-bold text-sm ${i === 0 ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.2)]' : i === queueData.length - 1 ? 'bg-cyan-950/60 border-cyan-500 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.2)]' : 'bg-white/[0.03] border-white/[0.08] text-slate-300'}">
                     ${v}
                   </div>
                   <span class="text-[0.65rem] font-mono text-slate-500">${i === 0 ? 'FRONT' : i === queueData.length - 1 ? 'REAR' : `p[${i}]`}</span>
@@ -1449,32 +1502,30 @@
     const BSTModule = {
       renderControls() {
         const presets = DS_CONFIG.bst.presets;
-        document.getElementById('ds-command-bar').innerHTML = `
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex flex-wrap items-center gap-2.5">
-              <input id="bst-val-in" type="number" placeholder="Value" class="swiss-input w-24" onkeydown="if(event.key==='Enter') BSTModule.insert()" />
-              <button class="btn-swiss-dark" onclick="BSTModule.insert()">
-                <span>+ Insert</span>
-              </button>
-              <button class="btn-swiss-outline" onclick="BSTModule.search()">
-                <span>Search</span>
-              </button>
-              <button class="btn-swiss-outline" onclick="BSTModule.inOrder()">
-                <span>In-Order</span>
-              </button>
-              <button class="btn-swiss-outline" onclick="BSTModule.reset()">
-                <span>Reset</span>
-              </button>
-            </div>
+        document.getElementById('ds-command-deck').innerHTML = `
+          <div class="flex flex-wrap items-center gap-2.5">
+            <input id="bst-val-in" type="number" placeholder="Value" class="obsidian-input w-24" onkeydown="if(event.key==='Enter') BSTModule.insert()" />
+            <button class="btn-obsidian-primary" onclick="BSTModule.insert()">
+              <span>+ Insert</span>
+            </button>
+            <button class="btn-obsidian-secondary" onclick="BSTModule.search()">
+              <span>Search</span>
+            </button>
+            <button class="btn-obsidian-secondary" onclick="BSTModule.inOrder()">
+              <span>In-Order</span>
+            </button>
+            <button class="btn-obsidian-secondary" onclick="BSTModule.reset()">
+              <span>Reset</span>
+            </button>
+          </div>
 
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-xs font-mono text-slate-400">VECTORS:</span>
-              ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="px-2.5 py-1 text-xs font-mono border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all rounded-sm">
-                  ${p.name}
-                </button>
-              `).join('')}
-            </div>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <span class="text-xs font-mono text-slate-500">VECTORS:</span>
+            ${presets.map((p, i) => `
+              <button onclick="loadPreset(${i})" class="px-3 py-1 text-xs font-mono rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 transition-all">
+                ${p.name}
+              </button>
+            `).join('')}
           </div>
         `;
       },
@@ -1492,7 +1543,7 @@
           return;
         }
 
-        const W = 460;
+        const W = 480;
         function getTreeDepth(node) {
           if (!node) return 0;
           return 1 + Math.max(getTreeDepth(node.left), getTreeDepth(node.right));
@@ -1521,12 +1572,12 @@
           const cur = posMap[n.val];
           if (n.left) {
             const lc = posMap[n.left.val];
-            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${lc.x}" y2="${lc.y}" stroke="#475569" stroke-width="1.5" />`;
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${lc.x}" y2="${lc.y}" stroke="#334155" stroke-width="1.5" />`;
             drawLines(n.left);
           }
           if (n.right) {
             const rc = posMap[n.right.val];
-            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${rc.x}" y2="${rc.y}" stroke="#475569" stroke-width="1.5" />`;
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${rc.x}" y2="${rc.y}" stroke="#334155" stroke-width="1.5" />`;
             drawLines(n.right);
           }
         }
@@ -1536,8 +1587,8 @@
           const isTarget = n.val === targetVal;
           const inPath = pathVals.includes(n.val);
 
-          let fill = '#1e293b';
-          let stroke = '#475569';
+          let fill = '#111420';
+          let stroke = '#334155';
           let textColor = '#ffffff';
 
           if (isTarget) {
@@ -1564,7 +1615,7 @@
           <div class="w-full flex flex-col items-center">
             <div class="flex items-center justify-between w-full text-[0.7rem] font-mono text-slate-500 mb-2">
               <span>ROOT_NODE: [${bstRoot ? bstRoot.val : 'NULL'}]</span>
-              <span class="text-emerald-400">PARTITION_INVARIANT</span>
+              <span class="text-emerald-400 font-semibold">PARTITION_INVARIANT</span>
             </div>
             <svg viewBox="0 0 ${W} ${H}" class="w-full max-w-lg h-auto">
               ${linesSvg}
@@ -1709,33 +1760,31 @@
     const HashTableModule = {
       renderControls() {
         const presets = DS_CONFIG.hashtable.presets;
-        document.getElementById('ds-command-bar').innerHTML = `
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex flex-wrap items-center gap-2.5">
-              <input id="ht-key-in" type="text" placeholder="Key" class="swiss-input w-24" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
-              <input id="ht-val-in" type="text" placeholder="Value" class="swiss-input w-24" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
-              <button class="btn-swiss-dark" onclick="HashTableModule.insert()">
-                <span>+ Set Key</span>
-              </button>
-              <button class="btn-swiss-outline" onclick="HashTableModule.lookup()">
-                <span>Lookup</span>
-              </button>
-              <button class="btn-swiss-danger" onclick="HashTableModule.deleteKey()">
-                <span>Delete</span>
-              </button>
-              <button class="btn-swiss-outline" onclick="HashTableModule.reset()">
-                <span>Reset</span>
-              </button>
-            </div>
+        document.getElementById('ds-command-deck').innerHTML = `
+          <div class="flex flex-wrap items-center gap-2.5">
+            <input id="ht-key-in" type="text" placeholder="Key" class="obsidian-input w-24" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
+            <input id="ht-val-in" type="text" placeholder="Value" class="obsidian-input w-24" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
+            <button class="btn-obsidian-primary" onclick="HashTableModule.insert()">
+              <span>+ Set Key</span>
+            </button>
+            <button class="btn-obsidian-secondary" onclick="HashTableModule.lookup()">
+              <span>Lookup</span>
+            </button>
+            <button class="btn-obsidian-danger" onclick="HashTableModule.deleteKey()">
+              <span>Delete</span>
+            </button>
+            <button class="btn-obsidian-secondary" onclick="HashTableModule.reset()">
+              <span>Reset</span>
+            </button>
+          </div>
 
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-xs font-mono text-slate-400">VECTORS:</span>
-              ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="px-2.5 py-1 text-xs font-mono border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all rounded-sm">
-                  ${p.name}
-                </button>
-              `).join('')}
-            </div>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <span class="text-xs font-mono text-slate-500">VECTORS:</span>
+            ${presets.map((p, i) => `
+              <button onclick="loadPreset(${i})" class="px-3 py-1 text-xs font-mono rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 transition-all">
+                ${p.name}
+              </button>
+            `).join('')}
           </div>
         `;
       },
@@ -1744,15 +1793,15 @@
         const stage = document.getElementById('ds-stage-container');
         if (!stage) return;
         stage.innerHTML = `
-          <div class="w-full flex flex-col gap-2 max-w-md py-1">
+          <div class="w-full flex flex-col gap-2.5 max-w-md py-1">
             <div class="flex items-center justify-between text-[0.7rem] font-mono text-slate-500 mb-1">
               <span>BUCKET_ARRAY: ${HT_SIZE} SLOTS</span>
               <span class="text-cyan-400 font-mono">hash(k) = ∑(ASCII) mod ${HT_SIZE}</span>
             </div>
 
             ${htBuckets.map((bucket, i) => `
-              <div class="flex items-center gap-2 p-2 border ${i === activeBucket ? 'border-emerald-500 bg-emerald-950/20' : 'border-slate-800 bg-[#0f1118]'} transition-all">
-                <span class="font-mono text-xs text-slate-400 font-semibold px-2 py-0.5 bg-slate-900 border border-slate-800">
+              <div class="flex items-center gap-2 p-2.5 rounded-xl border ${i === activeBucket ? 'border-emerald-500 bg-emerald-950/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]' : 'border-white/[0.06] bg-white/[0.02]'} transition-all">
+                <span class="font-mono text-xs text-slate-300 font-semibold px-2 py-0.5 rounded bg-white/[0.05] border border-white/[0.08]">
                   [0x0${i}]
                 </span>
                 
@@ -1760,7 +1809,7 @@
                   ${bucket.length === 0 ? `
                     <span class="text-[0.7rem] font-mono text-slate-600">NULL_PTR</span>
                   ` : bucket.map((item, j) => `
-                    <div class="px-2 py-0.5 border text-xs font-mono flex items-center gap-1 ${item.k === targetKey ? 'border-cyan-400 bg-cyan-950/60 text-cyan-200' : 'border-slate-700 bg-slate-800 text-slate-200'}">
+                    <div class="px-2.5 py-1 rounded-lg border text-xs font-mono flex items-center gap-1 ${item.k === targetKey ? 'border-cyan-400 bg-cyan-950/60 text-cyan-200 shadow-[0_0_12px_rgba(6,182,212,0.3)]' : 'border-white/[0.08] bg-white/[0.04] text-slate-200'}">
                       <span class="font-bold text-slate-400">${item.k}:</span>
                       <span>${item.v}</span>
                     </div>
@@ -1898,11 +1947,11 @@
       currentDS = ds;
 
       document.querySelectorAll('.nav-tab').forEach(btn => {
-        btn.classList.remove('text-black', 'font-semibold', 'bg-slate-100');
-        btn.classList.add('text-slate-600');
-        if (btn.getAttribute('onclick').includes(ds)) {
-          btn.classList.add('text-black', 'font-semibold', 'bg-slate-100');
-          btn.classList.remove('text-slate-600');
+        btn.classList.remove('bg-white', 'text-black', 'font-semibold', 'shadow-sm');
+        btn.classList.add('text-slate-400');
+        if (btn.getAttribute('onclick').includes(`'${ds}'`)) {
+          btn.classList.add('bg-white', 'text-black', 'font-semibold', 'shadow-sm');
+          btn.classList.remove('text-slate-400');
         }
       });
 
