@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DS Playground — 3D Tactile Visualizer</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
+
+    :root {
+      --bg-cream: #faf7f0;
+      --border-dark: #121826;
+      --shadow-dark: #121826;
+      --color-orange: #ff6b35;
+      --color-blue: #3b82f6;
+      --color-yellow: #fbbf24;
+      --color-green: #10b981;
+      --color-purple: #8b5cf6;
+      --color-pink: #ec4899;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    }
+
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      background-image: 
+        linear-gradient(to right, rgba(59, 130, 246, 0.08) 1.5px, transparent 1.5px),
+        linear-gradient(to bottom, rgba(59, 130, 246, 0.08) 1.5px, transparent 1.5px);
+      background-size: 32px 32px;
+      color: #121826;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Neo-Brutalist Cards */
+    .neo-card {
+      background: #ffffff;
+      border: 3px solid var(--border-dark);
+      border-radius: 20px;
+      box-shadow: 6px 6px 0px var(--shadow-dark);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .neo-card-sm {
+      background: #ffffff;
+      border: 2.5px solid var(--border-dark);
+      border-radius: 14px;
+      box-shadow: 4px 4px 0px var(--shadow-dark);
+    }
+
+    /* Keycaps Navigation */
+    .keycap-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 14px;
+      border: 2.5px solid var(--border-dark);
+      background: #ffffff;
+      box-shadow: 0 4px 0px var(--border-dark);
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      color: #121826;
+      user-select: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .keycap-nav:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0px var(--border-dark);
+      background: #fdfaf3;
+    }
+
+    .keycap-nav:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0px var(--border-dark);
+    }
+
+    .keycap-nav.active {
+      background: #ffedd5;
+      border-color: var(--border-dark);
+      box-shadow: 0 2px 0px var(--border-dark);
+      transform: translateY(2px);
+    }
+
+    /* 3D Tactile Action Buttons */
+    .key-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.15rem;
+      font-size: 0.875rem;
+      font-weight: 800;
+      border: 2.5px solid var(--border-dark);
+      border-radius: 12px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.1s ease;
+      box-shadow: 0 4px 0px var(--border-dark);
+    }
+
+    .key-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0px var(--border-dark);
+    }
+
+    .key-btn:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0px var(--border-dark);
+    }
+
+    .key-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 2px 0px var(--border-dark);
+    }
+
+    .key-btn-orange { background: #ff7844; color: #ffffff; }
+    .key-btn-blue   { background: #3b82f6; color: #ffffff; }
+    .key-btn-green  { background: #10b981; color: #ffffff; }
+    .key-btn-yellow { background: #fbbf24; color: #121826; }
+    .key-btn-purple { background: #a855f7; color: #ffffff; }
+    .key-btn-pink   { background: #f43f5e; color: #ffffff; }
+    .key-btn-white  { background: #ffffff; color: #121826; }
+
+    /* Neo Inputs */
+    .neo-input {
+      background: #ffffff;
+      border: 2.5px solid var(--border-dark);
+      border-radius: 12px;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #121826;
+      box-shadow: inset 2px 2px 0px rgba(0,0,0,0.06);
+      outline: none;
+      transition: all 0.15s;
+    }
+    .neo-input:focus {
+      border-color: var(--color-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    }
+
+    /* Sticker Badges */
+    .sticker-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      border: 2px solid var(--border-dark);
+      box-shadow: 2px 2px 0px var(--border-dark);
+      background: #ffffff;
+    }
+
+    /* ══════════════════════════════════════════════
+       3D KEYCAP CELL
+    ══════════════════════════════════════════════ */
+    .keycap-3d {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+      border: 3px solid var(--border-dark);
+      border-radius: 16px;
+      box-shadow: 0 8px 0px var(--border-dark), 0 12px 10px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #121826;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .keycap-3d:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 0px var(--border-dark), 0 16px 14px rgba(0,0,0,0.18);
+    }
+
+    .keycap-3d:active {
+      transform: translateY(4px);
+      box-shadow: 0 4px 0px var(--border-dark);
+    }
+
+    .keycap-3d::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 6px;
+      right: 6px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 8px;
+    }
+
+    .keycap-3d.highlight {
+      background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
+      color: #ffffff;
+      transform: translateY(-8px);
+      box-shadow: 0 14px 0px var(--border-dark), 0 18px 20px rgba(37, 99, 235, 0.35);
+    }
+
+    .keycap-3d.found {
+      background: linear-gradient(180deg, #34d399 0%, #059669 100%);
+      color: #ffffff;
+      transform: translateY(-10px) scale(1.08);
+      box-shadow: 0 16px 0px var(--border-dark), 0 20px 24px rgba(16, 185, 129, 0.4);
+    }
+
+    .keycap-3d.deleting {
+      background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
+      color: #ffffff;
+      transform: translateY(6px) scale(0.6);
+      box-shadow: 0 2px 0px var(--border-dark);
+      opacity: 0;
+    }
+
+    /* Linked List Capsule */
+    .ll-capsule {
+      display: flex;
+      align-items: stretch;
+      background: #ffffff;
+      border: 3px solid var(--border-dark);
+      border-radius: 16px;
+      box-shadow: 0 6px 0px var(--border-dark);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .ll-capsule:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 0px var(--border-dark);
+    }
+    .ll-capsule.highlight {
+      transform: translateY(-8px);
+      border-color: #2563eb;
+      box-shadow: 0 12px 0px #1e3a8a, 0 14px 15px rgba(37, 99, 235, 0.25);
+    }
+    .ll-val-box {
+      padding: 0.65rem 1.1rem;
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: #121826;
+      background: #ffffff;
+    }
+    .ll-ptr-box {
+      padding: 0.65rem 0.85rem;
+      background: #f1f5f9;
+      border-left: 3px solid var(--border-dark);
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Stack Chute */
+    .stack-chute {
+      width: 280px;
+      min-height: 290px;
+      border: 4px solid var(--border-dark);
+      border-top: none;
+      border-radius: 0 0 20px 20px;
+      background: #ffffff;
+      box-shadow: inset 0 -12px 0px rgba(0,0,0,0.06), 4px 6px 0px var(--border-dark);
+      display: flex;
+      flex-direction: column-reverse;
+      padding: 0.75rem 1.25rem;
+      gap: 0.6rem;
+    }
+
+    .stack-plate {
+      width: 100%;
+      padding: 0.75rem;
+      border: 3px solid var(--border-dark);
+      border-radius: 12px;
+      background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+      font-size: 1.1rem;
+      font-weight: 900;
+      text-align: center;
+      box-shadow: 0 4px 0px var(--border-dark);
+      animation: dropSlam 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .stack-plate:hover {
+      transform: scale(1.02);
+    }
+    .stack-plate.is-top {
+      background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%);
+      color: #ffffff;
+      box-shadow: 0 6px 0px var(--border-dark);
+    }
+
+    /* Queue Conveyor */
+    .conveyor-belt {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.5rem;
+      background: #ffffff;
+      border: 3px solid var(--border-dark);
+      border-radius: 20px;
+      box-shadow: 6px 6px 0px var(--border-dark);
+      overflow-x: auto;
+      min-height: 150px;
+    }
+
+    /* Mailbox Slot */
+    .mailbox-slot {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0.85rem;
+      background: #ffffff;
+      border: 2.5px solid var(--border-dark);
+      border-radius: 14px;
+      box-shadow: 3px 3px 0px var(--border-dark);
+      transition: all 0.2s;
+    }
+    .mailbox-slot.active-slot {
+      background: #fef08a;
+      transform: translateX(4px);
+    }
+
+    /* Step Callout Pointer Marker */
+    .pointer-marker {
+      animation: bounceMarker 1s infinite alternate ease-in-out;
+    }
+
+    /* Code Line Highlight */
+    .code-line {
+      display: block;
+      padding: 0.1rem 0.5rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .code-line.active-line {
+      background: rgba(251, 191, 36, 0.25);
+      border-left: 3px solid #fbbf24;
+      color: #fbbf24;
+      font-weight: 700;
+    }
+
+    @keyframes dropSlam {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes bounceMarker {
+      from { transform: translateY(0px); }
+      to { transform: translateY(-6px); }
+    }
+  </style>
+</head>
+<body class="p-4 md:p-6 lg:p-8">
+
+  <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
+
+    <!-- ── Left Sidebar ── -->
+    <aside class="w-full lg:w-72 flex flex-col gap-5 flex-shrink-0">
+      
+      <!-- Brand Poster Card -->
+      <div class="neo-card p-5 bg-[#ffedd5] relative overflow-hidden">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-[#ff6b35] border-3 border-[#121826] shadow-[0_4px_0_#121826] flex items-center justify-center text-white font-black text-2xl">
+            DS
+          </div>
+          <div>
+            <h1 class="text-xl font-black tracking-tight leading-none">OVERFLOW</h1>
+            <p class="text-xs font-bold text-slate-700 tracking-wide mt-1">Data Structures Lab</p>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t-2 border-[#121826]/10 flex items-center justify-between">
+          <!-- Audio Toggle Button -->
+          <button id="sound-btn" onclick="toggleSound()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border-2 border-[#121826] bg-white text-xs font-mono font-bold shadow-[2px_2px_0_#121826] cursor-pointer hover:bg-slate-50">
+            <span id="sound-icon">🔊</span>
+            <span id="sound-text">SFX On</span>
+          </button>
+          <span class="bg-[#121826] text-white px-2 py-0.5 rounded-full font-mono text-[0.7rem] font-bold">PRO UX</span>
+        </div>
+      </div>
+
+      <!-- Navigation Keycaps -->
+      <div class="neo-card p-3.5 flex flex-col gap-2">
+        <div class="px-2 py-1 text-[0.7rem] font-black uppercase tracking-wider text-slate-500">
+          Select Structure
+        </div>
+        <button class="keycap-nav active" onclick="switchDS('array')">
+          <span class="text-xl">🟧</span>
+          <span>Array</span>
+        </button>
+        <button class="keycap-nav" onclick="switchDS('linkedlist')">
+          <span class="text-xl">🔗</span>
+          <span>Linked List</span>
+        </button>
+        <button class="keycap-nav" onclick="switchDS('stack')">
+          <span class="text-xl">📚</span>
+          <span>Stack (LIFO)</span>
+        </button>
+        <button class="keycap-nav" onclick="switchDS('queue')">
+          <span class="text-xl">🚶</span>
+          <span>Queue (FIFO)</span>
+        </button>
+        <button class="keycap-nav" onclick="switchDS('bst')">
+          <span class="text-xl">🌳</span>
+          <span>Binary Search Tree</span>
+        </button>
+        <button class="keycap-nav" onclick="switchDS('hashtable')">
+          <span class="text-xl">🗂️</span>
+          <span>Hash Table</span>
+        </button>
+      </div>
+
+      <!-- UX Guidance: Click-to-Interact hint -->
+      <div class="neo-card-sm p-4 bg-[#e0f2fe] border-2 border-[#121826]">
+        <div class="flex items-center gap-1.5 font-black text-xs uppercase tracking-wider text-blue-900 mb-1">
+          <span>👆 Direct Manipulation</span>
+        </div>
+        <p class="text-xs text-slate-700 leading-relaxed font-semibold">
+          You can <b>click directly on any keycap node</b> in the canvas to inspect its memory address, value, or trigger an instant delete!
+        </p>
+      </div>
+
+    </aside>
+
+    <!-- ── Main Workspace ── -->
+    <main class="flex-1 flex flex-col gap-6">
+
+      <!-- Header Bento Card -->
+      <div class="neo-card p-6" id="ds-header-panel">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Interactive Controls Bento Bar -->
+      <div class="neo-card p-5" id="ds-controls-panel">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Interactive 3D Canvas Area -->
+      <div class="neo-card p-8 min-h-[330px] flex flex-col justify-center items-center relative overflow-hidden bg-white" id="ds-canvas-panel">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Stepper Controls & Live Terminal Bar -->
+      <div class="neo-card-sm p-4 bg-[#121826] text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
+        
+        <!-- Live status -->
+        <div class="flex items-center gap-3 overflow-hidden flex-1">
+          <div class="w-3 h-3 rounded-full bg-[#10b981] animate-ping flex-shrink-0"></div>
+          <span class="text-xs font-mono font-bold text-yellow-400 flex-shrink-0">LIVE CONSOLE:</span>
+          <span id="log-msg" class="text-xs font-mono text-slate-100 truncate">Ready! Click any keycap or operation above.</span>
+        </div>
+
+        <!-- Algorithmic Step Controller -->
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <!-- Step Forward Button -->
+          <button id="btn-step-fwd" onclick="stepForward()" disabled class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 font-mono text-xs font-bold border border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-700 hover:text-white flex items-center gap-1">
+            <span>⏭️</span> Step Next
+          </button>
+
+          <div class="h-5 w-px bg-slate-700"></div>
+
+          <!-- Speed Slider -->
+          <span class="text-[0.7rem] font-mono text-slate-400 font-bold uppercase">Speed:</span>
+          <select id="anim-speed" class="bg-[#1e293b] border-2 border-slate-700 text-white text-xs rounded-lg px-2 py-1 font-mono font-bold outline-none cursor-pointer">
+            <option value="900">Slow (0.5x)</option>
+            <option value="450" selected>Normal (1x)</option>
+            <option value="180">Fast (2x)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Bottom Split Guide & Code Inspection -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="ds-guide-panel">
+        <!-- Rendered by JS -->
+      </div>
+
+    </main>
+
+  </div>
+
+  <script>
+    /* ════════════════════════════════════════════════════
+       AUDIO SYNTHESIZER (Web Audio API Keycap Click)
+    ════════════════════════════════════════════════════ */
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+    }
+
+    function playKeyClick(freq = 600, duration = 0.04) {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        if (!audioCtx) return;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + duration);
+
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // Fallback gracefully if audio blocked
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('sound-icon').textContent = soundEnabled ? '🔊' : '🔇';
+      document.getElementById('sound-text').textContent = soundEnabled ? 'SFX On' : 'Muted';
+      if (soundEnabled) playKeyClick(800, 0.05);
+    }
+
+    /* ════════════════════════════════════════════════════
+       DATA STRUCTURE CONFIGS & CODE
+    ════════════════════════════════════════════════════ */
+    const DS_CONFIG = {
+      array: {
+        title: "Array",
+        tag: "Contiguous Memory Block",
+        accent: "#ff7844",
+        bgTint: "#ffedd5",
+        summary: "Arrays place elements in unbroken, consecutive memory lockers. You can jump directly to any locker via its index [i] in instant O(1) time. Deleting or inserting requires sliding all items, which takes O(n).",
+        complexities: [
+          { label: "Access: O(1)", bg: "#dcfce7", text: "#15803d" },
+          { label: "Search: O(n)", bg: "#fef3c7", text: "#b45309" },
+          { label: "Insert: O(n)", bg: "#fef3c7", text: "#b45309" },
+          { label: "Delete: O(n)", bg: "#fee2e2", text: "#b91c1c" }
+        ],
+        presets: [
+          { name: "Default", data: [12, 45, 7, 23, 56, 8, 89] },
+          { name: "Worst-Case Search", data: [10, 20, 30, 40, 50, 60, 999] },
+          { name: "Ascending Sorted", data: [5, 12, 19, 28, 42, 56, 70] }
+        ],
+        steps: [
+          { title: "Insert / Push", desc: "Adds an element to the next available index at the end of the array." },
+          { title: "Delete by Index", desc: "Extracts an item from index [i]. Subsequent items physically slide left to fill the vacuum." },
+          { title: "Linear Search", desc: "Scans sequentially index-by-index until the matching value is spotted." }
+        ],
+        codeLines: {
+          insert: [
+            "# 1. Check array bounds",
+            "arr.append(value)",
+            "# Insert complete in O(1) amortized"
+          ],
+          search: [
+            "for i in range(len(arr)):",
+            "    if arr[i] == target:",
+            "        return i  # Target Found!",
+            "return -1  # Target Not Found"
+          ],
+          delete: [
+            "removed_val = arr[index]",
+            "for j in range(index, len(arr) - 1):",
+            "    arr[j] = arr[j + 1]  # Shift left",
+            "arr.pop()  # Shrink size"
+          ]
+        }
+      },
+
+      linkedlist: {
+        title: "Linked List",
+        tag: "Chained Pointer Nodes",
+        accent: "#3b82f6",
+        bgTint: "#dbeafe",
+        summary: "Linked lists chain individual memory nodes together using pointers. Nodes can live anywhere in RAM! Inserting at the very front (HEAD) is instantaneous O(1) because zero elements need to shift.",
+        complexities: [
+          { label: "Access: O(n)", bg: "#fef3c7", text: "#b45309" },
+          { label: "Search: O(n)", bg: "#fef3c7", text: "#b45309" },
+          { label: "Insert Head: O(1)", bg: "#dcfce7", text: "#15803d" },
+          { label: "Delete Head: O(1)", bg: "#dcfce7", text: "#15803d" }
+        ],
+        presets: [
+          { name: "Default (4 nodes)", data: [18, 42, 9, 65] },
+          { name: "Single Node", data: [42] },
+          { name: "Chain of 6", data: [10, 20, 30, 40, 50, 60] }
+        ],
+        steps: [
+          { title: "Insert Head", desc: "Creates a new node and points its 'next' reference directly to current HEAD in O(1)." },
+          { title: "Insert Tail", desc: "Follows pointers down the chain to the last node whose next is NULL, then attaches the new node." },
+          { title: "Delete Head", desc: "Simply repoints HEAD to HEAD.next. The unlinked node is garbage collected instantly." }
+        ],
+        codeLines: {
+          insert: [
+            "new_node = Node(value)",
+            "new_node.next = head",
+            "head = new_node  # O(1) Head assigned"
+          ],
+          search: [
+            "curr = head",
+            "while curr is not None:",
+            "    if curr.val == target: return True",
+            "    curr = curr.next",
+            "return False"
+          ],
+          delete: [
+            "if not head: return None",
+            "head = head.next  # Unlink first node",
+            "return head"
+          ]
+        }
+      },
+
+      stack: {
+        title: "Stack (LIFO)",
+        tag: "Last-In, First-Out Chute",
+        accent: "#a855f7",
+        bgTint: "#f3e8ff",
+        summary: "Like a vertical dispenser of Pringles chips or a cafeteria tray rack. You can only place items on the TOP (Push) or retrieve items from the TOP (Pop). The last item added is always the first one out.",
+        complexities: [
+          { label: "Push: O(1)", bg: "#dcfce7", text: "#15803d" },
+          { label: "Pop: O(1)", bg: "#dcfce7", text: "#15803d" },
+          { label: "Peek: O(1)", bg: "#dcfce7", text: "#15803d" },
+          { label: "Search: O(n)", bg: "#fef3c7", text: "#b45309" }
+        ],
+        presets: [
+          { name: "Default Stack", data: [14, 28, 55, 90] },
+          { name: "Almost Full (5)", data: [10, 20, 30, 40, 50] },
+          { name: "Empty Chute", data: [] }
+        ],
+        steps: [
+          { title: "Push", desc: "Drops an element onto the top of the stack chute." },
+          { title: "Pop", desc: "Pulls and removes the current TOP element." },
+          { title: "Peek", desc: "Inspects what's currently resting on TOP without removing it." }
+        ],
+        codeLines: {
+          push: [
+            "stack.append(value)  # Place on TOP",
+            "top_ptr = len(stack) - 1"
+          ],
+          pop: [
+            "if not stack: raise UnderflowError()",
+            "removed_item = stack.pop()  # Pop TOP",
+            "return removed_item"
+          ],
+          peek: [
+            "if not stack: return None",
+            "return stack[-1]  # Read TOP without pop"
+          ]
+        }
+      },
+
+      queue: {
+        title: "Queue (FIFO)",
+        tag: "First-In, First-Out Pipeline",
+        accent: "#10b981",
+        bgTint: "#d1fae5",
+        summary: "Like an orderly queue line at a movie theater ticket counter: whoever gets in line first is served and exits first. Elements enter at the REAR and leave from the FRONT.",
+        complexities: [
+          { label: "Enqueue: O(1)", bg: "#dcfce7", text: "#15803d" },
+          { label: "Dequeue: O(1)", bg: "#dcfce7", text: "#15803d" },
+          { label: "Peek: O(1)", bg: "#dcfce7", text: "#15803d" },
+          { label: "Search: O(n)", bg: "#fef3c7", text: "#b45309" }
+        ],
+        presets: [
+          { name: "Standard Queue", data: [15, 33, 72, 8] },
+          { name: "Single Passenger", data: [99] },
+          { name: "Busy Conveyor", data: [5, 10, 15, 20, 25, 30] }
+        ],
+        steps: [
+          { title: "Enqueue (Rear)", desc: "Enters a new element at the back of the line." },
+          { title: "Dequeue (Front)", desc: "Releases the front-most element from the queue." },
+          { title: "Peek", desc: "Observes the person at the front without dequeueing." }
+        ],
+        codeLines: {
+          enqueue: [
+            "queue.append(value)  # Join REAR",
+            "rear_ptr = len(queue) - 1"
+          ],
+          dequeue: [
+            "if not queue: raise EmptyQueueError()",
+            "front_val = queue.pop(0)  # Exit FRONT",
+            "return front_val"
+          ]
+        }
+      },
+
+      bst: {
+        title: "Binary Search Tree",
+        tag: "Logarithmic Search Tree",
+        accent: "#06b6d4",
+        bgTint: "#cffafe",
+        summary: "A branched tree where every node obeys this golden rule: all left descendants have strictly smaller values, and all right descendants have strictly larger values. Halves search times like Binary Search!",
+        complexities: [
+          { label: "Search: O(log n)", bg: "#dcfce7", text: "#15803d" },
+          { label: "Insert: O(log n)", bg: "#dcfce7", text: "#15803d" },
+          { label: "Delete: O(log n)", bg: "#dcfce7", text: "#15803d" },
+          { label: "Worst: O(n)", bg: "#fee2e2", text: "#b91c1c" }
+        ],
+        presets: [
+          { name: "Balanced (7 Nodes)", data: [50, 25, 75, 12, 38, 60, 92] },
+          { name: "Left-Heavy Skew", data: [70, 50, 40, 30, 20] },
+          { name: "Right-Heavy Skew", data: [20, 30, 40, 50, 70] }
+        ],
+        steps: [
+          { title: "Insert", desc: "Compares against nodes: moves Left if value is smaller, Right if larger." },
+          { title: "Search Path", desc: "Skips half the remaining tree at each decision branch." },
+          { title: "In-Order Walk", desc: "Traverses Left Subtree → Root → Right Subtree, producing a perfectly sorted sequence." }
+        ],
+        codeLines: {
+          search: [
+            "while curr is not None:",
+            "    if target == curr.val: return curr",
+            "    elif target < curr.val: curr = curr.left",
+            "    else: curr = curr.right",
+            "return None  # Not found"
+          ],
+          inorder: [
+            "def in_order(node):",
+            "    if not node: return",
+            "    in_order(node.left)    # Visit Left",
+            "    visit(node.val)         # Visit Root",
+            "    in_order(node.right)   # Visit Right"
+          ]
+        }
+      },
+
+      hashtable: {
+        title: "Hash Table",
+        tag: "O(1) Key-Value Mapping",
+        accent: "#ec4899",
+        bgTint: "#fce7f3",
+        summary: "Translates string keys into numbers via a Hash Function (e.g. sum of char codes % bucket count). When keys produce the same bucket index, Chaining links them together into that bucket's list.",
+        complexities: [
+          { label: "Lookup: O(1) avg", bg: "#dcfce7", text: "#15803d" },
+          { label: "Insert: O(1) avg", bg: "#dcfce7", text: "#15803d" },
+          { label: "Delete: O(1) avg", bg: "#dcfce7", text: "#15803d" },
+          { label: "Worst: O(n)", bg: "#fee2e2", text: "#b91c1c" }
+        ],
+        presets: [
+          { name: "Standard (5 Keys)", data: [["user", "sui"], ["code", "rust"], ["tag", "web3"], ["mode", "fast"], ["zoom", "2x"]] },
+          { name: "Force Collision", data: [["cat", "feline"], ["act", "theatre"], ["tac", "tic"]] }
+        ],
+        steps: [
+          { title: "Hash Formula", desc: "Computes index = sum(charCodes) % bucketCount." },
+          { title: "Set Key-Value", desc: "Finds the corresponding mailbox bucket and appends or updates the key-value pair." },
+          { title: "Collision Chaining", desc: "Stores overlapping keys in an indexed linked chain within that bucket." }
+        ],
+        codeLines: {
+          lookup: [
+            "idx = hash_function(key) % NUM_BUCKETS",
+            "bucket = buckets[idx]",
+            "for entry in bucket:",
+            "    if entry.key == key: return entry.val",
+            "return None  # Key not present"
+          ]
+        }
+      }
+    };
+
+    /* ════════════════════════════════════════════════════
+       APP STATE
+    ════════════════════════════════════════════════════ */
+    let currentDS = 'array';
+    let isLocked = false;
+    let stepResolver = null;
+
+    // Array state
+    let arrData = [12, 45, 7, 23, 56, 8, 89];
+
+    // Linked List state
+    class LLNode { constructor(v) { this.val = v; this.next = null; } }
+    function buildLL(arr) {
+      let h = null;
+      for (let i = arr.length - 1; i >= 0; i--) {
+        let n = new LLNode(arr[i]); n.next = h; h = n;
+      }
+      return h;
+    }
+    let llHead = buildLL([18, 42, 9, 65]);
+
+    // Stack state
+    let stackData = [14, 28, 55, 90];
+
+    // Queue state
+    let queueData = [15, 33, 72, 8];
+
+    // BST state
+    class BSTNode { constructor(v) { this.val = v; this.left = null; this.right = null; } }
+    function bstInsert(r, v) {
+      if (!r) return new BSTNode(v);
+      if (v < r.val) r.left = bstInsert(r.left, v);
+      else if (v > r.val) r.right = bstInsert(r.right, v);
+      return r;
+    }
+    function buildBST(arr) {
+      let r = null;
+      arr.forEach(v => r = bstInsert(r, v));
+      return r;
+    }
+    let bstRoot = buildBST([50, 25, 75, 12, 38, 60, 92]);
+
+    // Hash table state
+    const HT_SIZE = 5;
+    let htBuckets = Array.from({ length: HT_SIZE }, () => []);
+    function getHash(k) {
+      let s = 0;
+      for (let c of k) s = (s + c.charCodeAt(0)) % HT_SIZE;
+      return s;
+    }
+    function initHT(data = null) {
+      htBuckets = Array.from({ length: HT_SIZE }, () => []);
+      const sample = data || [["user", "sui"], ["code", "rust"], ["tag", "web3"], ["mode", "fast"], ["zoom", "2x"]];
+      sample.forEach(([k, v]) => htBuckets[getHash(k)].push({ k, v }));
+    }
+    initHT();
+
+    /* ════════════════════════════════════════════════════
+       STEPPER ENGINE
+    ════════════════════════════════════════════════════ */
+    function getDelay() {
+      const el = document.getElementById('anim-speed');
+      return el ? parseInt(el.value) : 450;
+    }
+
+    async function waitStep() {
+      const btn = document.getElementById('btn-step-fwd');
+      if (btn) btn.disabled = false;
+
+      // Allow either manual step OR auto-advance after delay
+      const delayMs = getDelay();
+      return new Promise(resolve => {
+        let timer = null;
+        stepResolver = () => {
+          clearTimeout(timer);
+          if (btn) btn.disabled = true;
+          stepResolver = null;
+          resolve();
+        };
+        timer = setTimeout(() => {
+          if (stepResolver) stepResolver();
+        }, delayMs);
+      });
+    }
+
+    function stepForward() {
+      if (stepResolver) {
+        playKeyClick(750, 0.03);
+        stepResolver();
+      }
+    }
+
+    function logMsg(msg, icon = '⚡') {
+      const el = document.getElementById('log-msg');
+      if (el) el.innerHTML = `${icon} ${msg}`;
+    }
+
+    function highlightCodeLine(lineIdx) {
+      document.querySelectorAll('.code-line').forEach((el, i) => {
+        if (i === lineIdx) el.classList.add('active-line');
+        else el.classList.remove('active-line');
+      });
+    }
+
+    function setLock(locked) {
+      isLocked = locked;
+      document.querySelectorAll('.key-btn, .neo-input').forEach(b => {
+        if (!b.id.includes('anim-speed') && b.id !== 'btn-step-fwd') b.disabled = locked;
+      });
+    }
+
+    /* ════════════════════════════════════════════════════
+       RENDER DISPATCHER
+    ════════════════════════════════════════════════════ */
+    function renderApp() {
+      const cfg = DS_CONFIG[currentDS];
+
+      // Header Bento Card with Preset Bar
+      document.getElementById('ds-header-panel').innerHTML = `
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl border-3 border-[#121826] shadow-[4px_4px_0_#121826] flex items-center justify-center text-3xl font-black" style="background:${cfg.bgTint}">
+              ${currentDS === 'array' ? '🔢' : currentDS === 'linkedlist' ? '🔗' : currentDS === 'stack' ? '📚' : currentDS === 'queue' ? '🚶' : currentDS === 'bst' ? '🌳' : '🗂️'}
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h2 class="text-2xl font-black tracking-tight text-[#121826]">${cfg.title}</h2>
+                <span class="text-xs font-black uppercase px-2.5 py-0.5 rounded-full border-2 border-[#121826] bg-[#ffffff] shadow-[2px_2px_0_#121826]">${cfg.tag}</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-600 mt-1">${cfg.summary}</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            ${cfg.complexities.map(c => `
+              <span class="sticker-badge" style="background:${c.bg}; color:${c.text}">
+                ${c.label}
+              </span>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Scenario Presets Bar -->
+        <div class="mt-4 pt-4 border-t-2 border-[#121826]/10 flex items-center gap-2 flex-wrap">
+          <span class="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+            <span>✨ Presets:</span>
+          </span>
+          ${cfg.presets.map((p, idx) => `
+            <button onclick="loadPreset(${idx})" class="px-2.5 py-1 rounded-lg border-2 border-[#121826] bg-slate-50 hover:bg-yellow-100 text-xs font-bold text-[#121826] shadow-[2px_2px_0_#121826] cursor-pointer transition-all active:translate-y-0.5">
+              ${p.name}
+            </button>
+          `).join('')}
+        </div>
+      `;
+
+      // Bottom Explanatory & Synchronized Code Bento
+      const defaultLines = cfg.codeLines.search || cfg.codeLines.insert || cfg.codeLines.push || cfg.codeLines.lookup;
+      document.getElementById('ds-guide-panel').innerHTML = `
+        <!-- Left: Step Guide -->
+        <div class="neo-card p-5 flex flex-col gap-3">
+          <div class="flex items-center justify-between pb-2 border-b-2 border-[#121826]/10">
+            <span class="text-xs font-black uppercase tracking-wider text-slate-600">📖 Step-by-Step Guidance</span>
+            <span class="text-xs font-mono font-bold text-slate-400">Rules</span>
+          </div>
+          <div class="flex flex-col gap-2.5">
+            ${cfg.steps.map((st, i) => `
+              <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border-2 border-[#121826] shadow-[2px_2px_0_#121826]">
+                <div class="w-6 h-6 rounded-full bg-[#121826] text-white flex items-center justify-center text-xs font-mono font-black flex-shrink-0">
+                  ${i + 1}
+                </div>
+                <div>
+                  <h4 class="text-xs font-black text-[#121826]">${st.title}</h4>
+                  <p class="text-xs text-slate-600 mt-0.5 font-semibold">${st.desc}</p>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Right: Synchronized Code Execution -->
+        <div class="neo-card p-5 flex flex-col gap-3">
+          <div class="flex items-center justify-between pb-2 border-b-2 border-[#121826]/10">
+            <span class="text-xs font-black uppercase tracking-wider text-slate-600">💻 Live Synchronized Code</span>
+            <span class="text-xs font-mono font-bold text-yellow-600 bg-yellow-100 px-2 py-0.5 rounded border border-yellow-300">Live Tracing</span>
+          </div>
+          <div id="code-box" class="p-4 rounded-xl bg-[#121826] text-white font-mono text-xs overflow-x-auto border-2 border-[#121826] shadow-[inset_2px_2px_0_rgba(0,0,0,0.5)] min-h-[160px]">
+            ${defaultLines.map(l => `<span class="code-line">${l}</span>`).join('')}
+          </div>
+        </div>
+      `;
+
+      // Render Active Component
+      MODULES[currentDS].renderControls();
+      MODULES[currentDS].renderCanvas();
+    }
+
+    function setCodeLines(lines) {
+      const box = document.getElementById('code-box');
+      if (box) {
+        box.innerHTML = lines.map(l => `<span class="code-line">${l}</span>`).join('');
+      }
+    }
+
+    function loadPreset(idx) {
+      playKeyClick(700, 0.05);
+      const preset = DS_CONFIG[currentDS].presets[idx];
+      if (currentDS === 'array') arrData = [...preset.data];
+      else if (currentDS === 'linkedlist') llHead = buildLL(preset.data);
+      else if (currentDS === 'stack') stackData = [...preset.data];
+      else if (currentDS === 'queue') queueData = [...preset.data];
+      else if (currentDS === 'bst') bstRoot = buildBST(preset.data);
+      else if (currentDS === 'hashtable') initHT(preset.data);
+
+      MODULES[currentDS].renderCanvas();
+      logMsg(`Loaded Preset: <b>${preset.name}</b>`, "✨");
+    }
+
+    /* ════════════════════════════════════════════════════
+       1. ARRAY MODULE (With Pointer Callouts & Direct Click)
+    ════════════════════════════════════════════════════ */
+    const ArrayModule = {
+      renderControls() {
+        document.getElementById('ds-controls-panel').innerHTML = `
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="flex items-center gap-2">
+              <input id="arr-val-in" type="number" placeholder="Value (e.g. 99)" class="neo-input w-36" onkeydown="if(event.key==='Enter') ArrayModule.insert()" />
+              <button class="key-btn key-btn-orange" onclick="ArrayModule.insert()"><span class="text-base">➕</span> Insert</button>
+            </div>
+
+            <div class="h-8 w-0.5 bg-slate-300 hidden sm:block"></div>
+
+            <div class="flex items-center gap-2">
+              <input id="arr-idx-in" type="number" placeholder="Index (0..N)" class="neo-input w-36" onkeydown="if(event.key==='Enter') ArrayModule.deleteIdx()" />
+              <button class="key-btn key-btn-pink" onclick="ArrayModule.deleteIdx()"><span class="text-base">🗑️</span> Delete Index</button>
+            </div>
+
+            <div class="h-8 w-0.5 bg-slate-300 hidden sm:block"></div>
+
+            <button class="key-btn key-btn-blue" onclick="ArrayModule.search()"><span class="text-base">🔍</span> Search Value</button>
+            <button class="key-btn key-btn-white" onclick="ArrayModule.reset()"><span class="text-base">↺</span> Reset</button>
+          </div>
+        `;
+      },
+
+      renderCanvas(highlightIdx = -1, styleType = 'highlight') {
+        const panel = document.getElementById('ds-canvas-panel');
+        if (arrData.length === 0) {
+          panel.innerHTML = `<div class="text-center font-bold text-slate-400 py-12">Array is empty. Insert elements or select a preset!</div>`;
+          return;
+        }
+
+        panel.innerHTML = `
+          <div class="w-full flex flex-col items-center">
+            <div class="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-6 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#ff7844]"></span>
+              Indexed Memory Blocks • Size = ${arrData.length} (Click any keycap to inspect!)
+            </div>
+
+            <div class="flex items-end justify-center gap-3.5 flex-wrap py-4">
+              ${arrData.map((v, i) => `
+                <div class="flex flex-col items-center gap-2 relative">
+                  ${i === highlightIdx ? `
+                    <div class="pointer-marker text-xs font-mono font-black text-blue-600 bg-blue-100 px-2 py-0.5 rounded-md border border-blue-400 shadow-sm absolute -top-8">
+                      i = ${i} ⬇️
+                    </div>
+                  ` : ''}
+                  <div id="key-cap-${i}" onclick="ArrayModule.inspect(${i})" class="keycap-3d ${i === highlightIdx ? styleType : ''}" title="Click to inspect or delete">
+                    ${v}
+                  </div>
+                  <span class="font-mono text-xs font-black text-slate-500 bg-slate-200 px-2 py-0.5 rounded-md border border-[#121826]">
+                    [${i}]
+                  </span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      },
+
+      inspect(idx) {
+        playKeyClick(650, 0.04);
+        const val = arrData[idx];
+        logMsg(`Inspecting index <b>[${idx}]</b> with value <b>${val}</b>. (Click "Delete Index" to remove).`, "👆");
+        const idxInp = document.getElementById('arr-idx-in');
+        if (idxInp) idxInp.value = idx;
+        this.renderCanvas(idx, 'highlight');
+      },
+
+      insert() {
+        playKeyClick(550, 0.05);
+        const inp = document.getElementById('arr-val-in');
+        const v = parseInt(inp.value);
+        if (isNaN(v)) { logMsg("Enter a number to insert.", "⚠️"); return; }
+        if (arrData.length >= 10) { logMsg("Array reached capacity for visual layout.", "⚠️"); return; }
+        arrData.push(v);
+        inp.value = '';
+        setCodeLines(DS_CONFIG.array.codeLines.insert);
+        highlightCodeLine(1);
+        this.renderCanvas(arrData.length - 1, 'highlight');
+        logMsg(`Appended keycap <b>${v}</b> at index [${arrData.length - 1}] in O(1) time!`, "✅");
+      },
+
+      async deleteIdx() {
+        playKeyClick(400, 0.06);
+        const inp = document.getElementById('arr-idx-in');
+        const idx = parseInt(inp.value);
+        if (isNaN(idx) || idx < 0 || idx >= arrData.length) {
+          logMsg(`Invalid index! Must be between 0 and ${arrData.length - 1}.`, "⚠️");
+          return;
+        }
+
+        setLock(true);
+        setCodeLines(DS_CONFIG.array.codeLines.delete);
+        highlightCodeLine(0);
+        const cap = document.getElementById(`key-cap-${idx}`);
+        if (cap) cap.className = "keycap-3d deleting";
+        logMsg(`Deleting element at [${idx}]... sliding remaining items left.`, "🗑️");
+        await sleep(350);
+
+        highlightCodeLine(2);
+        const removed = arrData.splice(idx, 1)[0];
+        inp.value = '';
+        this.renderCanvas();
+        highlightCodeLine(3);
+        setLock(false);
+        logMsg(`Removed <b>${removed}</b>. All subsequent elements shifted in O(n) time.`, "✅");
+      },
+
+      async search() {
+        const inp = document.getElementById('arr-val-in');
+        const v = parseInt(inp.value);
+        if (isNaN(v)) { logMsg("Enter a target value in the Value box to search.", "⚠️"); return; }
+
+        setLock(true);
+        setCodeLines(DS_CONFIG.array.codeLines.search);
+        logMsg(`Starting linear search for keycap: <b>${v}</b> (Use Step Next or wait)...`, "🔍");
+
+        for (let i = 0; i < arrData.length; i++) {
+          highlightCodeLine(0);
+          this.renderCanvas(i, 'highlight');
+          playKeyClick(500 + i * 40, 0.04);
+          logMsg(`Checking index [${i}] → ${arrData[i]} === ${v}?`, "🔍");
+          await waitStep();
+
+          highlightCodeLine(1);
+          if (arrData[i] === v) {
+            highlightCodeLine(2);
+            playKeyClick(850, 0.1);
+            this.renderCanvas(i, 'found');
+            logMsg(`Target keycap <b>${v}</b> located at index <b>[${i}]</b> in ${i + 1} steps!`, "🎯");
+            setLock(false);
+            return;
+          }
+        }
+
+        highlightCodeLine(3);
+        this.renderCanvas();
+        setLock(false);
+        logMsg(`Target <b>${v}</b> was not found in the array.`, "❌");
+      },
+
+      reset() {
+        playKeyClick(700, 0.05);
+        arrData = [12, 45, 7, 23, 56, 8, 89];
+        this.renderCanvas();
+        logMsg("Array reset to initial keycaps.", "↺");
+      }
+    };
+
+    /* ════════════════════════════════════════════════════
+       2. LINKED LIST MODULE (Clickable Nodes)
+    ════════════════════════════════════════════════════ */
+    const LinkedListModule = {
+      renderControls() {
+        document.getElementById('ds-controls-panel').innerHTML = `
+          <div class="flex flex-wrap items-center gap-3">
+            <input id="ll-val-in" type="number" placeholder="Value (e.g. 88)" class="neo-input w-36" onkeydown="if(event.key==='Enter') LinkedListModule.insertHead()" />
+            <button class="key-btn key-btn-blue" onclick="LinkedListModule.insertHead()"><span class="text-base">⬅️</span> Insert Head</button>
+            <button class="key-btn key-btn-blue" onclick="LinkedListModule.insertTail()"><span class="text-base">➡️</span> Insert Tail</button>
+            <button class="key-btn key-btn-pink" onclick="LinkedListModule.deleteHead()"><span class="text-base">🗑️</span> Delete Head</button>
+            <button class="key-btn key-btn-yellow" onclick="LinkedListModule.search()"><span class="text-base">🔍</span> Search</button>
+            <button class="key-btn key-btn-white" onclick="LinkedListModule.reset()"><span class="text-base">↺</span> Reset</button>
+          </div>
+        `;
+      },
+
+      renderCanvas(highlightVal = null) {
+        const panel = document.getElementById('ds-canvas-panel');
+        let nodes = [];
+        let curr = llHead;
+        while (curr) { nodes.push(curr.val); curr = curr.next; }
+
+        if (nodes.length === 0) {
+          panel.innerHTML = `<div class="font-bold text-slate-400 py-12">Linked list is empty (HEAD -> NULL).</div>`;
+          return;
+        }
+
+        panel.innerHTML = `
+          <div class="w-full flex items-center justify-center overflow-x-auto py-6">
+            <div class="flex items-center gap-3 flex-nowrap px-4">
+              <div class="px-3.5 py-1.5 rounded-xl bg-[#3b82f6] text-white border-2 border-[#121826] shadow-[3px_3px_0_#121826] font-mono text-xs font-black">
+                HEAD
+              </div>
+              <span class="text-2xl font-black text-slate-800">→</span>
+
+              ${nodes.map((v, i) => `
+                <div class="flex items-center gap-3">
+                  <div onclick="LinkedListModule.inspect(${v})" class="ll-capsule ${v === highlightVal ? 'highlight' : ''}" title="Click to inspect node">
+                    <div class="ll-val-box" style="${v === highlightVal ? 'background:#dbeafe;' : ''}">${v}</div>
+                    <div class="ll-ptr-box">NEXT</div>
+                  </div>
+                  ${i < nodes.length - 1 ? `<span class="text-2xl font-black text-slate-800">→</span>` : ''}
+                </div>
+              `).join('')}
+
+              <span class="text-2xl font-black text-slate-800">→</span>
+              <div class="px-3.5 py-1.5 rounded-xl bg-[#f43f5e] text-white border-2 border-[#121826] shadow-[3px_3px_0_#121826] font-mono text-xs font-black">
+                NULL
+              </div>
+            </div>
+          </div>
+        `;
+      },
+
+      inspect(val) {
+        playKeyClick(600, 0.04);
+        logMsg(`Inspected node with value <b>${val}</b>. Pointer points to next node in RAM.`, "🔗");
+        this.renderCanvas(val);
+      },
+
+      insertHead() {
+        playKeyClick(550, 0.05);
+        const inp = document.getElementById('ll-val-in');
+        const v = parseInt(inp.value);
+        if (isNaN(v)) { logMsg("Enter a value.", "⚠️"); return; }
+        const n = new LLNode(v);
+        n.next = llHead;
+        llHead = n;
+        inp.value = '';
+        setCodeLines(DS_CONFIG.linkedlist.codeLines.insert);
+        highlightCodeLine(2);
+        this.renderCanvas(v);
+        logMsg(`Inserted node <b>${v}</b> at HEAD in instant <b>O(1)</b> time!`, "✅");
+      },
+
+      insertTail() {
+        playKeyClick(550, 0.05);
+        const inp = document.getElementById('ll-val-in');
+        const v = parseInt(inp.value);
+        if (isNaN(v)) { logMsg("Enter a value.", "⚠️"); return; }
+        const n = new LLNode(v);
+        if (!llHead) llHead = n;
+        else {
+          let c = llHead;
+          while (c.next) c = c.next;
+          c.next = n;
+        }
+        inp.value = '';
+        this.renderCanvas(v);
+        logMsg(`Traversed to end and hooked up node <b>${v}</b> at TAIL.`, "✅");
+      },
+
+      deleteHead() {
+        playKeyClick(420, 0.05);
+        if (!llHead) { logMsg("List is already empty.", "⚠️"); return; }
+        setCodeLines(DS_CONFIG.linkedlist.codeLines.delete);
+        highlightCodeLine(1);
+        const val = llHead.val;
+        llHead = llHead.next;
+        this.renderCanvas();
+        logMsg(`Deleted HEAD node <b>${val}</b> in O(1) time.`, "🗑️");
+      },
+
+      async search() {
+        const inp = document.getElementById('ll-val-in');
+        const v = parseInt(inp.value);
+        if (isNaN(v)) { logMsg("Enter search value.", "⚠️"); return; }
+
+        setLock(true);
+        setCodeLines(DS_CONFIG.linkedlist.codeLines.search);
+        let curr = llHead;
+        let count = 0;
+
+        while (curr) {
+          highlightCodeLine(1);
+          this.renderCanvas(curr.val);
+          playKeyClick(520 + count * 40, 0.04);
+          logMsg(`Traversing pointer node ${count}: comparing ${curr.val} === ${v}...`, "🔗");
+          await waitStep();
+
+          highlightCodeLine(2);
+          if (curr.val === v) {
+            playKeyClick(850, 0.1);
+            logMsg(`Target node <b>${v}</b> found after ${count + 1} pointer steps!`, "🎯");
+            setLock(false);
+            return;
+          }
+          highlightCodeLine(3);
+          curr = curr.next;
+          count++;
+        }
+
+        highlightCodeLine(4);
+        this.renderCanvas(null);
+        setLock(false);
+        logMsg(`Node <b>${v}</b> not found in linked chain.`, "❌");
+      },
+
+      reset() {
+        playKeyClick(700, 0.05);
+        llHead = buildLL([18, 42, 9, 65]);
+        this.renderCanvas();
+        logMsg("Linked list reset.", "↺");
+      }
+    };
+
+    /* ════════════════════════════════════════════════════
+       3. STACK MODULE (Direct Top Click Pop)
+    ════════════════════════════════════════════════════ */
+    const StackModule = {
+      renderControls() {
+        document.getElementById('ds-controls-panel').innerHTML = `
+          <div class="flex flex-wrap items-center gap-3">
+            <input id="st-val-in" type="number" placeholder="Value (e.g. 33)" class="neo-input w-36" onkeydown="if(event.key==='Enter') StackModule.push()" />
+            <button class="key-btn key-btn-purple" onclick="StackModule.push()"><span class="text-base">⬆️</span> Push (Top)</button>
+            <button class="key-btn key-btn-pink" onclick="StackModule.pop()"><span class="text-base">⬇️</span> Pop (Top)</button>
+            <button class="key-btn key-btn-yellow" onclick="StackModule.peek()"><span class="text-base">👁️</span> Peek</button>
+            <button class="key-btn key-btn-white" onclick="StackModule.reset()"><span class="text-base">↺</span> Reset</button>
+          </div>
+        `;
+      },
+
+      renderCanvas() {
+        const panel = document.getElementById('ds-canvas-panel');
+        const topIdx = stackData.length - 1;
+
+        panel.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-2">
+            <div class="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-3">
+              ⬇️ LIFO Chute: Click the TOP plate directly to Pop! ⬇️
+            </div>
+
+            <div class="stack-chute">
+              ${stackData.map((v, i) => `
+                <div onclick="${i === topIdx ? 'StackModule.pop()' : ''}" class="stack-plate ${i === topIdx ? 'is-top' : ''}" title="${i === topIdx ? 'Click to Pop!' : 'Blocked by plates above'}">
+                  ${v}
+                  ${i === topIdx ? '<span class="absolute right-3 top-2.5 bg-[#121826] text-white text-[0.65rem] font-mono px-2 py-0.5 rounded-full font-black">TOP (Click to Pop)</span>' : ''}
+                </div>
+              `).join('')}
+              ${stackData.length === 0 ? '<div class="text-center font-bold text-slate-400 my-auto">Stack Chute is Empty</div>' : ''}
+            </div>
+
+            <div class="w-64 border-t-4 border-[#121826] text-center pt-2 mt-2">
+              <span class="text-[0.7rem] font-mono font-black uppercase tracking-wider text-slate-600">Base of Chute (Sealed)</span>
+            </div>
+          </div>
+        `;
+      },
+
+      push() {
+        playKeyClick(600, 0.05);
+        const inp = document.getElementById('st-val-in');
+        const v = parseInt(inp.value);
+        if (isNaN(v)) { logMsg("Enter a value to push.", "⚠️"); return; }
+        if (stackData.length >= 6) { logMsg("Stack chute full for visualizer.", "⚠️"); return; }
+        stackData.push(v);
+        inp.value = '';
+        setCodeLines(DS_CONFIG.stack.codeLines.push);
+        highlightCodeLine(0);
+        this.renderCanvas();
+        logMsg(`Push(${v}) dropped onto TOP in O(1) time. Depth = ${stackData.length}.`, "⬆️");
+      },
+
+      pop() {
+        playKeyClick(420, 0.06);
+        if (stackData.length === 0) { logMsg("Stack Underflow! Nothing to pop.", "⚠️"); return; }
+        setCodeLines(DS_CONFIG.stack.codeLines.pop);
+        highlightCodeLine(1);
+        const removed = stackData.pop();
+        this.renderCanvas();
+        logMsg(`Pop() took <b>${removed}</b> off the TOP in O(1) time.`, "⬇️");
+      },
+
+      peek() {
+        playKeyClick(700, 0.04);
+        if (stackData.length === 0) { logMsg("Stack is empty.", "⚠️"); return; }
+        setCodeLines(DS_CONFIG.stack.codeLines.peek);
+        highlightCodeLine(1);
+        logMsg(`Peek: The TOP plate is <b>${stackData[stackData.length - 1]}</b>.`, "👁️");
+      },
+
+      reset() {
+        playKeyClick(700, 0.05);
+        stackData = [14, 28, 55, 90];
+        this.renderCanvas();
+        logMsg("Stack reset.", "↺");
+      }
+    };
+
+    /* ════════════════════════════════════════════════════
+       4. QUEUE MODULE (Direct Front Dequeue)
+    ════════════════════════════════════════════════════ */
+    const QueueModule = {
+      renderControls() {
+        document.getElementById('ds-controls-panel').innerHTML = `
+          <div class="flex flex-wrap items-center gap-3">
+            <input id="qu-val-in" type="number" placeholder="Value (e.g. 64)" class="neo-input w-36" onkeydown="if(event.key==='Enter') QueueModule.enqueue()" />
+            <button class="key-btn key-btn-green" onclick="QueueModule.enqueue()"><span class="text-base">➕</span> Enqueue (Rear)</button>
+            <button class="key-btn key-btn-pink" onclick="QueueModule.dequeue()"><span class="text-base">➖</span> Dequeue (Front)</button>
+            <button class="key-btn key-btn-yellow" onclick="QueueModule.peek()"><span class="text-base">👁️</span> Peek Front</button>
+            <button class="key-btn key-btn-white" onclick="QueueModule.reset()"><span class="text-base">↺</span> Reset</button>
+          </div>
+        `;
+      },
+
+      renderCanvas() {
+        const panel = document.getElementById('ds-canvas-panel');
+        panel.innerHTML = `
+          <div class="w-full flex flex-col items-center">
+            <div class="flex justify-between w-full max-w-xl text-xs font-mono font-black mb-3">
+              <span class="text-[#059669] flex items-center gap-1">⬅️ FRONT (Click to Dequeue)</span>
+              <span class="text-[#2563eb] flex items-center gap-1">REAR (Entry) ⬅️</span>
+            </div>
+
+            <div class="conveyor-belt w-full max-w-2xl justify-center">
+              ${queueData.map((v, i) => `
+                <div class="flex flex-col items-center gap-2">
+                  <div onclick="${i === 0 ? 'QueueModule.dequeue()' : ''}" class="keycap-3d" style="${i === 0 ? 'background:linear-gradient(180deg,#6ee7b7,#10b981);color:#fff;' : i === queueData.length - 1 ? 'background:linear-gradient(180deg,#93c5fd,#3b82f6);color:#fff;' : ''}" title="${i === 0 ? 'Click to Dequeue!' : ''}">
+                    ${v}
+                  </div>
+                  <span class="text-[0.7rem] font-mono font-black px-2 py-0.5 rounded-full border border-[#121826] ${i === 0 ? 'bg-emerald-100 text-emerald-800' : i === queueData.length - 1 ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-700'}">
+                    ${i === 0 ? 'FRONT' : i === queueData.length - 1 ? 'REAR' : `ITEM ${i}`}
+                  </span>
+                </div>
+              `).join('')}
+              ${queueData.length === 0 ? '<div class="text-center font-bold text-slate-400">Queue conveyor is empty</div>' : ''}
+            </div>
+          </div>
+        `;
+      },
+
+      enqueue() {
+        playKeyClick(600, 0.05);
+        const inp = document.getElementById('qu-val-in');
+        const v = parseInt(inp.value);
+        if (isNaN(v)) { logMsg("Enter a value.", "⚠️"); return; }
+        if (queueData.length >= 7) { logMsg("Queue full for visual layout.", "⚠️"); return; }
+        queueData.push(v);
+        inp.value = '';
+        setCodeLines(DS_CONFIG.queue.codeLines.enqueue);
+        highlightCodeLine(0);
+        this.renderCanvas();
+        logMsg(`Enqueue(${v}) joined the REAR line in O(1) time.`, "➕");
+      },
+
+      dequeue() {
+        playKeyClick(420, 0.05);
+        if (queueData.length === 0) { logMsg("Queue empty!", "⚠️"); return; }
+        setCodeLines(DS_CONFIG.queue.codeLines.dequeue);
+        highlightCodeLine(1);
+        const removed = queueData.shift();
+        this.renderCanvas();
+        logMsg(`Dequeue() serviced <b>${removed}</b> from FRONT in FIFO order.`, "➖");
+      },
+
+      peek() {
+        playKeyClick(700, 0.04);
+        if (queueData.length === 0) { logMsg("Queue is empty.", "⚠️"); return; }
+        logMsg(`Peek: The next item to be serviced is <b>${queueData[0]}</b>.`, "👁️");
+      },
+
+      reset() {
+        playKeyClick(700, 0.05);
+        queueData = [15, 33, 72, 8];
+        this.renderCanvas();
+        logMsg("Queue reset.", "↺");
+      }
+    };
+
+    /* ════════════════════════════════════════════════════
+       5. BST MODULE (Clickable Nodes & Path Step Tracing)
+    ════════════════════════════════════════════════════ */
+    const BSTModule = {
+      renderControls() {
+        document.getElementById('ds-controls-panel').innerHTML = `
+          <div class="flex flex-wrap items-center gap-3">
+            <input id="bst-val-in" type="number" placeholder="Value (e.g. 44)" class="neo-input w-36" onkeydown="if(event.key==='Enter') BSTModule.insert()" />
+            <button class="key-btn key-btn-orange" onclick="BSTModule.insert()"><span class="text-base">➕</span> Insert</button>
+            <button class="key-btn key-btn-blue" onclick="BSTModule.search()"><span class="text-base">🔍</span> Search Path</button>
+            <button class="key-btn key-btn-yellow" onclick="BSTModule.inOrder()"><span class="text-base">📋</span> In-Order (Sorted)</button>
+            <button class="key-btn key-btn-white" onclick="BSTModule.reset()"><span class="text-base">↺</span> Reset</button>
+          </div>
+        `;
+      },
+
+      renderCanvas(targetVal = null, pathVals = []) {
+        const panel = document.getElementById('ds-canvas-panel');
+        const W = 650;
+        const H = 280;
+
+        function calc(n, depth, l, r, map) {
+          if (!n) return;
+          const x = (l + r) / 2;
+          const y = depth * 65 + 40;
+          map[n.val] = { x, y, n };
+          calc(n.left, depth + 1, l, x, map);
+          calc(n.right, depth + 1, x, r, map);
+        }
+
+        const posMap = {};
+        calc(bstRoot, 0, 0, W, posMap);
+
+        let linesSvg = '';
+        let nodesSvg = '';
+
+        function drawLines(n) {
+          if (!n) return;
+          const cur = posMap[n.val];
+          if (n.left) {
+            const lc = posMap[n.left.val];
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${lc.x}" y2="${lc.y}" stroke="#121826" stroke-width="3" />`;
+            drawLines(n.left);
+          }
+          if (n.right) {
+            const rc = posMap[n.right.val];
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${rc.x}" y2="${rc.y}" stroke="#121826" stroke-width="3" />`;
+            drawLines(n.right);
+          }
+        }
+        drawLines(bstRoot);
+
+        Object.values(posMap).forEach(({ x, y, n }) => {
+          const isTarget = n.val === targetVal;
+          const inPath = pathVals.includes(n.val);
+
+          let fill = '#ffffff';
+          let textColor = '#121826';
+          if (isTarget) { fill = '#10b981'; textColor = '#ffffff'; }
+          else if (inPath) { fill = '#3b82f6'; textColor = '#ffffff'; }
+
+          nodesSvg += `
+            <g transform="translate(${x},${y})" onclick="BSTModule.inspect(${n.val})" class="cursor-pointer">
+              <circle r="22" cx="3" cy="3" fill="#121826" />
+              <circle r="22" fill="${fill}" stroke="#121826" stroke-width="3" />
+              <text text-anchor="middle" dy="5" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="900" fill="${textColor}">
+                ${n.val}
+              </text>
+            </g>
+          `;
+        });
+
+        panel.innerHTML = `
+          <div class="w-full flex justify-center overflow-x-auto">
+            <svg viewBox="0 0 ${W} ${H}" class="w-full max-w-2xl h-auto" style="min-height:260px;">
+              ${linesSvg}
+              ${nodesSvg}
+            </svg>
+          </div>
+        `;
+      },
+
+      inspect(val) {
+        playKeyClick(600, 0.04);
+        logMsg(`Selected node <b>${val}</b>. All left children are < ${val}, all right children are > ${val}.`, "🌳");
+        const inp = document.getElementById('bst-val-in');
+        if (inp) inp.value = val;
+      },
+
+      insert() {
+        playKeyClick(550, 0.05);
+        const inp = document.getElementById('bst-val-in');
+        const v = parseInt(inp.value);
+        if (isNaN(v)) { logMsg("Enter a number.", "⚠️"); return; }
+        bstRoot = bstInsert(bstRoot, v);
+        inp.value = '';
+        this.renderCanvas(v);
+        logMsg(`Inserted <b>${v}</b>: smaller branches left, larger branches right.`, "🌳");
+      },
+
+      async search() {
+        const inp = document.getElementById('bst-val-in');
+        const v = parseInt(inp.value);
+        if (isNaN(v)) { logMsg("Enter search value.", "⚠️"); return; }
+
+        setLock(true);
+        setCodeLines(DS_CONFIG.bst.codeLines.search);
+        let curr = bstRoot;
+        let path = [];
+
+        while (curr) {
+          path.push(curr.val);
+          this.renderCanvas(null, path);
+          playKeyClick(500 + path.length * 50, 0.04);
+
+          highlightCodeLine(1);
+          if (curr.val === v) {
+            playKeyClick(850, 0.1);
+            this.renderCanvas(v, path);
+            logMsg(`Found target <b>${v}</b> in <b>${path.length}</b> comparisons (O(log n))!`, "🎯");
+            setLock(false);
+            return;
+          }
+
+          if (v < curr.val) {
+            highlightCodeLine(2);
+            logMsg(`${v} < ${curr.val}: Branching LEFT (halving search space)...`, "🔍");
+            curr = curr.left;
+          } else {
+            highlightCodeLine(3);
+            logMsg(`${v} > ${curr.val}: Branching RIGHT (halving search space)...`, "🔍");
+            curr = curr.right;
+          }
+          await waitStep();
+        }
+
+        highlightCodeLine(4);
+        this.renderCanvas(null, path);
+        setLock(false);
+        logMsg(`Target ${v} is not in the tree.`, "❌");
+      },
+
+      async inOrder() {
+        setLock(true);
+        setCodeLines(DS_CONFIG.bst.codeLines.inorder);
+        const sorted = [];
+        const path = [];
+
+        async function traverse(node) {
+          if (!node) return;
+          highlightCodeLine(2);
+          await traverse(node.left);
+          sorted.push(node.val);
+          path.push(node.val);
+          highlightCodeLine(3);
+          BSTModule.renderCanvas(node.val, path);
+          playKeyClick(500 + sorted.length * 30, 0.03);
+          logMsg(`In-order traversal visited: [${sorted.join(', ')}]...`, "📋");
+          await waitStep();
+          highlightCodeLine(4);
+          await traverse(node.right);
+        }
+
+        await traverse(bstRoot);
+        setLock(false);
+        logMsg(`In-order Complete: <b>[${sorted.join(', ')}]</b> — Perfectly sorted!`, "✅");
+      },
+
+      reset() {
+        playKeyClick(700, 0.05);
+        bstRoot = buildBST([50, 25, 75, 12, 38, 60, 92]);
+        this.renderCanvas();
+        logMsg("BST reset.", "↺");
+      }
+    };
+
+    /* ════════════════════════════════════════════════════
+       6. HASH TABLE MODULE (Interactive Mailbox)
+    ════════════════════════════════════════════════════ */
+    const HashTableModule = {
+      renderControls() {
+        document.getElementById('ds-controls-panel').innerHTML = `
+          <div class="flex flex-wrap items-center gap-3">
+            <input id="ht-key-in" type="text" placeholder="Key (e.g. tag)" class="neo-input w-36" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
+            <input id="ht-val-in" type="text" placeholder="Value (e.g. nft)" class="neo-input w-36" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
+            <button class="key-btn key-btn-orange" onclick="HashTableModule.insert()"><span class="text-base">➕</span> Set Key</button>
+            <button class="key-btn key-btn-blue" onclick="HashTableModule.lookup()"><span class="text-base">🔍</span> Lookup Key</button>
+            <button class="key-btn key-btn-pink" onclick="HashTableModule.deleteKey()"><span class="text-base">🗑️</span> Delete Key</button>
+            <button class="key-btn key-btn-white" onclick="HashTableModule.reset()"><span class="text-base">↺</span> Reset</button>
+          </div>
+        `;
+      },
+
+      renderCanvas(activeBucket = -1, targetKey = null) {
+        const panel = document.getElementById('ds-canvas-panel');
+        panel.innerHTML = `
+          <div class="w-full max-w-2xl flex flex-col gap-3 py-2">
+            <div class="flex items-center justify-between text-xs font-mono font-black text-slate-600 mb-1">
+              <span>Mailbox Buckets = ${HT_SIZE}</span>
+              <span class="bg-yellow-200 px-2 py-0.5 rounded border border-[#121826]">hash(k) = sum(charCodes) % ${HT_SIZE}</span>
+            </div>
+
+            ${htBuckets.map((bucket, i) => `
+              <div class="mailbox-slot ${i === activeBucket ? 'active-slot' : ''}">
+                <div class="w-14 flex items-center justify-center py-1 rounded-lg bg-[#121826] text-white font-mono text-xs font-black flex-shrink-0">
+                  [${i}]
+                </div>
+
+                <div class="flex items-center gap-2 flex-wrap flex-1">
+                  ${bucket.length === 0 ? `
+                    <span class="text-xs font-mono text-slate-400 font-bold italic">Empty Mailbox Slot</span>
+                  ` : bucket.map((item, j) => `
+                    <div onclick="HashTableModule.inspect('${item.k}','${item.v}')" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border-2 border-[#121826] text-xs font-mono font-bold shadow-[2px_2px_0_#121826] ${item.k === targetKey ? 'bg-blue-400 text-white' : 'bg-white text-[#121826]'} hover:scale-105 transition-all">
+                      <span class="font-black text-[#ff6b35]">${item.k}</span>:
+                      <span>${item.v}</span>
+                    </div>
+                    ${j < bucket.length - 1 ? '<span class="font-black text-slate-600">→</span>' : ''}
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      },
+
+      inspect(k, v) {
+        playKeyClick(600, 0.04);
+        logMsg(`Selected key <b>"${k}"</b> with value <b>"${v}"</b>.`, "🗂️");
+        const kInp = document.getElementById('ht-key-in');
+        const vInp = document.getElementById('ht-val-in');
+        if (kInp) kInp.value = k;
+        if (vInp) vInp.value = v;
+      },
+
+      insert() {
+        playKeyClick(550, 0.05);
+        const kInp = document.getElementById('ht-key-in');
+        const vInp = document.getElementById('ht-val-in');
+        const k = kInp.value.trim();
+        const v = vInp.value.trim();
+        if (!k || !v) { logMsg("Enter both a key and a value.", "⚠️"); return; }
+
+        const idx = getHash(k);
+        const bucket = htBuckets[idx];
+        const existing = bucket.find(e => e.k === k);
+
+        if (existing) {
+          existing.v = v;
+          logMsg(`Updated key "${k}" to "${v}" in bucket [${idx}].`, "🔄");
+        } else {
+          bucket.push({ k, v });
+          logMsg(`Inserted "${k}": "${v}" into bucket [${idx}]. Hash index = ${idx}.`, "✅");
+        }
+
+        kInp.value = '';
+        vInp.value = '';
+        this.renderCanvas(idx, k);
+      },
+
+      async lookup() {
+        const kInp = document.getElementById('ht-key-in');
+        const k = kInp.value.trim();
+        if (!k) { logMsg("Enter key to search.", "⚠️"); return; }
+
+        setCodeLines(DS_CONFIG.hashtable.codeLines.lookup);
+        highlightCodeLine(0);
+        const idx = getHash(k);
+        const bucket = htBuckets[idx];
+        const found = bucket.find(e => e.k === k);
+
+        this.renderCanvas(idx, found ? k : null);
+        highlightCodeLine(2);
+        playKeyClick(found ? 850 : 400, 0.06);
+
+        if (found) {
+          highlightCodeLine(3);
+          logMsg(`Found "${k}" → "${found.v}" in bucket [${idx}]!`, "🎯");
+        } else {
+          highlightCodeLine(4);
+          logMsg(`Key "${k}" not found in bucket [${idx}].`, "❌");
+        }
+      },
+
+      deleteKey() {
+        playKeyClick(420, 0.05);
+        const kInp = document.getElementById('ht-key-in');
+        const k = kInp.value.trim();
+        if (!k) { logMsg("Enter key to delete.", "⚠️"); return; }
+
+        const idx = getHash(k);
+        const before = htBuckets[idx].length;
+        htBuckets[idx] = htBuckets[idx].filter(e => e.k !== k);
+
+        this.renderCanvas(idx);
+        if (htBuckets[idx].length < before) logMsg(`Deleted key "${k}" from bucket [${idx}].`, "🗑️");
+        else logMsg(`Key "${k}" not found.`, "❌");
+      },
+
+      reset() {
+        playKeyClick(700, 0.05);
+        initHT();
+        this.renderCanvas();
+        logMsg("Hash table reset.", "↺");
+      }
+    };
+
+    /* ════════════════════════════════════════════════════
+       MODULE REGISTRY
+    ════════════════════════════════════════════════════ */
+    const MODULES = {
+      array: ArrayModule,
+      linkedlist: LinkedListModule,
+      stack: StackModule,
+      queue: QueueModule,
+      bst: BSTModule,
+      hashtable: HashTableModule
+    };
+
+    function switchDS(ds) {
+      if (isLocked) return;
+      playKeyClick(700, 0.04);
+      currentDS = ds;
+      document.querySelectorAll('.keycap-nav').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('onclick').includes(ds)) btn.classList.add('active');
+      });
+      renderApp();
+      logMsg(`Loaded ${DS_CONFIG[ds].title}. Tap any action or node to explore!`, "🚀");
+    }
+
+    // Initial render
+    renderApp();
+  </script>
+</body>
+</html>
