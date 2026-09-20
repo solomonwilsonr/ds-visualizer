@@ -3,437 +3,282 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOJO DS — 3D Mascot & Street-Tech Data Structures Playground</title>
+  <title>CSQUARE / DS — Isometric Technical Data Structures Lab</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,600;0,700;0,800;0,900;1,800;1,900&family=JetBrains+Mono:wght@600;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
     :root {
-      --bg-dark: #0c0e17;
-      --card-dark: #161928;
-      --card-border: #262c45;
-      --purple-main: #7c3aed;
-      --purple-glow: #8b5cf6;
-      --pink-neon: #ff3b81;
-      --green-slime: #22c55e;
-      --cyan-electric: #06b6d4;
-      --yellow-burst: #fbbf24;
+      --bg-canvas: #f8fafc;
+      --bg-dark: #090a0f;
+      --border-light: #e2e8f0;
+      --border-dark: #1e222d;
+      --accent-green: #10b981;
+      --accent-magenta: #e11d48;
+      --accent-cyan: #06b6d4;
     }
 
     * {
       box-sizing: border-box;
-      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
     }
 
-    body {
-      background-color: var(--bg-dark);
+    /* Technical blueprint dot grid */
+    .blueprint-grid {
+      background-color: #f8fafc;
+      background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
+    }
+
+    /* Dark isometric stage grid */
+    .stage-dark-grid {
+      background-color: #0c0e14;
       background-image: 
-        radial-gradient(rgba(124, 58, 237, 0.15) 1.5px, transparent 1.5px),
-        radial-gradient(rgba(34, 197, 94, 0.08) 1.5px, transparent 1.5px);
-      background-size: 36px 36px, 18px 18px;
+        linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* Swiss Architectural Buttons */
+    .btn-swiss-dark {
+      background: #090a0f;
       color: #ffffff;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* Chunky Street-Tech Bento Cards */
-    .mojo-card {
-      background: var(--card-dark);
-      border: 2px solid var(--card-border);
-      border-radius: 24px;
-      box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
-      position: relative;
-    }
-
-    /* Glossy 3D Pill & Action Buttons */
-    .mojo-btn {
-      position: relative;
+      font-size: 0.825rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      padding: 0.6rem 1.25rem;
+      border-radius: 4px;
+      transition: all 0.15s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      height: 46px;
-      padding: 0 1.35rem;
-      border-radius: 9999px;
-      font-size: 0.9rem;
-      font-weight: 900;
-      letter-spacing: -0.01em;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-      border: none;
-      outline: none;
-      overflow: hidden;
+      border: 1px solid transparent;
       white-space: nowrap;
     }
-
-    .mojo-btn::before {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 10%;
-      right: 10%;
-      height: 40%;
-      background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
-      border-radius: 9999px;
-      pointer-events: none;
+    .btn-swiss-dark:hover:not(:disabled) {
+      background: #1e222d;
+      border-color: #333d4e;
     }
-
-    .mojo-btn:hover:not(:disabled) {
-      transform: translateY(-2px) scale(1.02);
-    }
-    .mojo-btn:active:not(:disabled) {
-      transform: translateY(2px) scale(0.98);
-    }
-    .mojo-btn:disabled {
+    .btn-swiss-dark:disabled {
       opacity: 0.4;
       cursor: not-allowed;
-      transform: none;
     }
 
-    .btn-green {
-      background: linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%);
-      color: #032e18;
-      box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.5), inset 0 -3px 0 #047857;
-    }
-    .btn-pink {
-      background: linear-gradient(180deg, #fb7185 0%, #ff3b81 50%, #e11d48 100%);
-      color: #ffffff;
-      box-shadow: 0 8px 20px -4px rgba(255, 59, 129, 0.5), inset 0 -3px 0 #be123c;
-    }
-    .btn-purple {
-      background: linear-gradient(180deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%);
-      color: #ffffff;
-      box-shadow: 0 8px 20px -4px rgba(124, 58, 237, 0.5), inset 0 -3px 0 #5b21b6;
-    }
-    .btn-dark {
-      background: #22283d;
-      color: #e2e8f0;
-      border: 1.5px solid #333d5e;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-
-    /* Glossy 3D Input */
-    .mojo-input {
-      height: 46px;
-      background: #101322;
-      border: 2px solid #28304d;
-      border-radius: 9999px;
-      padding: 0 1.25rem;
-      font-weight: 800;
-      font-size: 0.95rem;
-      color: #ffffff;
-      outline: none;
-      transition: all 0.2s;
-    }
-    .mojo-input:focus {
-      border-color: var(--purple-glow);
-      box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.25);
-    }
-
-    /* Sticker Pills inspired by MOJO & N+ Store */
-    .sticker-tag {
+    .btn-swiss-outline {
+      background: #ffffff;
+      color: #090a0f;
+      border: 1px solid #cbd5e1;
+      font-size: 0.825rem;
+      font-weight: 600;
+      padding: 0.6rem 1.15rem;
+      border-radius: 4px;
+      transition: all 0.15s ease;
       display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      padding: 0.3rem 0.85rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 900;
-      letter-spacing: -0.01em;
-      text-transform: uppercase;
-      transform: rotate(-1.5deg);
-      transition: transform 0.2s;
-    }
-    .sticker-tag:hover {
-      transform: rotate(0deg) scale(1.05);
-    }
-
-    /* ══════════════════════════════════════════════
-       GLOSSY 3D SLIME / JELLY TILES (Array & Canvas)
-    ══════════════════════════════════════════════ */
-    .jelly-tile-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      padding-top: 36px;
-    }
-
-    .jelly-tile {
-      width: 72px;
-      height: 72px;
-      border-radius: 22px;
-      background: linear-gradient(180deg, #2a314d 0%, #1a1e33 100%);
-      border: 2.5px solid #3d4770;
-      display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.45rem;
-      font-weight: 900;
-      color: #ffffff;
-      box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.25), inset 0 -4px 6px rgba(0, 0, 0, 0.4);
-      position: relative;
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-      user-select: none;
+      gap: 0.4rem;
+      white-space: nowrap;
+    }
+    .btn-swiss-outline:hover:not(:disabled) {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+    .btn-swiss-outline:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
 
-    .jelly-tile::before {
-      content: '';
-      position: absolute;
-      top: 5px;
-      left: 12px;
-      right: 12px;
-      height: 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.05) 100%);
-      border-radius: 9999px;
-      pointer-events: none;
+    .btn-swiss-danger {
+      background: #fff1f2;
+      color: #e11d48;
+      border: 1px solid #fecdd3;
+      font-size: 0.825rem;
+      font-weight: 600;
+      padding: 0.6rem 1.15rem;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+    }
+    .btn-swiss-danger:hover:not(:disabled) {
+      background: #ffe4e6;
+      border-color: #fda4af;
     }
 
-    .jelly-tile:hover {
-      transform: translateY(-6px) scale(1.06);
-      border-color: #8b5cf6;
-      box-shadow: 0 18px 30px -4px rgba(139, 92, 246, 0.4);
+    /* Swiss Input */
+    .swiss-input {
+      height: 38px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 0 0.85rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #090a0f;
+      outline: none;
+      transition: all 0.15s;
+    }
+    .swiss-input:focus {
+      border-color: #090a0f;
+      box-shadow: 0 0 0 2px rgba(9, 10, 15, 0.1);
     }
 
-    .jelly-tile.scanning {
-      background: linear-gradient(180deg, #a78bfa 0%, #7c3aed 100%);
-      border-color: #c4b5fd;
-      color: #ffffff;
-      transform: translateY(-10px) scale(1.12);
-      box-shadow: 0 20px 35px -2px rgba(124, 58, 237, 0.7);
-    }
-
-    .jelly-tile.matched {
-      background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
-      border-color: #86efac;
-      color: #052e16;
-      transform: translateY(-12px) scale(1.15);
-      box-shadow: 0 22px 40px -2px rgba(34, 197, 94, 0.75);
-    }
-
-    .jelly-tile.removing {
-      background: linear-gradient(180deg, #fb7185 0%, #e11d48 100%);
-      transform: scale(0.4);
-      opacity: 0;
-    }
-
-    /* Floating Monster Pointer Tag */
-    .mojo-pointer {
-      position: absolute;
-      top: 0;
+    /* Technical Callout Tag */
+    .telemetry-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 4px;
+      letter-spacing: -0.01em;
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
-      padding: 0.25rem 0.65rem;
-      background: var(--pink-neon);
-      color: #ffffff;
-      font-size: 0.75rem;
-      font-weight: 900;
-      font-family: 'JetBrains Mono', monospace;
-      border-radius: 9999px;
-      box-shadow: 0 4px 14px rgba(255, 59, 129, 0.6);
-      animation: bounceMojo 0.8s infinite alternate ease-in-out;
-      z-index: 10;
     }
 
-    @keyframes bounceMojo {
-      from { transform: translateY(0px) scale(1); }
-      to   { transform: translateY(-6px) scale(1.05); }
-    }
-
-    /* Reactive Slime Mascot Animation */
-    .mascot-eye {
-      transition: transform 0.15s ease;
-    }
-    .mascot-bounce {
-      animation: mascotFloat 3s infinite ease-in-out alternate;
-    }
-    @keyframes mascotFloat {
-      0%   { transform: translateY(0px) rotate(0deg); }
-      50%  { transform: translateY(-5px) rotate(1.5deg); }
-      100% { transform: translateY(0px) rotate(0deg); }
-    }
-
-    /* Stack Chute in Street-Tech Style */
-    .mojo-stack-chute {
-      width: 300px;
-      min-height: 290px;
-      background: rgba(16, 19, 34, 0.7);
-      border: 3px dashed #333d61;
-      border-top: none;
-      border-radius: 0 0 28px 28px;
-      display: flex;
-      flex-direction: column-reverse;
-      padding: 1.25rem;
-      gap: 0.75rem;
-      box-shadow: inset 0 -20px 30px rgba(0,0,0,0.5);
-    }
-
-    .stack-candy-bar {
-      width: 100%;
-      padding: 0.9rem;
-      border-radius: 16px;
-      background: linear-gradient(180deg, #2a314d 0%, #1a1e33 100%);
-      border: 2px solid #3d4770;
-      font-size: 1.25rem;
-      font-weight: 900;
-      text-align: center;
-      color: #ffffff;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.4), inset 0 2px 2px rgba(255,255,255,0.2);
+    /* Isometric Block Renderings (SVG & CSS 3D Orthogonal) */
+    .iso-cube {
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
       cursor: pointer;
-      position: relative;
-      transition: all 0.2s;
     }
-    .stack-candy-bar.is-top {
-      background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%);
-      border-color: #e9d5ff;
-      box-shadow: 0 10px 25px rgba(147, 51, 234, 0.6);
+    .iso-cube:hover {
+      transform: translateY(-6px);
+      filter: drop-shadow(0 12px 18px rgba(16, 185, 129, 0.25));
+    }
+    .iso-cube.active-scan {
+      transform: translateY(-8px) scale(1.08);
+      filter: drop-shadow(0 16px 24px rgba(16, 185, 129, 0.5));
+    }
+    .iso-cube.found-target {
+      transform: translateY(-10px) scale(1.12);
+      filter: drop-shadow(0 20px 28px rgba(6, 182, 212, 0.6));
     }
 
-    /* Live Code Block */
+    /* Code Line Highlight */
     .code-row {
       display: block;
-      padding: 0.25rem 0.85rem;
-      border-radius: 6px;
-      line-height: 1.6;
-      transition: all 0.15s;
+      padding: 0.2rem 0.75rem;
+      border-radius: 2px;
+      line-height: 1.65;
+      transition: background 0.15s;
     }
     .code-row.active-row {
-      background: rgba(124, 58, 237, 0.35);
-      border-left: 3.5px solid var(--pink-neon);
-      color: #ffffff;
-      font-weight: 700;
+      background: rgba(16, 185, 129, 0.15);
+      border-left: 2.5px solid #10b981;
+      color: #34d399;
+      font-weight: 600;
     }
   </style>
 </head>
-<body class="h-full flex flex-col antialiased selection:bg-pink-500 selection:text-white">
+<body class="h-full flex flex-col blueprint-grid text-slate-900 selection:bg-slate-900 selection:text-white">
 
   <!-- ══════════════════════════════════════════════════════════
-       TOP MOJO HEADER (Mascot & Street-Tech Navigation)
+       ARCHITECTURAL HEADER (Swiss Minimalist)
   ══════════════════════════════════════════════════════════ -->
-  <header class="h-20 border-b border-[#1e2338] bg-[#0c0e17]/90 backdrop-blur-xl sticky top-0 z-30 flex items-center justify-between px-6 md:px-10">
+  <header class="h-16 border-b border-slate-200 bg-white/95 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-6 lg:px-10">
     
-    <!-- Brand with MOJO Mascot Monster -->
-    <div class="flex items-center gap-3.5">
-      <!-- Reactive SVG Monster Mascot (Blinks & Smiles) -->
-      <div id="mascot-face" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#7c3aed] to-[#ff3b81] p-0.5 shadow-[0_0_25px_rgba(124,58,237,0.5)] flex items-center justify-center mascot-bounce cursor-pointer" onclick="pokeMascot()">
-        <svg viewBox="0 0 100 100" class="w-full h-full rounded-[14px]">
-          <!-- Slime Monster Body -->
-          <rect width="100" height="100" rx="14" fill="#8b5cf6"/>
-          <!-- Little monster horns -->
-          <polygon points="18,12 28,30 10,28" fill="#34d399"/>
-          <polygon points="82,12 72,30 90,28" fill="#34d399"/>
-          <!-- Eyes -->
-          <circle id="mascot-left-eye" cx="35" cy="46" r="10" fill="#ffffff"/>
-          <circle id="mascot-left-pupil" cx="36" cy="47" r="5" fill="#0c0e17" class="mascot-eye"/>
-          <circle id="mascot-right-eye" cx="65" cy="46" r="10" fill="#ffffff"/>
-          <circle id="mascot-right-pupil" cx="64" cy="47" r="5" fill="#0c0e17" class="mascot-eye"/>
-          <!-- Mouth -->
-          <path id="mascot-mouth" d="M 36 68 Q 50 82 64 68" stroke="#0c0e17" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <!-- Brand -->
+    <div class="flex items-center gap-4">
+      <div class="w-8 h-8 bg-black flex items-center justify-center text-white font-bold text-xs">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
         </svg>
       </div>
-
-      <div>
-        <div class="flex items-center gap-2">
-          <h1 class="text-xl font-black tracking-tight text-white uppercase italic">MOJO<span class="text-[#ff3b81] not-italic">.DS</span></h1>
-          <span class="sticker-tag bg-[#ff3b81] text-white text-[0.65rem] px-2 py-0.5">2026 POP</span>
-        </div>
-        <p class="text-[0.7rem] font-bold text-slate-400 tracking-wider uppercase">Interactive Street-Tech Lab</p>
+      <div class="flex items-baseline gap-2">
+        <span class="text-sm font-bold tracking-tight text-black">CSQUARE</span>
+        <span class="text-slate-400 font-mono text-xs">/</span>
+        <span class="text-xs font-mono text-slate-600 font-medium tracking-tight uppercase">DATA STRUCTURES ARCHITECTURE</span>
       </div>
     </div>
 
-    <!-- Segmented Navigation Pills -->
-    <nav class="hidden lg:flex items-center p-1.5 rounded-full bg-[#151929] border border-[#242b44] text-xs font-black">
-      <button class="nav-pill px-4 py-2 rounded-full transition-all text-white bg-gradient-to-r from-[#7c3aed] to-[#ff3b81] shadow-lg shadow-purple-500/30" onclick="switchDS('array')">Array</button>
-      <button class="nav-pill px-4 py-2 rounded-full transition-all text-slate-400 hover:text-white" onclick="switchDS('linkedlist')">Linked List</button>
-      <button class="nav-pill px-4 py-2 rounded-full transition-all text-slate-400 hover:text-white" onclick="switchDS('stack')">Stack</button>
-      <button class="nav-pill px-4 py-2 rounded-full transition-all text-slate-400 hover:text-white" onclick="switchDS('queue')">Queue</button>
-      <button class="nav-pill px-4 py-2 rounded-full transition-all text-slate-400 hover:text-white" onclick="switchDS('bst')">BST</button>
-      <button class="nav-pill px-4 py-2 rounded-full transition-all text-slate-400 hover:text-white" onclick="switchDS('hashtable')">Hash Table</button>
+    <!-- Navigation Tabs (Editorial Clean) -->
+    <nav class="hidden md:flex items-center gap-1 text-xs font-medium text-slate-600">
+      <button class="nav-tab px-3.5 py-1.5 rounded text-black font-semibold bg-slate-100" onclick="switchDS('array')">01. Array</button>
+      <button class="nav-tab px-3.5 py-1.5 rounded hover:text-black hover:bg-slate-50 transition-all" onclick="switchDS('linkedlist')">02. Linked List</button>
+      <button class="nav-tab px-3.5 py-1.5 rounded hover:text-black hover:bg-slate-50 transition-all" onclick="switchDS('stack')">03. Stack</button>
+      <button class="nav-tab px-3.5 py-1.5 rounded hover:text-black hover:bg-slate-50 transition-all" onclick="switchDS('queue')">04. Queue</button>
+      <button class="nav-tab px-3.5 py-1.5 rounded hover:text-black hover:bg-slate-50 transition-all" onclick="switchDS('bst')">05. BST</button>
+      <button class="nav-tab px-3.5 py-1.5 rounded hover:text-black hover:bg-slate-50 transition-all" onclick="switchDS('hashtable')">06. Hash Table</button>
     </nav>
 
-    <!-- Sound & GitHub Actions -->
+    <!-- Right Controls -->
     <div class="flex items-center gap-3">
-      <button id="sound-btn" onclick="toggleSound()" class="h-10 px-4 rounded-full bg-[#1a1f33] hover:bg-[#232a45] border border-[#293252] text-xs font-black text-slate-200 flex items-center gap-1.5 transition-all">
+      <button id="sound-btn" onclick="toggleSound()" class="h-8 px-2.5 rounded border border-slate-200 text-xs font-mono text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition-all">
         <span id="sound-icon">🔊</span>
-        <span id="sound-text" class="hidden sm:inline">SFX</span>
+        <span id="sound-text" class="hidden sm:inline">Audio</span>
       </button>
 
-      <a href="https://github.com/solomonwilsonr/ds-visualizer" target="_blank" rel="noopener" class="h-10 px-4 rounded-full bg-gradient-to-r from-[#22c55e] to-[#10b981] hover:opacity-90 text-[#042813] text-xs font-black flex items-center gap-1.5 transition-all shadow-md shadow-emerald-500/30">
-        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+      <a href="https://github.com/solomonwilsonr/ds-visualizer" target="_blank" rel="noopener" class="h-8 px-3 rounded bg-black text-white text-xs font-medium flex items-center gap-1.5 hover:bg-slate-800 transition-all">
+        <span>Repository</span>
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
         </svg>
-        <span>GitHub</span>
       </a>
     </div>
 
   </header>
 
-  <!-- Mobile Navigation Pill Bar -->
-  <div class="lg:hidden overflow-x-auto p-2.5 bg-[#101322] border-b border-[#1e2338] flex gap-1.5">
-    <button class="nav-pill text-xs px-3.5 py-1.5 rounded-full font-black text-white bg-gradient-to-r from-[#7c3aed] to-[#ff3b81]" onclick="switchDS('array')">Array</button>
-    <button class="nav-pill text-xs px-3.5 py-1.5 rounded-full font-black text-slate-400" onclick="switchDS('linkedlist')">Linked List</button>
-    <button class="nav-pill text-xs px-3.5 py-1.5 rounded-full font-black text-slate-400" onclick="switchDS('stack')">Stack</button>
-    <button class="nav-pill text-xs px-3.5 py-1.5 rounded-full font-black text-slate-400" onclick="switchDS('queue')">Queue</button>
-    <button class="nav-pill text-xs px-3.5 py-1.5 rounded-full font-black text-slate-400" onclick="switchDS('bst')">BST</button>
-    <button class="nav-pill text-xs px-3.5 py-1.5 rounded-full font-black text-slate-400" onclick="switchDS('hashtable')">Hash Table</button>
+  <!-- Mobile Tab Bar -->
+  <div class="md:hidden overflow-x-auto p-2 bg-white border-b border-slate-200 flex gap-1 text-xs">
+    <button class="nav-tab px-3 py-1 rounded font-semibold bg-slate-100 text-black" onclick="switchDS('array')">Array</button>
+    <button class="nav-tab px-3 py-1 rounded text-slate-600" onclick="switchDS('linkedlist')">Linked List</button>
+    <button class="nav-tab px-3 py-1 rounded text-slate-600" onclick="switchDS('stack')">Stack</button>
+    <button class="nav-tab px-3 py-1 rounded text-slate-600" onclick="switchDS('queue')">Queue</button>
+    <button class="nav-tab px-3 py-1 rounded text-slate-600" onclick="switchDS('bst')">BST</button>
+    <button class="nav-tab px-3 py-1 rounded text-slate-600" onclick="switchDS('hashtable')">Hash Table</button>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════
-       MAIN WORKSPACE BENTO GRID
+       MAIN ARCHITECTURAL STAGE (Csquare Split Grid Layout)
   ══════════════════════════════════════════════════════════ -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 flex flex-col gap-6">
+  <main class="flex-1 max-w-7xl w-full mx-auto p-6 md:p-10 flex flex-col gap-8">
 
-    <!-- Top Bento: Title & Split Complexity Badges -->
-    <section class="mojo-card p-6 md:p-8 bg-gradient-to-br from-[#161928] via-[#1a1f33] to-[#161928]" id="ds-hero-card">
+    <!-- Hero / Architecture Overview (Csquare Split Card) -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 border border-slate-200 bg-white shadow-sm" id="ds-hero-section">
       <!-- Rendered by JS -->
     </section>
 
-    <!-- Controls Bar -->
-    <section class="mojo-card p-4 md:p-5" id="ds-toolbar-card">
+    <!-- Operation Command Bar -->
+    <section class="border border-slate-200 bg-white p-4 shadow-sm" id="ds-command-bar">
       <!-- Rendered by JS -->
     </section>
 
-    <!-- Interactive Visual Stage (The Main Attraction) -->
-    <section class="mojo-card p-6 md:p-10 min-h-[350px] flex flex-col justify-center items-center relative overflow-hidden bg-[#0d101d]" id="ds-stage-card">
-      <!-- Rendered by JS -->
-    </section>
-
-    <!-- Live Ticker & Stepper Controller -->
-    <section class="mojo-card p-4 bg-[#090b12] border-[#20273d] flex flex-col md:flex-row items-center justify-between gap-4">
+    <!-- Live Execution Telemetry Bar -->
+    <section class="bg-black text-white p-4 border border-slate-900 flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
       <div class="flex items-center gap-3 overflow-hidden w-full md:w-auto">
-        <span class="w-3 h-3 rounded-full bg-[#22c55e] animate-ping flex-shrink-0"></span>
-        <span class="text-xs font-mono font-black text-[#ff3b81] flex-shrink-0 uppercase">CONSOLE:</span>
-        <span id="log-msg" class="text-xs font-mono text-slate-200 truncate">Ready! Choose an operation or preset above to animate.</span>
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
+        <span class="text-slate-400 font-semibold uppercase flex-shrink-0">TELEMETRY:</span>
+        <span id="log-msg" class="text-slate-200 truncate">System initialized. Awaiting execution command.</span>
       </div>
 
-      <!-- Playback Controls -->
       <div class="flex items-center gap-3 flex-shrink-0">
-        <button id="btn-step-fwd" onclick="stepForward()" disabled class="h-9 px-4 rounded-full bg-[#242b44] hover:bg-[#313a5c] text-white text-xs font-black disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 transition-all">
-          <span>⏭️</span> Step Next
+        <button id="btn-step-fwd" onclick="stepForward()" disabled class="h-7 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono text-[0.75rem] border border-slate-700 rounded-none disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1.5 transition-all">
+          <span>STEP_FWD [⏭]</span>
         </button>
 
-        <div class="h-5 w-px bg-[#262c45]"></div>
+        <div class="h-4 w-px bg-slate-800"></div>
 
         <div class="flex items-center gap-2">
-          <span class="text-xs font-mono text-slate-400 font-bold uppercase">Speed:</span>
-          <select id="anim-speed" class="h-9 bg-[#191e30] border border-[#2e3757] text-white text-xs rounded-full px-3 font-mono font-bold outline-none cursor-pointer">
-            <option value="900">Slow (0.5x)</option>
-            <option value="450" selected>Normal (1x)</option>
-            <option value="180">Fast (2x)</option>
+          <span class="text-slate-400">CLK_SPEED:</span>
+          <select id="anim-speed" class="h-7 bg-slate-900 border border-slate-700 text-slate-200 text-[0.75rem] px-2 font-mono outline-none cursor-pointer">
+            <option value="900">0.5x (SLOW)</option>
+            <option value="450" selected>1.0x (NOMINAL)</option>
+            <option value="180">2.0x (BURST)</option>
           </select>
         </div>
       </div>
     </section>
 
-    <!-- Bottom Bento: Guidance & Live Code Tracing -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="ds-details-grid">
+    <!-- Bottom Architectural Blueprint (Technical Spec + Code Implementation) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8" id="ds-blueprint-section">
       <!-- Rendered by JS -->
     </div>
 
@@ -441,7 +286,7 @@
 
   <script>
     /* ══════════════════════════════════════════════════════════
-       AUDIO SYNTHESIZER
+       AUDIO ENGINE (Minimalist subtle feedback)
     ══════════════════════════════════════════════════════════ */
     let audioCtx = null;
     let soundEnabled = true;
@@ -453,7 +298,7 @@
       }
     }
 
-    function playKeyClick(freq = 600, duration = 0.04) {
+    function playKeyClick(freq = 520, duration = 0.035) {
       if (!soundEnabled) return;
       try {
         initAudio();
@@ -464,10 +309,10 @@
         const gain = audioCtx.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + duration);
+        osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + duration);
 
-        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
 
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -480,196 +325,166 @@
     function toggleSound() {
       soundEnabled = !soundEnabled;
       document.getElementById('sound-icon').textContent = soundEnabled ? '🔊' : '🔇';
-      document.getElementById('sound-text').textContent = soundEnabled ? 'SFX' : 'Muted';
-      if (soundEnabled) playKeyClick(800, 0.04);
+      document.getElementById('sound-text').textContent = soundEnabled ? 'Audio' : 'Muted';
+      if (soundEnabled) playKeyClick(700, 0.04);
     }
 
     /* ══════════════════════════════════════════════════════════
-       REACTIVE MASCOT EMOTIONS (MOJO Monster Reactions)
-    ══════════════════════════════════════════════════════════ */
-    function setMascotMood(mood = 'normal') {
-      const mouth = document.getElementById('mascot-mouth');
-      const leftEye = document.getElementById('mascot-left-pupil');
-      const rightEye = document.getElementById('mascot-right-pupil');
-      if (!mouth) return;
-
-      if (mood === 'happy') {
-        mouth.setAttribute('d', 'M 30 62 Q 50 90 70 62'); // Big smile
-        if (leftEye) leftEye.setAttribute('cy', '44');
-        if (rightEye) rightEye.setAttribute('cy', '44');
-      } else if (mood === 'shock') {
-        mouth.setAttribute('d', 'M 40 70 A 10 10 0 1 0 60 70 A 10 10 0 1 0 40 70'); // Open O mouth
-      } else if (mood === 'focused') {
-        mouth.setAttribute('d', 'M 38 70 L 62 70'); // Straight line
-      } else {
-        mouth.setAttribute('d', 'M 36 68 Q 50 82 64 68'); // Default smile
-        if (leftEye) leftEye.setAttribute('cy', '47');
-        if (rightEye) rightEye.setAttribute('cy', '47');
-      }
-    }
-
-    function pokeMascot() {
-      playKeyClick(900, 0.08);
-      setMascotMood('happy');
-      logMsg("🎉 <b>MOJO Mascot:</b> Let's master Data Structures together!");
-      setTimeout(() => setMascotMood('normal'), 1200);
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       METADATA & DATA STRUCTURE CONFIG
+       ARCHITECTURAL STRUCTURE DATA & SPECS
     ══════════════════════════════════════════════════════════ */
     const DS_CONFIG = {
       array: {
-        title: "Array",
-        typeTag: "Contiguous Memory Tape",
-        accent: "#7c3aed",
-        summary: "Arrays allocate unbroken, consecutive memory addresses for elements. Reading any element by index is instantaneous O(1), but deleting or inserting in the middle causes downstream items to shift in O(n) time.",
+        title: "Contiguous Array",
+        codeNum: "01",
+        category: "Sequential Physical Memory",
+        summary: "An array stores a static sequence of elements in contiguous physical memory addresses. Direct element retrieval via arithmetic address calculation requires a single CPU clock cycle O(1). Inserting or deleting in arbitrary positions requires shifting elements left or right in O(n) linear time.",
         complexities: [
-          { label: "Access", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
-          { label: "Search", value: "O(n)", bg: "#f59e0b", textColor: "#2d1600" },
-          { label: "Insert", value: "O(n)", bg: "#f59e0b", textColor: "#2d1600" },
-          { label: "Delete", value: "O(n)", bg: "#ff3b81", textColor: "#ffffff" }
+          { name: "Access", time: "O(1)", type: "optimal" },
+          { name: "Search", time: "O(n)", type: "linear" },
+          { name: "Insert", time: "O(n)", type: "linear" },
+          { name: "Delete", time: "O(n)", type: "linear" }
         ],
         presets: [
-          { name: "Default (7)", data: [12, 45, 7, 23, 56, 8, 89] },
+          { name: "Default Vector", data: [12, 45, 7, 23, 56, 8, 89] },
           { name: "Worst-Case Scan", data: [10, 20, 30, 40, 50, 60, 99] },
-          { name: "Sorted Ascending", data: [4, 11, 19, 28, 42, 65, 80] }
+          { name: "Ordered Sequence", data: [4, 11, 19, 28, 42, 65, 80] }
         ],
-        steps: [
-          { title: "Direct Index Access", desc: "Memory offset = Base + (Index * CellSize). Computes in a single CPU instruction O(1)." },
-          { title: "Insert / Append", desc: "Appends element at the next vacant index or slides elements right to make room." },
-          { title: "Delete by Index", desc: "Extracts element at index [i], sliding trailing elements left to close the gap." }
+        specs: [
+          { label: "Memory Topology", desc: "Monolithic contiguous RAM allocation" },
+          { label: "Indexing Formula", desc: "Address = Base_Addr + (Index × Element_Size)" },
+          { label: "Cache Spatial Locality", desc: "Optimal (high cache-line utilization)" }
         ],
         codeLines: {
           search: [
+            "# Linear Search Verification",
             "def linear_search(arr, target):",
             "    for i in range(len(arr)):",
             "        if arr[i] == target:",
-            "            return i  # Match found at index i!",
-            "    return -1  # Target not present"
+            "            return i  # Target resolved at offset i",
+            "    return -1  # Target not found in block"
           ],
           insert: [
-            "# Append at tail (O(1) amortized)",
-            "arr.append(value)",
-            "# Array length updated"
+            "# Contiguous Insertion",
+            "arr.append(value)  # O(1) amortized reallocation",
+            "capacity_size = len(arr)"
           ],
           delete: [
-            "removed_val = arr[index]",
+            "# Contiguous Element Removal & Shift",
+            "target = arr[index]",
             "for j in range(index, len(arr) - 1):",
-            "    arr[j] = arr[j + 1]  # Shift elements left",
+            "    arr[j] = arr[j + 1]  # O(n) element copy",
             "arr.pop()"
           ]
         }
       },
 
       linkedlist: {
-        title: "Linked List",
-        typeTag: "Chained Memory Nodes",
-        accent: "#ff3b81",
-        summary: "Linked lists chain individual node objects containing a payload value and a pointer to the next node. Nodes can live anywhere in RAM. Inserting or deleting at the HEAD is an instant O(1) pointer swap.",
+        title: "Singly Linked List",
+        codeNum: "02",
+        category: "Pointer-Chained Dispersed Nodes",
+        summary: "A linked list consists of dynamically allocated node structures interconnected via pointer references. Memory addresses need not be adjacent. Prepending or deleting elements at the HEAD requires only pointer modification in O(1) time without memory reorganization.",
         complexities: [
-          { label: "Access", value: "O(n)", bg: "#f59e0b", textColor: "#2d1600" },
-          { label: "Search", value: "O(n)", bg: "#f59e0b", textColor: "#2d1600" },
-          { label: "Insert Head", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
-          { label: "Delete Head", value: "O(1)", bg: "#10b981", textColor: "#032e18" }
+          { name: "Access", time: "O(n)", type: "linear" },
+          { name: "Search", time: "O(n)", timeType: "linear" },
+          { name: "Insert Head", time: "O(1)", type: "optimal" },
+          { name: "Delete Head", time: "O(1)", type: "optimal" }
         ],
         presets: [
-          { name: "Default (4 Nodes)", data: [18, 42, 9, 65] },
-          { name: "Single Node", data: [50] },
-          { name: "Chain of 6", data: [10, 20, 30, 40, 50, 60] }
+          { name: "Standard Chain (4)", data: [18, 42, 9, 65] },
+          { name: "Single Root", data: [50] },
+          { name: "Pipeline of 6", data: [10, 20, 30, 40, 50, 60] }
         ],
-        steps: [
-          { title: "Insert Head", desc: "Instantiates new node, points its next reference to existing HEAD in O(1)." },
-          { title: "Insert Tail", desc: "Traverses to node whose next pointer is NULL, attaching the new node." },
-          { title: "Delete Head", desc: "Repoints HEAD to HEAD.next. The unlinked node is automatically freed." }
+        specs: [
+          { label: "Memory Topology", desc: "Non-contiguous heap-allocated node entities" },
+          { label: "Pointer Overhead", desc: "8 bytes per node reference pointer (64-bit)" },
+          { label: "Head Manipulation", desc: "Instantaneous O(1) reference reassignment" }
         ],
         codeLines: {
           search: [
             "curr = head",
             "while curr is not None:",
-            "    if curr.val == target:",
-            "        return True  # Found matching node!",
-            "    curr = curr.next",
+            "    if curr.val == target: return True",
+            "    curr = curr.next  # Pointer hop",
             "return False"
           ],
           insert: [
             "new_node = Node(value)",
             "new_node.next = head",
-            "head = new_node  # O(1) Head assigned"
+            "head = new_node  # O(1) head link"
           ],
           delete: [
             "if not head: return None",
-            "head = head.next  # Unlink first node in O(1)",
+            "head = head.next  # Detach head node in O(1)",
             "return head"
           ]
         }
       },
 
       stack: {
-        title: "Stack (LIFO)",
-        typeTag: "Vertical Drop Chute",
-        accent: "#8b5cf6",
-        summary: "Follows Last-In, First-Out (LIFO) order. Elements are pushed and popped exclusively from the top of the stack. Used in recursion call stacks, undo/redo buffers, and expression syntax parsing.",
+        title: "Stack Architecture",
+        codeNum: "03",
+        category: "LIFO Register Column",
+        summary: "Follows strict Last-In, First-Out (LIFO) architectural constraints. Pointers restrict insertion and removal strictly to the top of the column. Fundamental to processor call frames, bracket syntax verification, and execution history.",
         complexities: [
-          { label: "Push", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
-          { label: "Pop", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
-          { label: "Peek", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
-          { label: "Search", value: "O(n)", bg: "#f59e0b", textColor: "#2d1600" }
+          { name: "Push", time: "O(1)", type: "optimal" },
+          { name: "Pop", time: "O(1)", type: "optimal" },
+          { name: "Peek", time: "O(1)", type: "optimal" },
+          { name: "Search", time: "O(n)", type: "linear" }
         ],
         presets: [
-          { name: "Default Stack", data: [14, 28, 55, 90] },
-          { name: "Full Stack (5)", data: [10, 20, 30, 40, 50] },
-          { name: "Empty Chute", data: [] }
+          { name: "Balanced Column (4)", data: [14, 28, 55, 90] },
+          { name: "Full Capacity (5)", data: [10, 20, 30, 40, 50] },
+          { name: "Clear Column", data: [] }
         ],
-        steps: [
-          { title: "Push", desc: "Drops an item directly on top of the stack chute in O(1)." },
-          { title: "Pop", desc: "Pulls and removes the current TOP element in O(1)." },
-          { title: "Peek", desc: "Reads the current top element without altering the stack." }
+        specs: [
+          { label: "Access Port", desc: "Top-of-Stack pointer register exclusively" },
+          { label: "Operation Invariant", desc: "Restricted LIFO push/pop boundary" },
+          { label: "Primary Application", desc: "CPU Activation records and call stacks" }
         ],
         codeLines: {
           push: [
-            "stack.append(value)  # Push to TOP",
-            "top_ptr = len(stack) - 1"
+            "stack.append(value)  # Allocate at Top",
+            "sp_register = len(stack) - 1"
           ],
           pop: [
-            "if len(stack) == 0: raise UnderflowError",
-            "return stack.pop()  # O(1) Pop"
+            "if len(stack) == 0: raise StackUnderflow()",
+            "return stack.pop()  # O(1) Top removal"
           ],
           peek: [
             "if len(stack) == 0: return None",
-            "return stack[-1]  # Inspect TOP"
+            "return stack[-1]  # Inspect Top element"
           ]
         }
       },
 
       queue: {
-        title: "Queue (FIFO)",
-        typeTag: "High-Speed Conveyor",
-        accent: "#10b981",
-        summary: "Follows First-In, First-Out (FIFO) semantics. Elements enter at the REAR and exit from the FRONT. Essential for BFS graph traversals, print queues, and task scheduling.",
+        title: "Queue Pipeline",
+        codeNum: "04",
+        category: "FIFO Conduit Architecture",
+        summary: "Enforces First-In, First-Out (FIFO) pipeline processing. Data elements enter strictly at the REAR port and exit through the FRONT gate. Foundation of asynchronous message brokers, IO buffers, and breadth-first search traversals.",
         complexities: [
-          { label: "Enqueue", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
-          { label: "Dequeue", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
-          { label: "Peek", value: "O(1)", bg: "#10b981", textColor: "#032e18" },
-          { label: "Search", value: "O(n)", bg: "#f59e0b", textColor: "#2d1600" }
+          { name: "Enqueue", time: "O(1)", type: "optimal" },
+          { name: "Dequeue", time: "O(1)", type: "optimal" },
+          { name: "Peek", time: "O(1)", type: "optimal" },
+          { name: "Search", time: "O(n)", type: "linear" }
         ],
         presets: [
-          { name: "Standard (4)", data: [15, 33, 72, 8] },
-          { name: "Single Item", data: [99] },
-          { name: "Busy Line (6)", data: [5, 10, 15, 20, 25, 30] }
+          { name: "Nominal Stream (4)", data: [15, 33, 72, 8] },
+          { name: "Single Packet", data: [99] },
+          { name: "Throughput (6)", data: [5, 10, 15, 20, 25, 30] }
         ],
-        steps: [
-          { title: "Enqueue (Rear)", desc: "Appends the new element to the back of the conveyor." },
-          { title: "Dequeue (Front)", desc: "Serves and removes the front-most element in FIFO order." },
-          { title: "Peek", desc: "Inspects the next element to exit without removing it." }
+        specs: [
+          { label: "Processing Order", desc: "Strict temporal FIFO queuing" },
+          { label: "Entry/Exit Interfaces", desc: "Dual pointer: Head (Front) and Tail (Rear)" },
+          { label: "Buffer Utilization", desc: "Continuous stream scheduling" }
         ],
         codeLines: {
           enqueue: [
             "queue.append(value)  # Enqueue to REAR",
-            "rear_index = len(queue) - 1"
+            "rear_pointer = len(queue) - 1"
           ],
           dequeue: [
-            "if len(queue) == 0: raise EmptyQueueError",
+            "if len(queue) == 0: raise QueueDepleted()",
             "return queue.pop(0)  # Dequeue from FRONT"
           ]
         }
@@ -677,24 +492,24 @@
 
       bst: {
         title: "Binary Search Tree",
-        typeTag: "Logarithmic Search Tree",
-        accent: "#06b6d4",
-        summary: "Every node has at most two children. The left child must have a value strictly less than the node, and the right child strictly greater. In-order traversal visits nodes in ascending sorted order.",
+        codeNum: "05",
+        category: "Logarithmic Partitioning Graph",
+        summary: "Organizes elements hierarchically such that for any given node, all left subtree descendants hold strictly smaller values, and all right descendants hold strictly larger values. Each decision halves the remaining search perimeter in O(log n) time.",
         complexities: [
-          { label: "Search", value: "O(log n)", bg: "#10b981", textColor: "#032e18" },
-          { label: "Insert", value: "O(log n)", bg: "#10b981", textColor: "#032e18" },
-          { label: "Delete", value: "O(log n)", bg: "#10b981", textColor: "#032e18" },
-          { label: "Worst Case", value: "O(n)", bg: "#ff3b81", textColor: "#ffffff" }
+          { name: "Search", time: "O(log n)", type: "optimal" },
+          { name: "Insert", time: "O(log n)", type: "optimal" },
+          { name: "Delete", time: "O(log n)", type: "optimal" },
+          { name: "Worst Case", time: "O(n)", type: "critical" }
         ],
         presets: [
-          { name: "Balanced (7)", data: [50, 25, 75, 12, 38, 60, 92] },
-          { name: "Left Skewed", data: [70, 50, 40, 30, 20] },
-          { name: "Right Skewed", data: [20, 30, 40, 50, 70] }
+          { name: "Balanced Tree (7)", data: [50, 25, 75, 12, 38, 60, 92] },
+          { name: "Left Skew Vector", data: [70, 50, 40, 30, 20] },
+          { name: "Right Skew Vector", data: [20, 30, 40, 50, 70] }
         ],
-        steps: [
-          { title: "Binary Search", desc: "Compares target against root: move Left if smaller, Right if larger. Halves search space each step." },
-          { title: "Insert", desc: "Navigates down the branch path and attaches new node to an empty leaf position." },
-          { title: "In-Order Walk", desc: "Recursively visits Left Subtree -> Node -> Right Subtree, producing a sorted sequence." }
+        specs: [
+          { label: "Partitioning Invariant", desc: "LeftSubtree < Root < RightSubtree" },
+          { label: "Height Efficiency", desc: "h = ⌊log₂ n⌋ when fully balanced" },
+          { label: "In-Order Traversal", desc: "Left → Root → Right delivers sorted sequence" }
         ],
         codeLines: {
           search: [
@@ -702,52 +517,52 @@
             "    if target == curr.val: return curr",
             "    elif target < curr.val: curr = curr.left",
             "    else: curr = curr.right",
-            "return None  # Value not found"
+            "return None  # Node not present in tree"
           ],
           inorder: [
             "def in_order(node):",
             "    if not node: return",
-            "    in_order(node.left)    # Visit Left",
-            "    visit(node.val)         # Visit Current Node",
-            "    in_order(node.right)   # Visit Right"
+            "    in_order(node.left)",
+            "    visit(node.val)  # Emits sorted scalar",
+            "    in_order(node.right)"
           ]
         }
       },
 
       hashtable: {
-        title: "Hash Table",
-        typeTag: "Key-Value Vault",
-        accent: "#fbbf24",
-        summary: "Uses a deterministic hash function to convert string keys into numeric bucket indices. Collisions are resolved through separate chaining within each bucket slot.",
+        title: "Hash Map / Bucket Array",
+        codeNum: "06",
+        category: "Constant-Time Key-Address Indexing",
+        summary: "Maps arbitrary alphanumeric keys to memory bucket offsets via a deterministic mathematical hashing algorithm. Collisions are handled via isolated linked chaining within bucket segments.",
         complexities: [
-          { label: "Lookup", value: "O(1) avg", bg: "#10b981", textColor: "#032e18" },
-          { label: "Insert", value: "O(1) avg", bg: "#10b981", textColor: "#032e18" },
-          { label: "Delete", value: "O(1) avg", bg: "#10b981", textColor: "#032e18" },
-          { label: "Worst Case", value: "O(n)", bg: "#ff3b81", textColor: "#ffffff" }
+          { name: "Lookup", time: "O(1) avg", type: "optimal" },
+          { name: "Insert", time: "O(1) avg", type: "optimal" },
+          { name: "Delete", time: "O(1) avg", type: "optimal" },
+          { name: "Worst Case", time: "O(n)", type: "critical" }
         ],
         presets: [
-          { name: "Default (5 Keys)", data: [["user", "mojo"], ["role", "mascot"], ["city", "tokyo"], ["mode", "fast"], ["zoom", "100%"]] },
-          { name: "Forced Collision", data: [["cat", "feline"], ["act", "theatre"], ["tac", "tic"]] }
+          { name: "Standard (5 Entries)", data: [["user", "admin"], ["region", "us-east"], ["tenant", "csquare"], ["mode", "cluster"], ["scale", "4x"]] },
+          { name: "Collision Cluster", data: [["cat", "entry_0"], ["act", "entry_1"], ["tac", "entry_2"]] }
         ],
-        steps: [
-          { title: "Hash Formula", desc: "index = sum(charCodes) % bucketCount." },
-          { title: "Direct Bucket Lookup", desc: "Jumps directly to bucket[index] in O(1) average time." },
-          { title: "Separate Chaining", desc: "Colliding keys form a linked list within that bucket." }
+        specs: [
+          { label: "Hashing Algorithm", desc: "Index = (∑ ASCII(char)) mod NUM_BUCKETS" },
+          { label: "Collision Resolution", desc: "Separate Chaining via segment linked lists" },
+          { label: "Load Factor α", desc: "Items / Total_Buckets thresholding" }
         ],
         codeLines: {
           lookup: [
-            "bucket_index = hash(key) % NUM_BUCKETS",
-            "bucket = buckets[bucket_index]",
+            "bucket_idx = hash(key) % BUCKET_COUNT",
+            "bucket = table[bucket_idx]",
             "for entry in bucket:",
             "    if entry.key == key: return entry.val",
-            "return None  # Key not found"
+            "return None  # Key missing"
           ]
         }
       }
     };
 
     /* ══════════════════════════════════════════════════════════
-       DATA STORES
+       STATE REPOSITORIES
     ══════════════════════════════════════════════════════════ */
     let currentDS = 'array';
     let isLocked = false;
@@ -791,13 +606,13 @@
     }
     function initHT(data = null) {
       htBuckets = Array.from({ length: HT_SIZE }, () => []);
-      const sample = data || [["user", "mojo"], ["role", "mascot"], ["city", "tokyo"], ["mode", "fast"], ["zoom", "100%"]];
+      const sample = data || [["user", "admin"], ["region", "us-east"], ["tenant", "csquare"], ["mode", "cluster"], ["scale", "4x"]];
       sample.forEach(([k, v]) => htBuckets[getHash(k)].push({ k, v }));
     }
     initHT();
 
     /* ══════════════════════════════════════════════════════════
-       STEPPER & RUNTIME CONTROLS
+       STEPPER ENGINE
     ══════════════════════════════════════════════════════════ */
     function getDelay() {
       const el = document.getElementById('anim-speed');
@@ -825,7 +640,7 @@
 
     function stepForward() {
       if (stepResolver) {
-        playKeyClick(750, 0.03);
+        playKeyClick(700, 0.03);
         stepResolver();
       }
     }
@@ -845,79 +660,148 @@
     function setLock(locked) {
       isLocked = locked;
       document.querySelectorAll('input, button').forEach(b => {
-        if (!b.id.includes('anim-speed') && b.id !== 'btn-step-fwd' && !b.classList.contains('nav-pill') && b.id !== 'sound-btn') {
+        if (!b.id.includes('anim-speed') && b.id !== 'btn-step-fwd' && !b.classList.contains('nav-tab')) {
           b.disabled = locked;
         }
       });
     }
 
     /* ══════════════════════════════════════════════════════════
-       RENDER ENGINE
+       SVG ISOMETRIC GENERATOR HELPER
+    ══════════════════════════════════════════════════════════ */
+    // Generates high-end isometric cube path with 3 distinct shading faces
+    function generateIsometricCubeSvg(x, y, size, val, isHighlighted = false, isFound = false) {
+      const w = size;
+      const h = size * 0.58;
+      const depth = size * 0.7;
+
+      // Color scheme (Emerald / Green or Magenta)
+      let topFill = '#ffffff';
+      let leftFill = '#f1f5f9';
+      let rightFill = '#e2e8f0';
+      let stroke = '#cbd5e1';
+      let textColor = '#090a0f';
+
+      if (isFound) {
+        topFill = '#34d399';
+        leftFill = '#10b981';
+        rightFill = '#059669';
+        stroke = '#047857';
+        textColor = '#ffffff';
+      } else if (isHighlighted) {
+        topFill = '#38bdf8';
+        leftFill = '#0ea5e9';
+        rightFill = '#0284c7';
+        stroke = '#0369a1';
+        textColor = '#ffffff';
+      }
+
+      return `
+        <g class="iso-cube ${isHighlighted ? 'active-scan' : ''} ${isFound ? 'found-target' : ''}">
+          <!-- Top Face -->
+          <polygon points="${x},${y - h/2} ${x + w/2},${y} ${x},${y + h/2} ${x - w/2},${y}" fill="${topFill}" stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round" />
+          
+          <!-- Left Face -->
+          <polygon points="${x - w/2},${y} ${x},${y + h/2} ${x},${y + h/2 + depth} ${x - w/2},${y + depth}" fill="${leftFill}" stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round" />
+          
+          <!-- Right Face -->
+          <polygon points="${x},${y + h/2} ${x + w/2},${y} ${x + w/2},${y + depth} ${x},${y + h/2 + depth}" fill="${rightFill}" stroke="${stroke}" stroke-width="1.5" stroke-linejoin="round" />
+          
+          <!-- Centered Scalar Value on Top Face -->
+          <text x="${x}" y="${y + 4}" text-anchor="middle" font-family="'Inter', sans-serif" font-size="14" font-weight="700" fill="${textColor}">
+            ${val}
+          </text>
+        </g>
+      `;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       MAIN RENDER ENGINE
     ══════════════════════════════════════════════════════════ */
     function renderApp() {
       const cfg = DS_CONFIG[currentDS];
 
-      // 1. Hero Card with Split N+ / MOJO Badges
-      document.getElementById('ds-hero-card').innerHTML = `
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      // 1. Hero Split Section (Csquare Style: Dark Visual Left, Swiss Editorial Right)
+      document.getElementById('ds-hero-section').innerHTML = `
+        <!-- Left 5-Cols: Isometric Interactive Visual Stage -->
+        <div class="lg:col-span-5 stage-dark-grid p-8 min-h-[320px] flex flex-col justify-center items-center relative border-b lg:border-b-0 lg:border-r border-slate-800" id="ds-stage-container">
+          <!-- Rendered by Component Canvas -->
+        </div>
+
+        <!-- Right 7-Cols: Csquare Clean Editorial Information -->
+        <div class="lg:col-span-7 p-8 lg:p-10 flex flex-col justify-between">
           <div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <h2 class="text-3xl font-black italic tracking-tight text-white uppercase">${cfg.title}</h2>
-              <span class="sticker-tag bg-[#7c3aed] text-white px-3 py-1 shadow-md shadow-purple-500/40">${cfg.typeTag}</span>
+            <div class="flex items-center gap-2 font-mono text-xs text-slate-400 mb-2">
+              <span>INDEX: ${cfg.codeNum}</span>
+              <span>//</span>
+              <span class="text-emerald-600 font-semibold uppercase">${cfg.category}</span>
             </div>
-            <p class="text-sm font-semibold text-slate-300 mt-2 max-w-3xl leading-relaxed">${cfg.summary}</p>
+
+            <h2 class="text-3xl font-extrabold tracking-tight text-black mb-3">${cfg.title}</h2>
+            <p class="text-sm text-slate-600 leading-relaxed max-w-2xl">${cfg.summary}</p>
           </div>
 
-          <!-- Split Badges inspired by N+ Store (Image 3) -->
-          <div class="flex flex-wrap items-center gap-2.5 flex-shrink-0">
+          <!-- Technical Metrics Matrix -->
+          <div class="mt-8 pt-6 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-4">
             ${cfg.complexities.map(c => `
-              <div class="flex items-stretch rounded-full overflow-hidden border-2 border-[#2b3352] shadow-md font-mono text-xs font-black">
-                <span class="bg-[#191e32] text-slate-300 px-3 py-1.5 flex items-center">${c.label}</span>
-                <span style="background:${c.bg}; color:${c.textColor};" class="px-3 py-1.5 flex items-center">${c.value}</span>
+              <div>
+                <span class="text-[0.7rem] font-mono uppercase text-slate-400 tracking-wider block">${c.name}</span>
+                <span class="text-base font-bold font-mono text-slate-900 mt-0.5 block">${c.time}</span>
               </div>
             `).join('')}
           </div>
         </div>
       `;
 
-      // 2. Toolbar & Presets
+      // 2. Command Bar & Presets
       MODULES[currentDS].renderControls();
 
-      // 3. Stage
+      // 3. Render Canvas
       MODULES[currentDS].renderCanvas();
 
-      // 4. Guidance & Code Tracing
+      // 4. Bottom Blueprint & Code
       const defaultLines = cfg.codeLines.search || cfg.codeLines.insert || cfg.codeLines.push || cfg.codeLines.lookup;
-      document.getElementById('ds-details-grid').innerHTML = `
-        <!-- Left: MOJO Playbook Steps -->
-        <div class="mojo-card p-6 flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-3 border-b border-[#242b44]">
-            <h3 class="text-xs font-black uppercase tracking-wider text-[#ff3b81]">📖 Playbook Mechanics</h3>
-            <span class="sticker-tag bg-[#10b981] text-[#052e16] text-[0.65rem] px-2.5 py-0.5">Rules</span>
+      document.getElementById('ds-blueprint-section').innerHTML = `
+        <!-- Left: Technical Specification Checklist -->
+        <div class="lg:col-span-6 bg-white border border-slate-200 p-8 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <span class="text-xs font-mono font-semibold uppercase text-slate-400">Architectural Specifications</span>
+              <span class="text-xs font-mono text-emerald-600 font-semibold">VERIFIED</span>
+            </div>
+
+            <div class="space-y-4">
+              ${cfg.specs.map(s => `
+                <div class="border-b border-slate-100 pb-3">
+                  <span class="text-xs font-semibold text-black uppercase tracking-wider block">${s.label}</span>
+                  <span class="text-xs text-slate-600 font-mono mt-1 block">${s.desc}</span>
+                </div>
+              `).join('')}
+            </div>
           </div>
-          <div class="flex flex-col gap-3">
-            ${cfg.steps.map((st, i) => `
-              <div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-[#121524] border border-[#222840]">
-                <div class="w-7 h-7 rounded-xl bg-gradient-to-tr from-[#7c3aed] to-[#ff3b81] text-white flex items-center justify-center text-xs font-mono font-black flex-shrink-0 shadow-sm mt-0.5">
-                  ${i + 1}
-                </div>
-                <div>
-                  <h4 class="text-xs font-black text-white uppercase">${st.title}</h4>
-                  <p class="text-xs text-slate-400 mt-1 font-semibold leading-relaxed">${st.desc}</p>
-                </div>
-              </div>
-            `).join('')}
+
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-mono">
+            <span>SPECIFICATION_REV: 2026.02</span>
+            <span>MEMORY_SAFE: TRUE</span>
           </div>
         </div>
 
-        <!-- Right: Real-time Code Engine -->
-        <div class="mojo-card p-6 flex flex-col gap-4 bg-[#0d0f1a]">
-          <div class="flex items-center justify-between pb-3 border-b border-[#242b44]">
-            <h3 class="text-xs font-black uppercase tracking-wider text-[#06b6d4]">💻 Live Execution Engine</h3>
-            <span class="sticker-tag bg-[#7c3aed] text-white text-[0.65rem] px-2.5 py-0.5">Python 3.12</span>
+        <!-- Right: Code Implementation -->
+        <div class="lg:col-span-6 bg-[#0c0e14] border border-slate-800 p-8 text-white flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+              <span class="text-xs font-mono font-semibold uppercase text-slate-400">Verified Algorithm Implementation</span>
+              <span class="text-[0.7rem] font-mono px-2 py-0.5 bg-slate-800 text-slate-300 rounded">Python 3.12</span>
+            </div>
+
+            <div id="code-box" class="font-mono text-xs text-slate-300 overflow-x-auto min-h-[170px] flex flex-col justify-center">
+              ${defaultLines.map(l => `<span class="code-row">${l}</span>`).join('')}
+            </div>
           </div>
-          <div id="code-box" class="p-3 font-mono text-xs text-slate-300 overflow-x-auto min-h-[170px] flex flex-col justify-center">
-            ${defaultLines.map(l => `<span class="code-row">${l}</span>`).join('')}
+
+          <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>SYNTAX: PYTHON_AST</span>
+            <span>STATUS: ACTIVE_TRACING</span>
           </div>
         </div>
       `;
@@ -941,47 +825,47 @@
       else if (currentDS === 'hashtable') initHT(preset.data);
 
       MODULES[currentDS].renderCanvas();
-      logMsg(`Loaded scenario: <b>${preset.name}</b>`);
+      logMsg(`Scenario loaded: <b>${preset.name}</b>`);
     }
 
     /* ══════════════════════════════════════════════════════════
-       1. ARRAY MODULE (Glossy 3D Tiles)
+       1. ARRAY MODULE (Isometric Memory Cubes)
     ══════════════════════════════════════════════════════════ */
     const ArrayModule = {
       renderControls() {
         const presets = DS_CONFIG.array.presets;
-        document.getElementById('ds-toolbar-card').innerHTML = `
+        document.getElementById('ds-command-bar').innerHTML = `
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <!-- Action Buttons -->
+            <!-- Command Inputs -->
             <div class="flex flex-wrap items-center gap-2.5">
-              <input id="arr-val-in" type="number" placeholder="Value" class="mojo-input w-28" onkeydown="if(event.key==='Enter') ArrayModule.insert()" />
-              <button class="mojo-btn btn-green" onclick="ArrayModule.insert()">
-                <span>➕ Insert</span>
+              <input id="arr-val-in" type="number" placeholder="Value" class="swiss-input w-24" onkeydown="if(event.key==='Enter') ArrayModule.insert()" />
+              <button class="btn-swiss-dark" onclick="ArrayModule.insert()">
+                <span>+ Insert</span>
               </button>
 
-              <div class="h-6 w-px bg-[#262c45] hidden sm:block"></div>
+              <div class="h-5 w-px bg-slate-200 hidden sm:block"></div>
 
-              <input id="arr-idx-in" type="number" placeholder="[i]" class="mojo-input w-20" onkeydown="if(event.key==='Enter') ArrayModule.deleteIdx()" />
-              <button class="mojo-btn btn-pink" onclick="ArrayModule.deleteIdx()">
-                <span>🗑️ Delete [i]</span>
+              <input id="arr-idx-in" type="number" placeholder="[Offset]" class="swiss-input w-24" onkeydown="if(event.key==='Enter') ArrayModule.deleteIdx()" />
+              <button class="btn-swiss-danger" onclick="ArrayModule.deleteIdx()">
+                <span>Delete [i]</span>
               </button>
 
-              <div class="h-6 w-px bg-[#262c45] hidden sm:block"></div>
+              <div class="h-5 w-px bg-slate-200 hidden sm:block"></div>
 
-              <button class="mojo-btn btn-purple" onclick="ArrayModule.search()">
-                <span>🔍 Search</span>
+              <button class="btn-swiss-outline" onclick="ArrayModule.search()">
+                <span>Search</span>
               </button>
 
-              <button class="mojo-btn btn-dark" onclick="ArrayModule.reset()">
-                <span>↺ Reset</span>
+              <button class="btn-swiss-outline" onclick="ArrayModule.reset()">
+                <span>Reset</span>
               </button>
             </div>
 
             <!-- Presets -->
             <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-xs font-black uppercase text-slate-400">Presets:</span>
+              <span class="text-xs font-mono text-slate-400">VECTORS:</span>
               ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="sticker-tag bg-[#20263d] hover:bg-[#2e3757] text-white px-3 py-1.5 border border-[#333d5e] cursor-pointer">
+                <button onclick="loadPreset(${i})" class="px-2.5 py-1 text-xs font-mono border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all rounded-sm">
                   ${p.name}
                 </button>
               `).join('')}
@@ -990,69 +874,63 @@
         `;
       },
 
-      renderCanvas(highlightIdx = -1, styleType = 'scanning') {
-        const stage = document.getElementById('ds-stage-card');
+      renderCanvas(highlightIdx = -1, styleType = 'active-scan') {
+        const stage = document.getElementById('ds-stage-container');
+        if (!stage) return;
         if (arrData.length === 0) {
-          stage.innerHTML = `<div class="text-sm font-bold text-slate-500 py-12">Array tape is empty. Insert items or choose a preset!</div>`;
+          stage.innerHTML = `<div class="text-xs font-mono text-slate-500">Vector buffer is unallocated.</div>`;
           return;
         }
 
+        const W = 460;
+        const H = 220;
+        const startX = 50;
+        const spacing = Math.min(54, (W - 100) / arrData.length);
+
+        let cubesSvg = '';
+        arrData.forEach((val, i) => {
+          const cx = startX + i * spacing;
+          const cy = 110;
+          const isScan = i === highlightIdx;
+          const isFound = styleType === 'found-target' && isScan;
+          cubesSvg += generateIsometricCubeSvg(cx, cy, 48, val, isScan, isFound);
+
+          // Blueprint memory address tag below
+          cubesSvg += `
+            <text x="${cx}" y="${cy + 60}" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="#64748b">
+              [${i}]
+            </text>
+            <text x="${cx}" y="${cy + 74}" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#475569">
+              0x${(1000 + i * 4).toString(16).toUpperCase()}
+            </text>
+          `;
+        });
+
         stage.innerHTML = `
           <div class="w-full flex flex-col items-center">
-            <div class="flex items-center gap-2 text-xs font-mono font-bold text-slate-400 uppercase tracking-widest mb-6">
-              <span class="w-2.5 h-2.5 rounded-full bg-[#34d399] animate-pulse"></span>
-              Memory Tape: ${arrData.length} Elements (Tap any tile!)
+            <div class="flex items-center justify-between w-full text-[0.7rem] font-mono text-slate-500 mb-2">
+              <span>PHYSICAL_MEMORY_BLOCK: 0x1000</span>
+              <span class="text-emerald-500">LENGTH = ${arrData.length} WORDS</span>
             </div>
-
-            <div class="flex items-end justify-center gap-3.5 flex-wrap py-2">
-              ${arrData.map((val, i) => `
-                <div class="jelly-tile-wrap">
-                  ${i === highlightIdx ? `
-                    <div class="mojo-pointer">
-                      i = ${i} ⬇️
-                    </div>
-                  ` : ''}
-                  <div id="arr-tile-${i}" onclick="ArrayModule.inspect(${i})" class="jelly-tile ${i === highlightIdx ? styleType : ''}">
-                    ${val}
-                  </div>
-                  <div class="text-center mt-2.5">
-                    <span class="text-[0.75rem] font-mono font-black text-slate-300 bg-[#1e2338] px-2.5 py-0.5 rounded-full border border-[#2f3757]">
-                      [${i}]
-                    </span>
-                    <div class="text-[0.65rem] font-mono text-slate-500 mt-1">
-                      0x${(1000 + i * 4).toString(16).toUpperCase()}
-                    </div>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
+            <svg viewBox="0 0 ${W} ${H}" class="w-full max-w-lg h-auto">
+              ${cubesSvg}
+            </svg>
           </div>
         `;
-      },
-
-      inspect(idx) {
-        playKeyClick(650, 0.03);
-        const val = arrData[idx];
-        setMascotMood('happy');
-        logMsg(`Inspecting index <b>[${idx}]</b> with value <b>${val}</b> at memory address <b>0x${(1000 + idx * 4).toString(16).toUpperCase()}</b>.`);
-        const inp = document.getElementById('arr-idx-in');
-        if (inp) inp.value = idx;
-        this.renderCanvas(idx, 'scanning');
       },
 
       insert() {
         playKeyClick(550, 0.04);
         const inp = document.getElementById('arr-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Please enter a numeric value to insert."); return; }
-        if (arrData.length >= 10) { logMsg("Visualizer capacity limit reached (max 10 elements)."); return; }
+        if (isNaN(v)) { logMsg("Command rejected: Numeric value required."); return; }
+        if (arrData.length >= 8) { logMsg("Buffer limit reached (max 8 words in viewport)."); return; }
         arrData.push(v);
         inp.value = '';
-        setMascotMood('happy');
         setCodeLines(DS_CONFIG.array.codeLines.insert);
         highlightCodeLine(1);
-        this.renderCanvas(arrData.length - 1, 'scanning');
-        logMsg(`🎉 Appended jelly tile <b>${v}</b> at index [${arrData.length - 1}] in O(1) time!`);
+        this.renderCanvas(arrData.length - 1, 'active-scan');
+        logMsg(`Allocation success: appended <b>${v}</b> at offset [${arrData.length - 1}] in O(1).`);
       },
 
       async deleteIdx() {
@@ -1060,104 +938,98 @@
         const inp = document.getElementById('arr-idx-in');
         const idx = parseInt(inp.value);
         if (isNaN(idx) || idx < 0 || idx >= arrData.length) {
-          logMsg(`Invalid index. Must be between 0 and ${arrData.length - 1}.`);
+          logMsg(`Invalid offset. Valid boundary: 0..${arrData.length - 1}.`);
           return;
         }
 
         setLock(true);
-        setMascotMood('shock');
         setCodeLines(DS_CONFIG.array.codeLines.delete);
-        highlightCodeLine(0);
-        const el = document.getElementById(`arr-tile-${idx}`);
-        if (el) el.className = "jelly-tile removing";
-        logMsg(`Deleting index [${idx}]... sliding trailing items left.`);
+        highlightCodeLine(1);
+        this.renderCanvas(idx, 'active-scan');
+        logMsg(`Deallocating offset [${idx}]... executing memory shift left.`);
         await sleep(320);
 
-        highlightCodeLine(2);
+        highlightCodeLine(3);
         const removed = arrData.splice(idx, 1)[0];
         inp.value = '';
         this.renderCanvas();
-        highlightCodeLine(3);
+        highlightCodeLine(4);
         setLock(false);
-        setMascotMood('normal');
-        logMsg(`Removed <b>${removed}</b>. Subsequent elements shifted in O(n) time.`);
+        logMsg(`Deallocated word <b>${removed}</b>. Trailing elements shifted left in O(n) time.`);
       },
 
       async search() {
         const inp = document.getElementById('arr-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Enter a target value in the Value box to search."); return; }
+        if (isNaN(v)) { logMsg("Command rejected: Specify target value in Value input."); return; }
 
         setLock(true);
-        setMascotMood('focused');
         setCodeLines(DS_CONFIG.array.codeLines.search);
-        logMsg(`Scanning array for target value: <b>${v}</b>...`);
+        logMsg(`Scanning contiguous block for target value: <b>${v}</b>...`);
 
         for (let i = 0; i < arrData.length; i++) {
-          highlightCodeLine(1);
-          this.renderCanvas(i, 'scanning');
+          highlightCodeLine(2);
+          this.renderCanvas(i, 'active-scan');
           playKeyClick(500 + i * 40, 0.03);
-          logMsg(`Checking index [${i}] -> compare ${arrData[i]} === ${v}...`);
+          logMsg(`Evaluating offset [${i}] -> compare memory word ${arrData[i]} === ${v}...`);
           await waitStep();
 
-          highlightCodeLine(2);
+          highlightCodeLine(3);
           if (arrData[i] === v) {
-            highlightCodeLine(3);
+            highlightCodeLine(4);
             playKeyClick(850, 0.08);
-            setMascotMood('happy');
-            this.renderCanvas(i, 'matched');
-            logMsg(`🎯 Match found! Target <b>${v}</b> located at index <b>[${i}]</b> in ${i + 1} steps!`);
+            this.renderCanvas(i, 'found-target');
+            logMsg(`Target verified: <b>${v}</b> resolved at offset <b>[${i}]</b> in ${i + 1} cycles.`);
             setLock(false);
             return;
           }
         }
 
-        highlightCodeLine(4);
+        highlightCodeLine(5);
         this.renderCanvas();
         setLock(false);
-        setMascotMood('normal');
-        logMsg(`Target <b>${v}</b> was not found in the array.`);
+        logMsg(`Target <b>${v}</b> not located within the allocated memory block.`);
       },
 
       reset() {
         playKeyClick(700, 0.04);
         arrData = [12, 45, 7, 23, 56, 8, 89];
         this.renderCanvas();
-        logMsg("Array reset to default values.");
+        logMsg("Vector buffer reset to default architecture.");
       }
     };
 
     /* ══════════════════════════════════════════════════════════
-       2. LINKED LIST MODULE
+       2. LINKED LIST MODULE (Orthogonal Blueprint Pipeline)
     ══════════════════════════════════════════════════════════ */
     const LinkedListModule = {
       renderControls() {
         const presets = DS_CONFIG.linkedlist.presets;
-        document.getElementById('ds-toolbar-card').innerHTML = `
+        document.getElementById('ds-command-bar').innerHTML = `
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-2.5">
-              <input id="ll-val-in" type="number" placeholder="Node Value" class="mojo-input w-28" onkeydown="if(event.key==='Enter') LinkedListModule.insertHead()" />
-              <button class="mojo-btn btn-green" onclick="LinkedListModule.insertHead()">
-                <span>⬅️ Insert Head (O(1))</span>
+              <input id="ll-val-in" type="number" placeholder="Value" class="swiss-input w-24" onkeydown="if(event.key==='Enter') LinkedListModule.insertHead()" />
+              <button class="btn-swiss-dark" onclick="LinkedListModule.insertHead()">
+                <span>+ Insert Head (O(1))</span>
               </button>
-              <button class="mojo-btn btn-purple" onclick="LinkedListModule.insertTail()">
-                <span>➡️ Insert Tail</span>
+              <button class="btn-swiss-outline" onclick="LinkedListModule.insertTail()">
+                <span>+ Insert Tail</span>
               </button>
-              <button class="mojo-btn btn-pink" onclick="LinkedListModule.deleteHead()">
-                <span>🗑️ Delete Head</span>
+              <button class="btn-swiss-danger" onclick="LinkedListModule.deleteHead()">
+                <span>Delete Head</span>
               </button>
-              <button class="mojo-btn btn-dark" onclick="LinkedListModule.search()">
-                <span>🔍 Search</span>
+              <button class="btn-swiss-outline" onclick="LinkedListModule.search()">
+                <span>Search</span>
               </button>
-              <button class="mojo-btn btn-dark" onclick="LinkedListModule.reset()">
-                <span>↺ Reset</span>
+              <button class="btn-swiss-outline" onclick="LinkedListModule.reset()">
+                <span>Reset</span>
               </button>
             </div>
 
             <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-xs font-black uppercase text-slate-400">Presets:</span>
+              <span class="text-xs font-mono text-slate-400">VECTORS:</span>
               ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="sticker-tag bg-[#20263d] hover:bg-[#2e3757] text-white px-3 py-1.5 border border-[#333d5e] cursor-pointer">
+                <button onclick="loadPreset(${i})" class="px-2.5 py-1 text-xs font-mono border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all rounded-sm">
                   ${p.name}
                 </button>
               `).join('')}
@@ -1167,77 +1039,91 @@
       },
 
       renderCanvas(highlightVal = null) {
-        const stage = document.getElementById('ds-stage-card');
+        const stage = document.getElementById('ds-stage-container');
+        if (!stage) return;
         let nodes = [];
         let curr = llHead;
         while (curr) { nodes.push(curr.val); curr = curr.next; }
 
         if (nodes.length === 0) {
-          stage.innerHTML = `<div class="text-sm font-bold text-slate-500 py-12">Linked list is empty (HEAD -> NULL).</div>`;
+          stage.innerHTML = `<div class="text-xs font-mono text-slate-500">HEAD reference is null.</div>`;
           return;
         }
 
+        const W = 460;
+        const H = 200;
+        const startX = 40;
+        const nodeWidth = 60;
+        const spacing = Math.min(85, (W - 80) / nodes.length);
+
+        let svgContent = '';
+        nodes.forEach((val, i) => {
+          const nx = startX + i * spacing;
+          const ny = 75;
+          const isHigh = val === highlightVal;
+
+          // Wire connectors
+          if (i < nodes.length - 1) {
+            svgContent += `
+              <line x1="${nx + nodeWidth}" y1="${ny + 18}" x2="${nx + spacing}" y2="${ny + 18}" stroke="#334155" stroke-width="2" />
+              <polygon points="${nx + spacing},${ny + 18} ${nx + spacing - 6},${ny + 14} ${nx + spacing - 6},${ny + 22}" fill="#334155" />
+            `;
+          }
+
+          // Node Box
+          svgContent += `
+            <g class="cursor-pointer">
+              <!-- Value Section -->
+              <rect x="${nx}" y="${ny}" width="${nodeWidth * 0.65}" height="36" fill="${isHigh ? '#10b981' : '#1e293b'}" stroke="${isHigh ? '#34d399' : '#334155'}" stroke-width="1.5" />
+              <text x="${nx + nodeWidth * 0.325}" y="${ny + 23}" text-anchor="middle" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="#ffffff">
+                ${val}
+              </text>
+              
+              <!-- Pointer Section -->
+              <rect x="${nx + nodeWidth * 0.65}" y="${ny}" width="${nodeWidth * 0.35}" height="36" fill="#0f172a" stroke="${isHigh ? '#34d399' : '#334155'}" stroke-width="1.5" />
+              <circle cx="${nx + nodeWidth * 0.825}" cy="${ny + 18}" r="3" fill="#38bdf8" />
+              
+              <!-- Address label -->
+              <text x="${nx + nodeWidth * 0.5}" y="${ny + 54}" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748b">
+                0x${(2048 + i * 16).toString(16).toUpperCase()}
+              </text>
+            </g>
+          `;
+        });
+
         stage.innerHTML = `
-          <div class="w-full flex items-center justify-center overflow-x-auto py-6">
-            <div class="flex items-center gap-3 px-4">
-              <!-- HEAD Chip -->
-              <span class="sticker-tag bg-[#7c3aed] text-white px-3 py-1 shadow-md shadow-purple-500/40">
-                HEAD
-              </span>
-              <span class="text-2xl font-black text-slate-500">→</span>
-
-              <!-- Node Capsules -->
-              ${nodes.map((v, i) => `
-                <div class="flex items-center gap-3">
-                  <div onclick="LinkedListModule.inspect(${v})" class="flex items-stretch rounded-2xl overflow-hidden border-2 cursor-pointer transition-all shadow-lg ${v === highlightVal ? 'border-[#ff3b81] shadow-pink-500/30 scale-105' : 'border-[#2f385c] bg-[#161a2c]'}">
-                    <div class="px-4 py-3 text-lg font-black text-white bg-[#1a1f33] min-w-[54px] text-center">
-                      ${v}
-                    </div>
-                    <div class="px-3 py-3 bg-[#111422] border-l border-[#242b44] font-mono text-[0.7rem] text-[#34d399] font-bold flex items-center">
-                      next
-                    </div>
-                  </div>
-                  ${i < nodes.length - 1 ? `<span class="text-2xl font-black text-slate-500">→</span>` : ''}
-                </div>
-              `).join('')}
-
-              <span class="text-2xl font-black text-slate-500">→</span>
-              <span class="sticker-tag bg-[#ff3b81] text-white px-3 py-1 shadow-md shadow-pink-500/40">
-                NULL
-              </span>
+          <div class="w-full flex flex-col items-center">
+            <div class="flex items-center justify-between w-full text-[0.7rem] font-mono text-slate-500 mb-2">
+              <span>HEAD -> 0x${(2048).toString(16).toUpperCase()}</span>
+              <span class="text-cyan-400">CHAIN NODES: ${nodes.length}</span>
             </div>
+            <svg viewBox="0 0 ${W} ${H}" class="w-full max-w-lg h-auto">
+              ${svgContent}
+            </svg>
           </div>
         `;
-      },
-
-      inspect(val) {
-        playKeyClick(600, 0.03);
-        setMascotMood('happy');
-        logMsg(`Inspected node <b>${val}</b>. Reference pointer connects to next node address.`);
-        this.renderCanvas(val);
       },
 
       insertHead() {
         playKeyClick(550, 0.04);
         const inp = document.getElementById('ll-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Please enter a numeric value."); return; }
+        if (isNaN(v)) { logMsg("Command rejected: Numeric value required."); return; }
         const n = new LLNode(v);
         n.next = llHead;
         llHead = n;
         inp.value = '';
-        setMascotMood('happy');
         setCodeLines(DS_CONFIG.linkedlist.codeLines.insert);
         highlightCodeLine(2);
         this.renderCanvas(v);
-        logMsg(`Inserted node <b>${v}</b> at HEAD in instant O(1) time!`);
+        logMsg(`Pointer re-assigned: node <b>${v}</b> attached at HEAD in O(1) time.`);
       },
 
       insertTail() {
         playKeyClick(550, 0.04);
         const inp = document.getElementById('ll-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Please enter a numeric value."); return; }
+        if (isNaN(v)) { logMsg("Command rejected: Numeric value required."); return; }
         const n = new LLNode(v);
         if (!llHead) llHead = n;
         else {
@@ -1247,27 +1133,26 @@
         }
         inp.value = '';
         this.renderCanvas(v);
-        logMsg(`Traversed to end and hooked up node <b>${v}</b> at TAIL.`);
+        logMsg(`Traversed to NULL terminator: appended node <b>${v}</b> at TAIL.`);
       },
 
       deleteHead() {
         playKeyClick(420, 0.04);
-        if (!llHead) { logMsg("List is empty. Nothing to delete."); return; }
+        if (!llHead) { logMsg("Operation failed: List is empty."); return; }
         setCodeLines(DS_CONFIG.linkedlist.codeLines.delete);
         highlightCodeLine(1);
         const val = llHead.val;
         llHead = llHead.next;
         this.renderCanvas();
-        logMsg(`Deleted HEAD node <b>${val}</b> in O(1) time.`);
+        logMsg(`Unlinked HEAD node <b>${val}</b> in O(1) time.`);
       },
 
       async search() {
         const inp = document.getElementById('ll-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Enter search target value."); return; }
+        if (isNaN(v)) { logMsg("Command rejected: Enter search target."); return; }
 
         setLock(true);
-        setMascotMood('focused');
         setCodeLines(DS_CONFIG.linkedlist.codeLines.search);
         let curr = llHead;
         let count = 0;
@@ -1276,66 +1161,63 @@
           highlightCodeLine(1);
           this.renderCanvas(curr.val);
           playKeyClick(520 + count * 40, 0.03);
-          logMsg(`Traversing node ${count}: comparing ${curr.val} === ${v}...`);
+          logMsg(`Traversing node reference ${count}: testing payload <b>${curr.val}</b> === ${v}...`);
           await waitStep();
 
           highlightCodeLine(2);
           if (curr.val === v) {
-            highlightCodeLine(3);
             playKeyClick(850, 0.08);
-            setMascotMood('happy');
-            logMsg(`Target node <b>${v}</b> located after ${count + 1} pointer steps!`);
+            logMsg(`Target located: node <b>${v}</b> matched after ${count + 1} pointer transitions.`);
             setLock(false);
             return;
           }
-          highlightCodeLine(4);
+          highlightCodeLine(3);
           curr = curr.next;
           count++;
         }
 
-        highlightCodeLine(5);
+        highlightCodeLine(4);
         this.renderCanvas(null);
         setLock(false);
-        setMascotMood('normal');
-        logMsg(`Node <b>${v}</b> was not found in the linked list.`);
+        logMsg(`Target <b>${v}</b> not encountered in node chain.`);
       },
 
       reset() {
         playKeyClick(700, 0.04);
         llHead = buildLL([18, 42, 9, 65]);
         this.renderCanvas();
-        logMsg("Linked list reset to default chain.");
+        logMsg("Linked list pipeline reset.");
       }
     };
 
     /* ══════════════════════════════════════════════════════════
-       3. STACK MODULE (Arcade Hopper)
+       3. STACK MODULE (Isometric Elevator Column)
     ══════════════════════════════════════════════════════════ */
     const StackModule = {
       renderControls() {
         const presets = DS_CONFIG.stack.presets;
-        document.getElementById('ds-toolbar-card').innerHTML = `
+        document.getElementById('ds-command-bar').innerHTML = `
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-2.5">
-              <input id="st-val-in" type="number" placeholder="Value" class="mojo-input w-28" onkeydown="if(event.key==='Enter') StackModule.push()" />
-              <button class="mojo-btn btn-purple" onclick="StackModule.push()">
-                <span>⬆️ Push (Top)</span>
+              <input id="st-val-in" type="number" placeholder="Value" class="swiss-input w-24" onkeydown="if(event.key==='Enter') StackModule.push()" />
+              <button class="btn-swiss-dark" onclick="StackModule.push()">
+                <span>+ Push (Top)</span>
               </button>
-              <button class="mojo-btn btn-pink" onclick="StackModule.pop()">
-                <span>⬇️ Pop (Top)</span>
+              <button class="btn-swiss-danger" onclick="StackModule.pop()">
+                <span>- Pop (Top)</span>
               </button>
-              <button class="mojo-btn btn-dark" onclick="StackModule.peek()">
-                <span>👁️ Peek</span>
+              <button class="btn-swiss-outline" onclick="StackModule.peek()">
+                <span>Peek</span>
               </button>
-              <button class="mojo-btn btn-dark" onclick="StackModule.reset()">
-                <span>↺ Reset</span>
+              <button class="btn-swiss-outline" onclick="StackModule.reset()">
+                <span>Reset</span>
               </button>
             </div>
 
             <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-xs font-black uppercase text-slate-400">Presets:</span>
+              <span class="text-xs font-mono text-slate-400">VECTORS:</span>
               ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="sticker-tag bg-[#20263d] hover:bg-[#2e3757] text-white px-3 py-1.5 border border-[#333d5e] cursor-pointer">
+                <button onclick="loadPreset(${i})" class="px-2.5 py-1 text-xs font-mono border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all rounded-sm">
                   ${p.name}
                 </button>
               `).join('')}
@@ -1345,27 +1227,29 @@
       },
 
       renderCanvas() {
-        const stage = document.getElementById('ds-stage-card');
+        const stage = document.getElementById('ds-stage-container');
+        if (!stage) return;
         const topIdx = stackData.length - 1;
 
         stage.innerHTML = `
-          <div class="flex flex-col items-center justify-center py-2">
-            <div class="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest mb-3">
-              ⬇️ LIFO Chute: Push & Pop only at the TOP ⬇️
+          <div class="w-full flex flex-col items-center py-2">
+            <div class="flex items-center justify-between w-full max-w-xs text-[0.7rem] font-mono text-slate-500 mb-2">
+              <span>STACK_POINTER: [SP = ${stackData.length}]</span>
+              <span class="text-emerald-400">LIFO INVARIANT</span>
             </div>
 
-            <div class="mojo-stack-chute">
+            <div class="w-64 min-h-[220px] border-x border-b border-slate-800 bg-[#0f1118] flex flex-col-reverse p-3 gap-2">
               ${stackData.map((v, i) => `
-                <div onclick="${i === topIdx ? 'StackModule.pop()' : ''}" class="stack-candy-bar ${i === topIdx ? 'is-top' : ''}" title="${i === topIdx ? 'Click to Pop' : ''}">
-                  <span>${v}</span>
-                  ${i === topIdx ? '<span class="ml-2 text-[0.65rem] font-mono px-2 py-0.5 rounded-full bg-white/20 text-white font-black">TOP (Click)</span>' : ''}
+                <div class="w-full p-2.5 border flex items-center justify-between font-mono text-xs ${i === topIdx ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300' : 'bg-slate-900 border-slate-800 text-slate-300'}">
+                  <span class="font-bold text-sm text-white">${v}</span>
+                  <span class="text-[0.65rem] text-slate-500">${i === topIdx ? '← SP (TOP)' : `OFFSET [${i}]`}</span>
                 </div>
               `).join('')}
-              ${stackData.length === 0 ? '<div class="text-center text-xs font-bold text-slate-500 my-auto">Stack Chute is Empty</div>' : ''}
+              ${stackData.length === 0 ? '<div class="text-center font-mono text-xs text-slate-600 my-auto">Stack column is empty</div>' : ''}
             </div>
-
-            <div class="w-72 border-t-2 border-[#333d61] text-center pt-2 mt-2">
-              <span class="text-[0.65rem] font-mono font-bold uppercase tracking-wider text-slate-500">Base of Chute (Closed)</span>
+            
+            <div class="w-64 border-t-2 border-slate-700 text-center pt-2 mt-1">
+              <span class="text-[0.65rem] font-mono text-slate-600 uppercase">BASE_REGISTER (RESTRICTED)</span>
             </div>
           </div>
         `;
@@ -1375,73 +1259,70 @@
         playKeyClick(600, 0.04);
         const inp = document.getElementById('st-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Please enter a value to push."); return; }
-        if (stackData.length >= 6) { logMsg("Stack chute full for visual stage."); return; }
+        if (isNaN(v)) { logMsg("Command rejected: Numeric value required."); return; }
+        if (stackData.length >= 6) { logMsg("Hardware stack limit reached for visual register."); return; }
         stackData.push(v);
         inp.value = '';
-        setMascotMood('happy');
         setCodeLines(DS_CONFIG.stack.codeLines.push);
         highlightCodeLine(0);
         this.renderCanvas();
-        logMsg(`Push(${v}) dropped onto TOP in O(1) time. Depth = ${stackData.length}.`);
+        logMsg(`Pushed <b>${v}</b> to TOP register in O(1) time. Depth = ${stackData.length}.`);
       },
 
       pop() {
         playKeyClick(420, 0.05);
-        if (stackData.length === 0) { logMsg("Stack Underflow! Nothing to pop."); return; }
+        if (stackData.length === 0) { logMsg("Fault: Stack Underflow."); return; }
         setCodeLines(DS_CONFIG.stack.codeLines.pop);
         highlightCodeLine(1);
         const removed = stackData.pop();
         this.renderCanvas();
-        setMascotMood('shock');
-        logMsg(`Pop() retrieved <b>${removed}</b> from TOP in O(1) time.`);
-        setTimeout(() => setMascotMood('normal'), 800);
+        logMsg(`Popped <b>${removed}</b> from TOP register in O(1) time.`);
       },
 
       peek() {
         playKeyClick(700, 0.03);
-        if (stackData.length === 0) { logMsg("Stack is empty."); return; }
+        if (stackData.length === 0) { logMsg("Stack column is empty."); return; }
         setCodeLines(DS_CONFIG.stack.codeLines.peek);
         highlightCodeLine(1);
-        logMsg(`Peek: TOP item is <b>${stackData[stackData.length - 1]}</b>.`);
+        logMsg(`Peek: TOP register holds <b>${stackData[stackData.length - 1]}</b>.`);
       },
 
       reset() {
         playKeyClick(700, 0.04);
         stackData = [14, 28, 55, 90];
         this.renderCanvas();
-        logMsg("Stack reset to default values.");
+        logMsg("Stack register column reset.");
       }
     };
 
     /* ══════════════════════════════════════════════════════════
-       4. QUEUE MODULE (Conveyor Pipeline)
+       4. QUEUE MODULE (Pipeline Conveyor)
     ══════════════════════════════════════════════════════════ */
     const QueueModule = {
       renderControls() {
         const presets = DS_CONFIG.queue.presets;
-        document.getElementById('ds-toolbar-card').innerHTML = `
+        document.getElementById('ds-command-bar').innerHTML = `
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-2.5">
-              <input id="qu-val-in" type="number" placeholder="Value" class="mojo-input w-28" onkeydown="if(event.key==='Enter') QueueModule.enqueue()" />
-              <button class="mojo-btn btn-green" onclick="QueueModule.enqueue()">
-                <span>➕ Enqueue (Rear)</span>
+              <input id="qu-val-in" type="number" placeholder="Value" class="swiss-input w-24" onkeydown="if(event.key==='Enter') QueueModule.enqueue()" />
+              <button class="btn-swiss-dark" onclick="QueueModule.enqueue()">
+                <span>+ Enqueue (Rear)</span>
               </button>
-              <button class="mojo-btn btn-pink" onclick="QueueModule.dequeue()">
-                <span>➖ Dequeue (Front)</span>
+              <button class="btn-swiss-danger" onclick="QueueModule.dequeue()">
+                <span>- Dequeue (Front)</span>
               </button>
-              <button class="mojo-btn btn-dark" onclick="QueueModule.peek()">
-                <span>👁️ Peek</span>
+              <button class="btn-swiss-outline" onclick="QueueModule.peek()">
+                <span>Peek</span>
               </button>
-              <button class="mojo-btn btn-dark" onclick="QueueModule.reset()">
-                <span>↺ Reset</span>
+              <button class="btn-swiss-outline" onclick="QueueModule.reset()">
+                <span>Reset</span>
               </button>
             </div>
 
             <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-xs font-black uppercase text-slate-400">Presets:</span>
+              <span class="text-xs font-mono text-slate-400">VECTORS:</span>
               ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="sticker-tag bg-[#20263d] hover:bg-[#2e3757] text-white px-3 py-1.5 border border-[#333d5e] cursor-pointer">
+                <button onclick="loadPreset(${i})" class="px-2.5 py-1 text-xs font-mono border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all rounded-sm">
                   ${p.name}
                 </button>
               `).join('')}
@@ -1451,26 +1332,25 @@
       },
 
       renderCanvas() {
-        const stage = document.getElementById('ds-stage-card');
+        const stage = document.getElementById('ds-stage-container');
+        if (!stage) return;
         stage.innerHTML = `
           <div class="w-full flex flex-col items-center">
-            <div class="flex justify-between w-full max-w-xl text-xs font-mono font-bold text-slate-400 uppercase tracking-wider mb-3">
-              <span class="text-[#22c55e] flex items-center gap-1 font-black">⬅️ FRONT (Dequeue Out)</span>
-              <span class="text-[#7c3aed] flex items-center gap-1 font-black">REAR (Enqueue In) ⬅️</span>
+            <div class="flex justify-between w-full max-w-md text-[0.7rem] font-mono text-slate-500 mb-2">
+              <span class="text-emerald-400 font-semibold">FRONT_PORT (OUT) ⬅️</span>
+              <span class="text-cyan-400 font-semibold">⬅️ REAR_PORT (IN)</span>
             </div>
 
-            <div class="flex items-center gap-3.5 p-6 rounded-3xl bg-[#121524] border-2 border-[#222840] overflow-x-auto w-full max-w-2xl justify-center">
+            <div class="flex items-center gap-2 p-4 border border-slate-800 bg-[#0f1118] w-full max-w-md overflow-x-auto justify-center min-h-[110px]">
               ${queueData.map((v, i) => `
-                <div class="flex flex-col items-center gap-2">
-                  <div onclick="${i === 0 ? 'QueueModule.dequeue()' : ''}" class="w-16 h-16 rounded-2xl border-2 flex items-center justify-center font-black text-xl shadow-lg cursor-pointer transition-all ${i === 0 ? 'bg-gradient-to-tr from-[#10b981] to-[#34d399] text-[#032e18] border-[#86efac] shadow-emerald-500/30' : i === queueData.length - 1 ? 'bg-gradient-to-tr from-[#6d28d9] to-[#a78bfa] text-white border-[#c4b5fd] shadow-purple-500/30' : 'bg-[#1e2338] text-white border-[#333d61]'}">
+                <div class="flex flex-col items-center gap-1.5 flex-shrink-0">
+                  <div class="w-12 h-12 border flex items-center justify-center font-mono font-bold text-sm ${i === 0 ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300' : i === queueData.length - 1 ? 'bg-cyan-950/60 border-cyan-500 text-cyan-300' : 'bg-slate-900 border-slate-800 text-slate-300'}">
                     ${v}
                   </div>
-                  <span class="text-[0.65rem] font-mono font-black px-2 py-0.5 rounded-full ${i === 0 ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : i === queueData.length - 1 ? 'bg-purple-950 text-purple-300 border border-purple-800' : 'bg-slate-800 text-slate-400'}">
-                    ${i === 0 ? 'FRONT' : i === queueData.length - 1 ? 'REAR' : `pos ${i}`}
-                  </span>
+                  <span class="text-[0.65rem] font-mono text-slate-500">${i === 0 ? 'FRONT' : i === queueData.length - 1 ? 'REAR' : `p[${i}]`}</span>
                 </div>
               `).join('')}
-              ${queueData.length === 0 ? '<div class="text-sm font-bold text-slate-500">Queue is empty</div>' : ''}
+              ${queueData.length === 0 ? '<div class="text-xs font-mono text-slate-600">Pipeline empty</div>' : ''}
             </div>
           </div>
         `;
@@ -1480,71 +1360,68 @@
         playKeyClick(600, 0.04);
         const inp = document.getElementById('qu-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Please enter a numeric value."); return; }
-        if (queueData.length >= 7) { logMsg("Queue visualizer capacity limit reached."); return; }
+        if (isNaN(v)) { logMsg("Command rejected: Numeric value required."); return; }
+        if (queueData.length >= 7) { logMsg("Queue pipeline buffer full."); return; }
         queueData.push(v);
         inp.value = '';
-        setMascotMood('happy');
         setCodeLines(DS_CONFIG.queue.codeLines.enqueue);
         highlightCodeLine(0);
         this.renderCanvas();
-        logMsg(`Enqueue(${v}) joined the REAR line in O(1) time.`);
+        logMsg(`Enqueued <b>${v}</b> to REAR gate in O(1) time.`);
       },
 
       dequeue() {
         playKeyClick(420, 0.04);
-        if (queueData.length === 0) { logMsg("Queue is empty. Nothing to dequeue."); return; }
+        if (queueData.length === 0) { logMsg("Pipeline depleted."); return; }
         setCodeLines(DS_CONFIG.queue.codeLines.dequeue);
         highlightCodeLine(1);
         const removed = queueData.shift();
         this.renderCanvas();
-        setMascotMood('shock');
-        logMsg(`Dequeue() serviced <b>${removed}</b> from FRONT in FIFO order.`);
-        setTimeout(() => setMascotMood('normal'), 800);
+        logMsg(`Dequeued <b>${removed}</b> from FRONT port in FIFO sequence.`);
       },
 
       peek() {
         playKeyClick(700, 0.03);
         if (queueData.length === 0) { logMsg("Queue is empty."); return; }
-        logMsg(`Peek: Front item waiting to be serviced is <b>${queueData[0]}</b>.`);
+        logMsg(`Peek: Next packet to dequeue is <b>${queueData[0]}</b>.`);
       },
 
       reset() {
         playKeyClick(700, 0.04);
         queueData = [15, 33, 72, 8];
         this.renderCanvas();
-        logMsg("Queue reset to default line.");
+        logMsg("Queue pipeline reset.");
       }
     };
 
     /* ══════════════════════════════════════════════════════════
-       5. BST MODULE (Neon Vector Tree)
+       5. BST MODULE (Orthogonal Wire Graph)
     ══════════════════════════════════════════════════════════ */
     const BSTModule = {
       renderControls() {
         const presets = DS_CONFIG.bst.presets;
-        document.getElementById('ds-toolbar-card').innerHTML = `
+        document.getElementById('ds-command-bar').innerHTML = `
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-2.5">
-              <input id="bst-val-in" type="number" placeholder="Value" class="mojo-input w-28" onkeydown="if(event.key==='Enter') BSTModule.insert()" />
-              <button class="mojo-btn btn-green" onclick="BSTModule.insert()">
-                <span>➕ Insert</span>
+              <input id="bst-val-in" type="number" placeholder="Value" class="swiss-input w-24" onkeydown="if(event.key==='Enter') BSTModule.insert()" />
+              <button class="btn-swiss-dark" onclick="BSTModule.insert()">
+                <span>+ Insert</span>
               </button>
-              <button class="mojo-btn btn-purple" onclick="BSTModule.search()">
-                <span>🔍 Search Path</span>
+              <button class="btn-swiss-outline" onclick="BSTModule.search()">
+                <span>Search</span>
               </button>
-              <button class="mojo-btn btn-pink" onclick="BSTModule.inOrder()">
-                <span>📋 In-Order (Sorted)</span>
+              <button class="btn-swiss-outline" onclick="BSTModule.inOrder()">
+                <span>In-Order</span>
               </button>
-              <button class="mojo-btn btn-dark" onclick="BSTModule.reset()">
-                <span>↺ Reset</span>
+              <button class="btn-swiss-outline" onclick="BSTModule.reset()">
+                <span>Reset</span>
               </button>
             </div>
 
             <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-xs font-black uppercase text-slate-400">Presets:</span>
+              <span class="text-xs font-mono text-slate-400">VECTORS:</span>
               ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="sticker-tag bg-[#20263d] hover:bg-[#2e3757] text-white px-3 py-1.5 border border-[#333d5e] cursor-pointer">
+                <button onclick="loadPreset(${i})" class="px-2.5 py-1 text-xs font-mono border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all rounded-sm">
                   ${p.name}
                 </button>
               `).join('')}
@@ -1554,14 +1431,15 @@
       },
 
       renderCanvas(targetVal = null, pathVals = []) {
-        const stage = document.getElementById('ds-stage-card');
-        const W = 650;
-        const H = 280;
+        const stage = document.getElementById('ds-stage-container');
+        if (!stage) return;
+        const W = 460;
+        const H = 220;
 
         function calc(n, depth, l, r, map) {
           if (!n) return;
           const x = (l + r) / 2;
-          const y = depth * 65 + 40;
+          const y = depth * 55 + 35;
           map[n.val] = { x, y, n };
           calc(n.left, depth + 1, l, x, map);
           calc(n.right, depth + 1, x, r, map);
@@ -1578,12 +1456,12 @@
           const cur = posMap[n.val];
           if (n.left) {
             const lc = posMap[n.left.val];
-            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${lc.x}" y2="${lc.y}" stroke="#333d61" stroke-width="2.5" />`;
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${lc.x}" y2="${lc.y}" stroke="#334155" stroke-width="1.5" />`;
             drawLines(n.left);
           }
           if (n.right) {
             const rc = posMap[n.right.val];
-            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${rc.x}" y2="${rc.y}" stroke="#333d61" stroke-width="2.5" />`;
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${rc.x}" y2="${rc.y}" stroke="#334155" stroke-width="1.5" />`;
             drawLines(n.right);
           }
         }
@@ -1593,24 +1471,24 @@
           const isTarget = n.val === targetVal;
           const inPath = pathVals.includes(n.val);
 
-          let fill = '#1a1f33';
-          let stroke = '#3d4770';
+          let fill = '#1e293b';
+          let stroke = '#475569';
           let textColor = '#ffffff';
 
           if (isTarget) {
-            fill = '#22c55e';
-            stroke = '#86efac';
-            textColor = '#052e16';
+            fill = '#10b981';
+            stroke = '#34d399';
+            textColor = '#022c22';
           } else if (inPath) {
-            fill = '#7c3aed';
-            stroke = '#c4b5fd';
+            fill = '#0284c7';
+            stroke = '#38bdf8';
             textColor = '#ffffff';
           }
 
           nodesSvg += `
             <g transform="translate(${x},${y})" onclick="BSTModule.inspect(${n.val})" class="cursor-pointer">
-              <circle r="22" fill="${fill}" stroke="${stroke}" stroke-width="2.5" />
-              <text text-anchor="middle" dy="5" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="900" fill="${textColor}">
+              <circle r="18" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+              <text text-anchor="middle" dy="4.5" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" fill="${textColor}">
                 ${n.val}
               </text>
             </g>
@@ -1618,8 +1496,12 @@
         });
 
         stage.innerHTML = `
-          <div class="w-full flex justify-center overflow-x-auto">
-            <svg viewBox="0 0 ${W} ${H}" class="w-full max-w-2xl h-auto" style="min-height:260px;">
+          <div class="w-full flex flex-col items-center">
+            <div class="flex items-center justify-between w-full text-[0.7rem] font-mono text-slate-500 mb-2">
+              <span>ROOT_NODE: [${bstRoot ? bstRoot.val : 'NULL'}]</span>
+              <span class="text-emerald-400">PARTITION_INVARIANT</span>
+            </div>
+            <svg viewBox="0 0 ${W} ${H}" class="w-full max-w-lg h-auto">
               ${linesSvg}
               ${nodesSvg}
             </svg>
@@ -1629,8 +1511,7 @@
 
       inspect(val) {
         playKeyClick(600, 0.03);
-        setMascotMood('happy');
-        logMsg(`Selected node <b>${val}</b>. Left subtree < ${val}, Right subtree > ${val}.`);
+        logMsg(`Inspected node [${val}]: LeftSubtree < ${val}, RightSubtree > ${val}.`);
         const inp = document.getElementById('bst-val-in');
         if (inp) inp.value = val;
       },
@@ -1639,11 +1520,11 @@
         playKeyClick(550, 0.04);
         const inp = document.getElementById('bst-val-in');
         const v = parseInt(inp.value);
-        if (isNaN(v)) { logMsg("Please enter a numeric node value."); return; }
+        if (isNaN(v)) { logMsg("Command rejected: Numeric value required."); return; }
         bstRoot = bstInsert(bstRoot, v);
         inp.value = '';
         this.renderCanvas(v);
-        logMsg(`Inserted node <b>${v}</b> into BST.`);
+        logMsg(`Partitioned node [${v}] into tree in O(log n) time.`);
       },
 
       async search() {
@@ -1652,7 +1533,6 @@
         if (isNaN(v)) { logMsg("Enter search target value."); return; }
 
         setLock(true);
-        setMascotMood('focused');
         setCodeLines(DS_CONFIG.bst.codeLines.search);
         let curr = bstRoot;
         let path = [];
@@ -1665,20 +1545,19 @@
           highlightCodeLine(1);
           if (curr.val === v) {
             playKeyClick(850, 0.08);
-            setMascotMood('happy');
             this.renderCanvas(v, path);
-            logMsg(`Found target <b>${v}</b> in <b>${path.length}</b> comparisons (O(log n) efficiency).`);
+            logMsg(`Target located: <b>${v}</b> resolved in ${path.length} logarithmic branch evaluations.`);
             setLock(false);
             return;
           }
 
           if (v < curr.val) {
             highlightCodeLine(2);
-            logMsg(`${v} < ${curr.val}: Branching LEFT (halving search space)...`);
+            logMsg(`${v} < ${curr.val}: Branching LEFT (halving boundary)...`);
             curr = curr.left;
           } else {
             highlightCodeLine(3);
-            logMsg(`${v} > ${curr.val}: Branching RIGHT (halving search space)...`);
+            logMsg(`${v} > ${curr.val}: Branching RIGHT (halving boundary)...`);
             curr = curr.right;
           }
           await waitStep();
@@ -1687,13 +1566,11 @@
         highlightCodeLine(4);
         this.renderCanvas(null, path);
         setLock(false);
-        setMascotMood('normal');
-        logMsg(`Target value ${v} does not exist in the BST.`);
+        logMsg(`Target ${v} is not present in binary search partition.`);
       },
 
       async inOrder() {
         setLock(true);
-        setMascotMood('focused');
         setCodeLines(DS_CONFIG.bst.codeLines.inorder);
         const sorted = [];
         const path = [];
@@ -1715,48 +1592,46 @@
 
         await traverse(bstRoot);
         setLock(false);
-        setMascotMood('happy');
-        logMsg(`In-order traversal complete: <b>[${sorted.join(', ')}]</b> (Notice it is sorted).`);
+        logMsg(`In-order Traversal Complete: [${sorted.join(', ')}] — Output is verified sorted.`);
       },
 
       reset() {
         playKeyClick(700, 0.04);
         bstRoot = buildBST([50, 25, 75, 12, 38, 60, 92]);
         this.renderCanvas();
-        logMsg("BST reset to default balanced tree.");
+        logMsg("Tree graph reset.");
       }
     };
 
     /* ══════════════════════════════════════════════════════════
-       6. HASH TABLE MODULE (Split-Color Vault)
+       6. HASH TABLE MODULE (Segmented Bucket Rack)
     ══════════════════════════════════════════════════════════ */
     const HashTableModule = {
       renderControls() {
         const presets = DS_CONFIG.hashtable.presets;
-        document.getElementById('ds-toolbar-card').innerHTML = `
+        document.getElementById('ds-command-bar').innerHTML = `
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-2.5">
-              <input id="ht-key-in" type="text" placeholder="Key" class="mojo-input w-28" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
-              <input id="ht-val-in" type="text" placeholder="Value" class="mojo-input w-28" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
-              
-              <button class="mojo-btn btn-green" onclick="HashTableModule.insert()">
-                <span>Set Key</span>
+              <input id="ht-key-in" type="text" placeholder="Key" class="swiss-input w-24" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
+              <input id="ht-val-in" type="text" placeholder="Value" class="swiss-input w-24" onkeydown="if(event.key==='Enter') HashTableModule.insert()" />
+              <button class="btn-swiss-dark" onclick="HashTableModule.insert()">
+                <span>+ Set Key</span>
               </button>
-              <button class="mojo-btn btn-purple" onclick="HashTableModule.lookup()">
-                <span>Lookup Key</span>
+              <button class="btn-swiss-outline" onclick="HashTableModule.lookup()">
+                <span>Lookup</span>
               </button>
-              <button class="mojo-btn btn-pink" onclick="HashTableModule.deleteKey()">
-                <span>Delete Key</span>
+              <button class="btn-swiss-danger" onclick="HashTableModule.deleteKey()">
+                <span>Delete</span>
               </button>
-              <button class="mojo-btn btn-dark" onclick="HashTableModule.reset()">
-                <span>↺ Reset</span>
+              <button class="btn-swiss-outline" onclick="HashTableModule.reset()">
+                <span>Reset</span>
               </button>
             </div>
 
             <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-xs font-black uppercase text-slate-400">Presets:</span>
+              <span class="text-xs font-mono text-slate-400">VECTORS:</span>
               ${presets.map((p, i) => `
-                <button onclick="loadPreset(${i})" class="sticker-tag bg-[#20263d] hover:bg-[#2e3757] text-white px-3 py-1.5 border border-[#333d5e] cursor-pointer">
+                <button onclick="loadPreset(${i})" class="px-2.5 py-1 text-xs font-mono border border-slate-200 hover:bg-slate-50 text-slate-700 transition-all rounded-sm">
                   ${p.name}
                 </button>
               `).join('')}
@@ -1766,29 +1641,30 @@
       },
 
       renderCanvas(activeBucket = -1, targetKey = null) {
-        const stage = document.getElementById('ds-stage-card');
+        const stage = document.getElementById('ds-stage-container');
+        if (!stage) return;
         stage.innerHTML = `
-          <div class="w-full max-w-2xl flex flex-col gap-3 py-2">
-            <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-400 mb-1">
-              <span>Buckets: ${HT_SIZE}</span>
-              <span class="sticker-tag bg-[#7c3aed] text-white text-[0.65rem] px-2.5 py-0.5">hash(k) = sum(charCodes) % ${HT_SIZE}</span>
+          <div class="w-full flex flex-col gap-2 max-w-md py-1">
+            <div class="flex items-center justify-between text-[0.7rem] font-mono text-slate-500 mb-1">
+              <span>BUCKET_ARRAY: ${HT_SIZE} SLOTS</span>
+              <span class="text-cyan-400 font-mono">hash(k) = ∑(ASCII) mod ${HT_SIZE}</span>
             </div>
 
             ${htBuckets.map((bucket, i) => `
-              <div class="flex items-center gap-3.5 p-3 rounded-2xl border transition-all ${i === activeBucket ? 'bg-[#7c3aed]/20 border-[#ff3b81] shadow-lg shadow-purple-500/20' : 'bg-[#151929] border-[#222840]'}">
-                <div class="w-14 h-10 flex items-center justify-center rounded-xl bg-gradient-to-tr from-[#7c3aed] to-[#ff3b81] text-white font-mono text-xs font-black flex-shrink-0 shadow-sm">
-                  [${i}]
-                </div>
-
-                <div class="flex items-center gap-2 flex-wrap flex-1">
+              <div class="flex items-center gap-2 p-2 border ${i === activeBucket ? 'border-emerald-500 bg-emerald-950/20' : 'border-slate-800 bg-[#0f1118]'} transition-all">
+                <span class="font-mono text-xs text-slate-400 font-semibold px-2 py-0.5 bg-slate-900 border border-slate-800">
+                  [0x0${i}]
+                </span>
+                
+                <div class="flex items-center gap-1.5 flex-wrap flex-1">
                   ${bucket.length === 0 ? `
-                    <span class="text-xs font-mono text-slate-500 italic">Empty Vault Slot</span>
+                    <span class="text-[0.7rem] font-mono text-slate-600">NULL_PTR</span>
                   ` : bucket.map((item, j) => `
-                    <div onclick="HashTableModule.inspect('${item.k}','${item.v}')" class="cursor-pointer flex items-stretch rounded-xl overflow-hidden border border-[#2f385c] text-xs font-mono font-bold shadow-md transition-all hover:scale-105 ${item.k === targetKey ? 'border-[#22c55e]' : ''}">
-                      <span class="px-2.5 py-1.5 bg-[#ff3b81] text-white">${item.k}</span>
-                      <span class="px-2.5 py-1.5 bg-[#1e2338] text-slate-200">${item.v}</span>
+                    <div class="px-2 py-0.5 border text-xs font-mono flex items-center gap-1 ${item.k === targetKey ? 'border-cyan-400 bg-cyan-950/60 text-cyan-200' : 'border-slate-700 bg-slate-800 text-slate-200'}">
+                      <span class="font-bold text-slate-400">${item.k}:</span>
+                      <span>${item.v}</span>
                     </div>
-                    ${j < bucket.length - 1 ? '<span class="text-slate-500 font-bold text-sm">→</span>' : ''}
+                    ${j < bucket.length - 1 ? '<span class="text-slate-600 text-xs font-mono">-></span>' : ''}
                   `).join('')}
                 </div>
               </div>
@@ -1797,23 +1673,13 @@
         `;
       },
 
-      inspect(k, v) {
-        playKeyClick(600, 0.03);
-        setMascotMood('happy');
-        logMsg(`Selected key <b>"${k}"</b> with value <b>"${v}"</b>.`);
-        const kInp = document.getElementById('ht-key-in');
-        const vInp = document.getElementById('ht-val-in');
-        if (kInp) kInp.value = k;
-        if (vInp) vInp.value = v;
-      },
-
       insert() {
         playKeyClick(550, 0.04);
         const kInp = document.getElementById('ht-key-in');
         const vInp = document.getElementById('ht-val-in');
         const k = kInp.value.trim();
         const v = vInp.value.trim();
-        if (!k || !v) { logMsg("Please enter both key and value."); return; }
+        if (!k || !v) { logMsg("Command rejected: Both Key and Value required."); return; }
 
         const idx = getHash(k);
         const bucket = htBuckets[idx];
@@ -1821,13 +1687,12 @@
 
         if (existing) {
           existing.v = v;
-          logMsg(`Updated key "${k}" to "${v}" in bucket [${idx}].`);
+          logMsg(`Key updated: "${k}" := "${v}" at bucket offset [${idx}].`);
         } else {
           bucket.push({ k, v });
-          logMsg(`Inserted "${k}": "${v}" into bucket [${idx}].`);
+          logMsg(`Key inserted: "${k}" mapped to bucket offset [${idx}] via hash function.`);
         }
 
-        setMascotMood('happy');
         kInp.value = '';
         vInp.value = '';
         this.renderCanvas(idx, k);
@@ -1836,7 +1701,7 @@
       async lookup() {
         const kInp = document.getElementById('ht-key-in');
         const k = kInp.value.trim();
-        if (!k) { logMsg("Enter key to search."); return; }
+        if (!k) { logMsg("Command rejected: Key required."); return; }
 
         setCodeLines(DS_CONFIG.hashtable.codeLines.lookup);
         highlightCodeLine(0);
@@ -1850,12 +1715,10 @@
 
         if (found) {
           highlightCodeLine(3);
-          setMascotMood('happy');
-          logMsg(`Found key <b>"${k}"</b> with value <b>"${found.v}"</b> in bucket [${idx}]!`);
+          logMsg(`Key resolved: "${k}" -> "${found.v}" located at bucket segment [${idx}].`);
         } else {
           highlightCodeLine(4);
-          setMascotMood('shock');
-          logMsg(`Key "${k}" not found in bucket [${idx}].`);
+          logMsg(`Key missing: "${k}" not found in bucket index [${idx}].`);
         }
       },
 
@@ -1863,27 +1726,27 @@
         playKeyClick(420, 0.04);
         const kInp = document.getElementById('ht-key-in');
         const k = kInp.value.trim();
-        if (!k) { logMsg("Enter key to delete."); return; }
+        if (!k) { logMsg("Command rejected: Key required."); return; }
 
         const idx = getHash(k);
         const before = htBuckets[idx].length;
         htBuckets[idx] = htBuckets[idx].filter(e => e.k !== k);
 
         this.renderCanvas(idx);
-        if (htBuckets[idx].length < before) logMsg(`Deleted key "${k}" from bucket [${idx}].`);
-        else logMsg(`Key "${k}" was not found.`);
+        if (htBuckets[idx].length < before) logMsg(`Key "${k}" purged from bucket [${idx}].`);
+        else logMsg(`Key "${k}" not found.`);
       },
 
       reset() {
         playKeyClick(700, 0.04);
         initHT();
         this.renderCanvas();
-        logMsg("Hash table reset to default entries.");
+        logMsg("Bucket array reset.");
       }
     };
 
     /* ══════════════════════════════════════════════════════════
-       MODULE REGISTRY & SWITCHER
+       MODULE REGISTRY & NAVIGATION
     ══════════════════════════════════════════════════════════ */
     const MODULES = {
       array: ArrayModule,
@@ -1899,17 +1762,17 @@
       playKeyClick(700, 0.03);
       currentDS = ds;
 
-      document.querySelectorAll('.nav-pill').forEach(btn => {
-        btn.classList.remove('text-white', 'bg-gradient-to-r', 'from-[#7c3aed]', 'to-[#ff3b81]', 'shadow-lg');
-        btn.classList.add('text-slate-400');
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.classList.remove('text-black', 'font-semibold', 'bg-slate-100');
+        btn.classList.add('text-slate-600');
         if (btn.getAttribute('onclick').includes(ds)) {
-          btn.classList.add('text-white', 'bg-gradient-to-r', 'from-[#7c3aed]', 'to-[#ff3b81]', 'shadow-lg');
-          btn.classList.remove('text-slate-400');
+          btn.classList.add('text-black', 'font-semibold', 'bg-slate-100');
+          btn.classList.remove('text-slate-600');
         }
       });
 
       renderApp();
-      logMsg(`Loaded <b>${DS_CONFIG[ds].title}</b>. Tap any operation or node!`);
+      logMsg(`Architecture loaded: <b>${DS_CONFIG[ds].title}</b>. Ready for execution.`);
     }
 
     // Initialize first render
