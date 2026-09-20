@@ -385,7 +385,7 @@
         summary: "A linked list consists of dynamically allocated node structures interconnected via pointer references. Memory addresses need not be adjacent. Prepending or deleting elements at the HEAD requires only pointer modification in O(1) time without memory reorganization.",
         complexities: [
           { name: "Access", time: "O(n)", type: "linear" },
-          { name: "Search", time: "O(n)", timeType: "linear" },
+          { name: "Search", time: "O(n)", type: "linear" },
           { name: "Insert Head", time: "O(1)", type: "optimal" },
           { name: "Delete Head", time: "O(1)", type: "optimal" }
         ],
@@ -486,6 +486,10 @@
           dequeue: [
             "if len(queue) == 0: raise QueueDepleted()",
             "return queue.pop(0)  # Dequeue from FRONT"
+          ],
+          peek: [
+            "if len(queue) == 0: return None",
+            "return queue[0]  # Inspect FRONT packet"
           ]
         }
       },
@@ -612,14 +616,27 @@
     initHT();
 
     /* ══════════════════════════════════════════════════════════
-       STEPPER ENGINE
+       STEPPER ENGINE & ASYNC CANCEL PIPELINE
     ══════════════════════════════════════════════════════════ */
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+    let executionToken = 0;
+
+    function cancelOngoingAnimation() {
+      executionToken++;
+      if (stepResolver) {
+        stepResolver();
+        stepResolver = null;
+      }
+      setLock(false);
+    }
+
     function getDelay() {
       const el = document.getElementById('anim-speed');
       return el ? parseInt(el.value) : 450;
     }
 
-    async function waitStep() {
+    async function waitStep(token = null) {
+      if (token !== null && token !== executionToken) return;
       const btn = document.getElementById('btn-step-fwd');
       if (btn) btn.disabled = false;
 
@@ -815,6 +832,7 @@
     }
 
     function loadPreset(idx) {
+      cancelOngoingAnimation();
       playKeyClick(700, 0.04);
       const preset = DS_CONFIG[currentDS].presets[idx];
       if (currentDS === 'array') arrData = [...preset.data];
@@ -937,17 +955,23 @@
         playKeyClick(400, 0.05);
         const inp = document.getElementById('arr-idx-in');
         const idx = parseInt(inp.value);
+        if (arrData.length === 0) {
+          logMsg("Vector buffer is empty. Nothing to delete.");
+          return;
+        }
         if (isNaN(idx) || idx < 0 || idx >= arrData.length) {
-          logMsg(`Invalid offset. Valid boundary: 0..${arrData.length - 1}.`);
+          logMsg(`Invalid offset [${inp.value}]. Valid boundary: 0..${arrData.length - 1}.`);
           return;
         }
 
+        const token = ++executionToken;
         setLock(true);
         setCodeLines(DS_CONFIG.array.codeLines.delete);
         highlightCodeLine(1);
         this.renderCanvas(idx, 'active-scan');
         logMsg(`Deallocating offset [${idx}]... executing memory shift left.`);
         await sleep(320);
+        if (token !== executionToken) return;
 
         highlightCodeLine(3);
         const removed = arrData.splice(idx, 1)[0];
@@ -962,7 +986,9 @@
         const inp = document.getElementById('arr-val-in');
         const v = parseInt(inp.value);
         if (isNaN(v)) { logMsg("Command rejected: Specify target value in Value input."); return; }
+        if (arrData.length === 0) { logMsg("Vector buffer is empty."); return; }
 
+        const token = ++executionToken;
         setLock(true);
         setCodeLines(DS_CONFIG.array.codeLines.search);
         logMsg(`Scanning contiguous block for target value: <b>${v}</b>...`);
@@ -972,7 +998,8 @@
           this.renderCanvas(i, 'active-scan');
           playKeyClick(500 + i * 40, 0.03);
           logMsg(`Evaluating offset [${i}] -> compare memory word ${arrData[i]} === ${v}...`);
-          await waitStep();
+          await waitStep(token);
+          if (token !== executionToken) return;
 
           highlightCodeLine(3);
           if (arrData[i] === v) {
@@ -992,6 +1019,7 @@
       },
 
       reset() {
+        cancelOngoingAnimation();
         playKeyClick(700, 0.04);
         arrData = [12, 45, 7, 23, 56, 8, 89];
         this.renderCanvas();
@@ -1046,15 +1074,21 @@
         while (curr) { nodes.push(curr.val); curr = curr.next; }
 
         if (nodes.length === 0) {
-          stage.innerHTML = `<div class="text-xs font-mono text-slate-500">HEAD reference is null.</div>`;
+          stage.innerHTML = `
+            <div class="w-full flex flex-col items-center justify-center min-h-[140px]">
+              <span class="text-xs font-mono text-slate-500 mb-1">HEAD -> NULL</span>
+              <span class="text-[0.7rem] font-mono text-slate-600">Dispersed pointer chain is empty.</span>
+            </div>
+          `;
           return;
         }
 
         const W = 460;
         const H = 200;
-        const startX = 40;
-        const nodeWidth = 60;
-        const spacing = Math.min(85, (W - 80) / nodes.length);
+        const count = nodes.length;
+        const spacing = count <= 4 ? 84 : count === 5 ? 74 : 64;
+        const nodeWidth = count <= 4 ? 56 : count === 5 ? 48 : 42;
+        const startX = Math.max(16, (W - ((count - 1) * spacing + nodeWidth)) / 2);
 
         let svgContent = '';
         nodes.forEach((val, i) => {
@@ -1064,9 +1098,10 @@
 
           // Wire connectors
           if (i < nodes.length - 1) {
+            const nextX = nx + spacing;
             svgContent += `
-              <line x1="${nx + nodeWidth}" y1="${ny + 18}" x2="${nx + spacing}" y2="${ny + 18}" stroke="#334155" stroke-width="2" />
-              <polygon points="${nx + spacing},${ny + 18} ${nx + spacing - 6},${ny + 14} ${nx + spacing - 6},${ny + 22}" fill="#334155" />
+              <line x1="${nx + nodeWidth}" y1="${ny + 18}" x2="${nextX}" y2="${ny + 18}" stroke="#475569" stroke-width="1.5" />
+              <polygon points="${nextX},${ny + 18} ${nextX - 6},${ny + 14} ${nextX - 6},${ny + 22}" fill="#475569" />
             `;
           }
 
@@ -1075,13 +1110,13 @@
             <g class="cursor-pointer">
               <!-- Value Section -->
               <rect x="${nx}" y="${ny}" width="${nodeWidth * 0.65}" height="36" fill="${isHigh ? '#10b981' : '#1e293b'}" stroke="${isHigh ? '#34d399' : '#334155'}" stroke-width="1.5" />
-              <text x="${nx + nodeWidth * 0.325}" y="${ny + 23}" text-anchor="middle" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="#ffffff">
+              <text x="${nx + nodeWidth * 0.325}" y="${ny + 23}" text-anchor="middle" font-family="'Inter', sans-serif" font-size="${count > 5 ? 11 : 12}" font-weight="700" fill="#ffffff">
                 ${val}
               </text>
               
               <!-- Pointer Section -->
               <rect x="${nx + nodeWidth * 0.65}" y="${ny}" width="${nodeWidth * 0.35}" height="36" fill="#0f172a" stroke="${isHigh ? '#34d399' : '#334155'}" stroke-width="1.5" />
-              <circle cx="${nx + nodeWidth * 0.825}" cy="${ny + 18}" r="3" fill="#38bdf8" />
+              <circle cx="${nx + nodeWidth * 0.825}" cy="${ny + 18}" r="2.5" fill="#38bdf8" />
               
               <!-- Address label -->
               <text x="${nx + nodeWidth * 0.5}" y="${ny + 54}" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748b">
@@ -1109,6 +1144,9 @@
         const inp = document.getElementById('ll-val-in');
         const v = parseInt(inp.value);
         if (isNaN(v)) { logMsg("Command rejected: Numeric value required."); return; }
+        let count = 0; let c = llHead; while (c) { count++; c = c.next; }
+        if (count >= 6) { logMsg("Maximum linked list chain length (6) reached for viewport."); return; }
+
         const n = new LLNode(v);
         n.next = llHead;
         llHead = n;
@@ -1124,12 +1162,15 @@
         const inp = document.getElementById('ll-val-in');
         const v = parseInt(inp.value);
         if (isNaN(v)) { logMsg("Command rejected: Numeric value required."); return; }
+        let count = 0; let c = llHead; while (c) { count++; c = c.next; }
+        if (count >= 6) { logMsg("Maximum linked list chain length (6) reached for viewport."); return; }
+
         const n = new LLNode(v);
         if (!llHead) llHead = n;
         else {
-          let c = llHead;
-          while (c.next) c = c.next;
-          c.next = n;
+          let curr = llHead;
+          while (curr.next) curr = curr.next;
+          curr.next = n;
         }
         inp.value = '';
         this.renderCanvas(v);
@@ -1138,7 +1179,7 @@
 
       deleteHead() {
         playKeyClick(420, 0.04);
-        if (!llHead) { logMsg("Operation failed: List is empty."); return; }
+        if (!llHead) { logMsg("Operation failed: Linked list is empty (HEAD is NULL)."); return; }
         setCodeLines(DS_CONFIG.linkedlist.codeLines.delete);
         highlightCodeLine(1);
         const val = llHead.val;
@@ -1151,7 +1192,9 @@
         const inp = document.getElementById('ll-val-in');
         const v = parseInt(inp.value);
         if (isNaN(v)) { logMsg("Command rejected: Enter search target."); return; }
+        if (!llHead) { logMsg("Operation failed: Linked list is empty."); return; }
 
+        const token = ++executionToken;
         setLock(true);
         setCodeLines(DS_CONFIG.linkedlist.codeLines.search);
         let curr = llHead;
@@ -1162,7 +1205,8 @@
           this.renderCanvas(curr.val);
           playKeyClick(520 + count * 40, 0.03);
           logMsg(`Traversing node reference ${count}: testing payload <b>${curr.val}</b> === ${v}...`);
-          await waitStep();
+          await waitStep(token);
+          if (token !== executionToken) return;
 
           highlightCodeLine(2);
           if (curr.val === v) {
@@ -1183,6 +1227,7 @@
       },
 
       reset() {
+        cancelOngoingAnimation();
         playKeyClick(700, 0.04);
         llHead = buildLL([18, 42, 9, 65]);
         this.renderCanvas();
@@ -1288,6 +1333,7 @@
       },
 
       reset() {
+        cancelOngoingAnimation();
         playKeyClick(700, 0.04);
         stackData = [14, 28, 55, 90];
         this.renderCanvas();
@@ -1383,10 +1429,13 @@
       peek() {
         playKeyClick(700, 0.03);
         if (queueData.length === 0) { logMsg("Queue is empty."); return; }
+        setCodeLines(DS_CONFIG.queue.codeLines.peek);
+        highlightCodeLine(1);
         logMsg(`Peek: Next packet to dequeue is <b>${queueData[0]}</b>.`);
       },
 
       reset() {
+        cancelOngoingAnimation();
         playKeyClick(700, 0.04);
         queueData = [15, 33, 72, 8];
         this.renderCanvas();
@@ -1433,13 +1482,29 @@
       renderCanvas(targetVal = null, pathVals = []) {
         const stage = document.getElementById('ds-stage-container');
         if (!stage) return;
+        if (!bstRoot) {
+          stage.innerHTML = `
+            <div class="w-full flex flex-col items-center justify-center min-h-[160px]">
+              <span class="text-xs font-mono text-slate-500 mb-1">ROOT -> NULL</span>
+              <span class="text-[0.7rem] font-mono text-slate-600">Binary search tree graph is unallocated.</span>
+            </div>
+          `;
+          return;
+        }
+
         const W = 460;
-        const H = 220;
+        function getTreeDepth(node) {
+          if (!node) return 0;
+          return 1 + Math.max(getTreeDepth(node.left), getTreeDepth(node.right));
+        }
+        const depthCount = getTreeDepth(bstRoot);
+        const H = Math.max(220, depthCount * 52 + 36);
+        const levelSpacing = depthCount > 4 ? 44 : 52;
 
         function calc(n, depth, l, r, map) {
           if (!n) return;
           const x = (l + r) / 2;
-          const y = depth * 55 + 35;
+          const y = depth * levelSpacing + 32;
           map[n.val] = { x, y, n };
           calc(n.left, depth + 1, l, x, map);
           calc(n.right, depth + 1, x, r, map);
@@ -1456,12 +1521,12 @@
           const cur = posMap[n.val];
           if (n.left) {
             const lc = posMap[n.left.val];
-            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${lc.x}" y2="${lc.y}" stroke="#334155" stroke-width="1.5" />`;
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${lc.x}" y2="${lc.y}" stroke="#475569" stroke-width="1.5" />`;
             drawLines(n.left);
           }
           if (n.right) {
             const rc = posMap[n.right.val];
-            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${rc.x}" y2="${rc.y}" stroke="#334155" stroke-width="1.5" />`;
+            linesSvg += `<line x1="${cur.x}" y1="${cur.y}" x2="${rc.x}" y2="${rc.y}" stroke="#475569" stroke-width="1.5" />`;
             drawLines(n.right);
           }
         }
@@ -1487,7 +1552,7 @@
 
           nodesSvg += `
             <g transform="translate(${x},${y})" onclick="BSTModule.inspect(${n.val})" class="cursor-pointer">
-              <circle r="18" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
+              <circle r="17" fill="${fill}" stroke="${stroke}" stroke-width="1.5" />
               <text text-anchor="middle" dy="4.5" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" fill="${textColor}">
                 ${n.val}
               </text>
@@ -1521,6 +1586,28 @@
         const inp = document.getElementById('bst-val-in');
         const v = parseInt(inp.value);
         if (isNaN(v)) { logMsg("Command rejected: Numeric value required."); return; }
+
+        function bstContains(r, val) {
+          if (!r) return false;
+          if (r.val === val) return true;
+          return val < r.val ? bstContains(r.left, val) : bstContains(r.right, val);
+        }
+
+        if (bstContains(bstRoot, v)) {
+          logMsg(`Value <b>${v}</b> already exists in tree (duplicates ignored in binary search partition).`);
+          return;
+        }
+
+        function countNodes(r) {
+          if (!r) return 0;
+          return 1 + countNodes(r.left) + countNodes(r.right);
+        }
+
+        if (countNodes(bstRoot) >= 9) {
+          logMsg("Maximum BST capacity reached (9 nodes for optimal layout).");
+          return;
+        }
+
         bstRoot = bstInsert(bstRoot, v);
         inp.value = '';
         this.renderCanvas(v);
@@ -1531,7 +1618,9 @@
         const inp = document.getElementById('bst-val-in');
         const v = parseInt(inp.value);
         if (isNaN(v)) { logMsg("Enter search target value."); return; }
+        if (!bstRoot) { logMsg("Operation failed: Binary search tree is empty."); return; }
 
+        const token = ++executionToken;
         setLock(true);
         setCodeLines(DS_CONFIG.bst.codeLines.search);
         let curr = bstRoot;
@@ -1560,7 +1649,8 @@
             logMsg(`${v} > ${curr.val}: Branching RIGHT (halving boundary)...`);
             curr = curr.right;
           }
-          await waitStep();
+          await waitStep(token);
+          if (token !== executionToken) return;
         }
 
         highlightCodeLine(4);
@@ -1570,32 +1660,42 @@
       },
 
       async inOrder() {
+        if (!bstRoot) { logMsg("Binary search tree is empty."); return; }
+
+        const token = ++executionToken;
         setLock(true);
         setCodeLines(DS_CONFIG.bst.codeLines.inorder);
         const sorted = [];
         const path = [];
 
         async function traverse(node) {
-          if (!node) return;
+          if (!node || token !== executionToken) return;
           highlightCodeLine(2);
           await traverse(node.left);
+          if (token !== executionToken) return;
+
           sorted.push(node.val);
           path.push(node.val);
           highlightCodeLine(3);
           BSTModule.renderCanvas(node.val, path);
           playKeyClick(500 + sorted.length * 30, 0.03);
           logMsg(`In-order traversal visited: [${sorted.join(', ')}]...`);
-          await waitStep();
+          await waitStep(token);
+          if (token !== executionToken) return;
+
           highlightCodeLine(4);
           await traverse(node.right);
         }
 
         await traverse(bstRoot);
-        setLock(false);
-        logMsg(`In-order Traversal Complete: [${sorted.join(', ')}] — Output is verified sorted.`);
+        if (token === executionToken) {
+          setLock(false);
+          logMsg(`In-order Traversal Complete: [${sorted.join(', ')}] — Output is verified sorted.`);
+        }
       },
 
       reset() {
+        cancelOngoingAnimation();
         playKeyClick(700, 0.04);
         bstRoot = buildBST([50, 25, 75, 12, 38, 60, 92]);
         this.renderCanvas();
@@ -1703,23 +1803,57 @@
         const k = kInp.value.trim();
         if (!k) { logMsg("Command rejected: Key required."); return; }
 
+        const token = ++executionToken;
+        setLock(true);
         setCodeLines(DS_CONFIG.hashtable.codeLines.lookup);
         highlightCodeLine(0);
-        const idx = getHash(k);
-        const bucket = htBuckets[idx];
-        const found = bucket.find(e => e.k === k);
 
-        this.renderCanvas(idx, found ? k : null);
+        const idx = getHash(k);
+        this.renderCanvas(idx);
+        playKeyClick(550, 0.04);
+        logMsg(`Computed hash: hash("${k}") % ${HT_SIZE} = <b>[0x0${idx}]</b>. Probing bucket segment...`);
+        await waitStep(token);
+        if (token !== executionToken) return;
+
+        highlightCodeLine(1);
+        const bucket = htBuckets[idx];
+        if (bucket.length === 0) {
+          highlightCodeLine(4);
+          this.renderCanvas(idx);
+          playKeyClick(380, 0.05);
+          setLock(false);
+          logMsg(`Bucket [0x0${idx}] is empty (NULL_PTR). Key "${k}" does not exist.`);
+          return;
+        }
+
         highlightCodeLine(2);
-        playKeyClick(found ? 850 : 400, 0.05);
+        let found = null;
+        for (let i = 0; i < bucket.length; i++) {
+          const item = bucket[i];
+          this.renderCanvas(idx, item.k);
+          playKeyClick(600 + i * 40, 0.03);
+          logMsg(`Scanning bucket [0x0${idx}] node ${i}: compare key "${item.k}" === "${k}"...`);
+          await waitStep(token);
+          if (token !== executionToken) return;
+
+          if (item.k === k) {
+            found = item;
+            break;
+          }
+        }
 
         if (found) {
           highlightCodeLine(3);
-          logMsg(`Key resolved: "${k}" -> "${found.v}" located at bucket segment [${idx}].`);
+          playKeyClick(850, 0.08);
+          this.renderCanvas(idx, found.k);
+          logMsg(`Key resolved: <b>"${k}"</b> -> <b>"${found.v}"</b> in bucket [0x0${idx}].`);
         } else {
           highlightCodeLine(4);
-          logMsg(`Key missing: "${k}" not found in bucket index [${idx}].`);
+          playKeyClick(380, 0.05);
+          this.renderCanvas(idx);
+          logMsg(`Key <b>"${k}"</b> not found in bucket chain [0x0${idx}].`);
         }
+        setLock(false);
       },
 
       deleteKey() {
@@ -1738,6 +1872,7 @@
       },
 
       reset() {
+        cancelOngoingAnimation();
         playKeyClick(700, 0.04);
         initHT();
         this.renderCanvas();
@@ -1758,7 +1893,7 @@
     };
 
     function switchDS(ds) {
-      if (isLocked) return;
+      cancelOngoingAnimation();
       playKeyClick(700, 0.03);
       currentDS = ds;
 
